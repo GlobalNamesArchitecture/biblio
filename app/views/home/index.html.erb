@@ -1,0 +1,6 @@
+<h1>Biblio Citation Parser</h1>
+
+<%= form_tag("/citations", :method => "POST") do %>
+  <%= text_area_tag(:citations, "", :size => "80x20") %>
+  <%= submit_tag("Submit") %>
+<% end %>

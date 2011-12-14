@@ -1,0 +1,35 @@
+<table>
+	<thead>
+		<tr>
+			<td>Author(s)</td>
+			<td>Year</td>
+			<td>Title</td>
+			<td>Journal</td>
+			<td>Volume</td>
+			<td>Pages</td>
+			<td>DOI</td>
+			<td>BHL</td>
+		</tr>
+	</thead>
+	<tbody>
+<% @records.each do |record| %>
+  <tr>
+	<td>
+	  <% record["author"].each_with_index do |author, i| %>
+	    <%= author["family"] %>, <%= author["given"] %>
+	    <% if i < record["author"].length-1 %>
+	      <%= "|" %>
+	    <% end %>
+	  <% end %>
+	</td>
+	<td><%= record["issued"]["date-parts"][0][0] unless record["issued"].nil? %></td>
+    <td><%= record["title"] unless record["title"].nil? %></td>
+    <td><%= record["container-title"] unless record["container-title"].nil? %></td>
+    <td><%= record["volume"] unless record["volume"].nil? %></td>
+    <td><%= record["page"] unless record["page"].nil? %></td>
+    <td><%= record["identifiers"].select{ |k| k["type"] == "doi" }[0]["id"] rescue nil %></td>
+    <td><%= record["identifiers"].select{ |k| k["type"] == "bhl" }[0]["id"] rescue nil %></td>
+  </tr>
+<% end %>
+</tbody>
+</table>
