@@ -37,9 +37,8 @@
             bhl      : 'page_white_go.png'
           },
 
-          // web service parser
+          // JSONP-based web service parser
           parserUrl   : '/citations/',
-          callback    : 'myCallback',
 
           // set the target for the final click event (if there is one)
           target      : '',

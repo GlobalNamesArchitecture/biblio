@@ -1,3 +1,5 @@
+<h1>Bibliographic Citation Discovery Service</h1>
+<h2>Results</h2>
 <table>
 	<thead>
 		<tr>
@@ -13,7 +15,7 @@
 	</thead>
 	<tbody>
 <% @records.each do |record| %>
-  <tr>
+  <tr class="<%= cycle("even", "odd") %>">
 	<td>
 	  <% record["author"].each_with_index do |author, i| %>
 	    <%= author["family"] %>, <%= author["given"] %>
@@ -27,8 +29,10 @@
     <td><%= record["container-title"] unless record["container-title"].nil? %></td>
     <td><%= record["volume"] unless record["volume"].nil? %></td>
     <td><%= record["page"] unless record["page"].nil? %></td>
-    <td><%= record["identifiers"].select{ |k| k["type"] == "doi" }[0]["id"] rescue nil %></td>
-    <td><%= record["identifiers"].select{ |k| k["type"] == "bhl" }[0]["id"] rescue nil %></td>
+    <% doi = record["identifiers"].select{ |k| k["type"] == "doi" }[0]["id"] rescue nil %>
+    <td><%= link_to h(doi), "http://dx.doi.org/" << doi, :target => "_blank" unless doi.nil? %></td>
+    <% bhl = record["identifiers"].select{ |k| k["type"] == "bhl" }[0]["id"] rescue nil %>
+    <td><%= link_to h(bhl), bhl, :target => "_blank" unless bhl.nil? %></td>
   </tr>
 <% end %>
 </tbody>

@@ -1,4 +1,60 @@
-<h1>jQuery Reference Parser</h1>
+<h1>Bibliographic Citation Discovery Service jQuery Plugin</h1>
+
+<h2>Examples</h2>
 <% @references.each do |reference| %>
 <p class="biblio-entry"><%= reference %></p>
 <% end %>
+
+<h2>Configuration</h2>
+<xmp>
+<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="jquery.refparser.js"></script>
+<script type="text/javascript">
+$(function(){
+
+  // Configure some options
+  var options = {
+     // URL path to the icons directory & icons themselves
+     iconPath  : '/icons/',
+     iconClass : 'refparser-icon',
+     icons     : {
+       search   : 'magnifier.png',
+       loader   : 'ajax-loader.gif',
+       error    : 'error.png',
+       timeout  : 'clock_red.png',
+       pdf      : 'page_white_acrobat.png',
+       html     : 'world_go.png',
+       doi      : 'world_go.png',
+       hdl      : 'world_go.png',
+       scholar  : 'g_scholar.png',
+       bhl      : 'page_white_go.png'
+     },
+
+     // JSONP-based web service parser
+     parserUrl   : '/citations/',
+
+     // set the target for the final click event (if there is one)
+     target      : '',
+
+     //set a timeout in milliseconds (should be at least 4000)
+     timeout     : 5000,
+
+     onSuccessfulParse : function(data, obj){
+       /* 'data' is a CITEPROC JS object for parsed reference, 'obj' is the jQuery object */
+     },
+     onFailedParse     : function(obj){
+       /* 'obj' is the jQuery object */
+     },
+     onError           : function(){}
+ };
+
+ $(".biblio-entry").refParser(options);
+
+});
+</script>
+
+<p class="biblio-entry">My reference here that may include HTML.</p>
+</xmp>
+
+<h2>Download</h2>
+<p>jQuery plug-in: <%= link_to 'jquery.refparser.js', @root_url.to_s << asset_path('jquery.refparser.js') %></p>

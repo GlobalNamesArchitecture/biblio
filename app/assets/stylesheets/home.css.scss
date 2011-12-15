@@ -1,3 +1,26 @@
 // Place all the styles related to the home controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
+
+textarea{
+  border: 1px solid #B0ADA3;
+  border-radius: 6px;
+  padding: 10px;
+  width: 50%;
+}
+.submit-button {
+  display:block;
+  border: 0 solid #0F1215;
+  color: #FFFFFF;
+  font-size: 1em;
+  font-weight: bold;
+  margin: 15px 5px;
+  min-height: 38px;
+  padding: 7px 15px;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background: -moz-linear-gradient(center bottom , #1B7004 4%, #5AA52B 58%, #90CF4C 98%) repeat scroll 0 0 transparent;
+  border-radius: 6px;
+}
+.submit-button:hover{
+  box-shadow:1px 1px 5px 1px #7EE52C inset, 0 1px 2px #000;
+}

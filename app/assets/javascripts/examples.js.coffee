@@ -6,11 +6,6 @@ $ ->
  config = {
    iconPath : "/assets/",
    target   : "_blank",
-   timeout  : 6000,
-   onSuccessfulParse : (data, obj) ->
-     ids = []
-     for identifier in data.records[0].identifiers
-       ids.push "#{identifier.type} : #{identifier.id}" if identifier.id?
-     alert(ids.toString()) if ids?
+   timeout  : 6000
  }
  $(".biblio-entry").refParser(config)
