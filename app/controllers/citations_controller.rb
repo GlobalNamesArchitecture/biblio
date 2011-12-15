@@ -17,7 +17,9 @@ class CitationsController < ApplicationController
     citations = params[:citations].split("\r\n").delete_if { |r| r == "" }
     citations.each do |citation|
       parsed = parse(citation)
-      parsed["identifiers"] = make_requests(parsed)
+      parsed["status"] = (parsed["author"].nil? || parsed["title"].nil?) ? "failed" : "success"
+      parsed["verbatim"] = citation
+      parsed["identifiers"] = make_requests(parsed) unless parsed["status"] == "failed"
       @records << parsed
     end
 

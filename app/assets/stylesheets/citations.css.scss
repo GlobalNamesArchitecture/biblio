@@ -18,3 +18,11 @@ table tbody tr.even{
 table tbody tr.odd{
   background: none repeat scroll 0 0 #E6E6E6;
 }
+table tbody tr.failed{
+  background: none repeat scroll 0 0 #ffbfbf;
+}
+table tbody tr.failed span{
+  width:20px;
+  display:inline-block;
+  background: asset-url("cancel.png", image) no-repeat;
+}
