@@ -7,6 +7,7 @@ gem 'therubyracer'
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
 gem 'sqlite3'
+gem 'kyotocabinet-ruby'
 gem 'anystyle-parser'
 gem 'marc'
 gem 'openurl'

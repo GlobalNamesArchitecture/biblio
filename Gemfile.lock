@@ -57,6 +57,7 @@ GEM
       railties (~> 3.0)
       thor (~> 0.14)
     json (1.6.3)
+    kyotocabinet-ruby (1.27.1)
     latex-decode (0.0.10)
       unicode (~> 0.4)
     libv8 (3.3.10.4)
@@ -149,6 +150,7 @@ DEPENDENCIES
   anystyle-parser
   coffee-rails (~> 3.1.1)
   jquery-rails
+  kyotocabinet-ruby
   marc
   nokogiri
   openurl

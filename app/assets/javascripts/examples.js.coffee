@@ -8,4 +8,5 @@ $ ->
    target   : "_blank",
    timeout  : 6000
  }
- $(".biblio-entry").refParser(config)
+ $(".biblio-item").refParser(config)
+ $(".biblio-input").refParser(config)

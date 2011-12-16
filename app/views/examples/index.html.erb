@@ -1,8 +1,13 @@
 <h1>Bibliographic Citation Discovery Service jQuery Plugin</h1>
 
-<h2>Examples</h2>
+<h2>Example - Pre-compiled List</h2>
 <% @references.each do |reference| %>
-<p class="biblio-entry"><%= reference %></p>
+<p class="biblio-item"><%= reference %></p>
+<% end %>
+
+<h2>Example - User Input</h2>
+<%= form_tag("/citations", :method => "POST") do %>
+  <%= text_field_tag :citations, nil, :placeholder => "Paste citation here and press enter...", :class => 'biblio-input' %>
 <% end %>
 
 <h2>Configuration</h2>

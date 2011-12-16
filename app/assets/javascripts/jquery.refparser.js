@@ -54,14 +54,14 @@
       settings = $.extend({}, defaults, options),
       target  = (settings.target) ? " target=\""+settings.target+"\" " : "";
 
-    base.execute = function(obj) {
+    base.execute = function(obj, ref) {
       var icon = obj.find('.' + settings.iconClass), identifiers = "", title = "", link = "";
 
       icon.attr({src : settings.iconPath + settings.icons.loader, alt : 'Looking for reference...', title : 'Looking for reference...'}).css({'cursor':'auto'}).unbind('click');
       $.ajax({
         type : 'GET',
         dataType : 'jsonp',
-        url : settings.parserUrl + '?q=' + escape(obj.text()) + '&callback=?',
+        url : settings.parserUrl + '?q=' + escape(ref) + '&callback=?',
         timeout : (settings.timeout || 5000),
         success : function(data) {
           identifiers = data.records[0].identifiers || "";
@@ -107,10 +107,25 @@
 
     return this.each(function() {
       var self = $(this);
-      self.append('<img src="' + settings.iconPath + settings.icons.search + '" alt="Search!" title="Search!" class="' + settings.iconClass + '" />');
-      self.find('.' + settings.iconClass).css({'cursor':'pointer','border':'0px'}).click(function() {
-        base.execute(self);
-      });
+      if(self.is(':input[type="text"]')) {
+        self.wrap("<div />")
+            .live("blur", function() {
+              self.parent().find("." + settings.iconClass).remove();
+              if(self.val() !== "") {
+                self.parent().append('<img src="' + settings.iconPath + settings.icons.loader + '" alt="Looking for reference..." title="Looking for reference..." class="' + settings.iconClass + '" />');
+                base.execute(self.parent(), self.val());
+              }
+            })
+            .live("keypress", function(e) {
+              var key = e.keyCode || e.which;
+              if(key === 13 || key === 9) { e.preventDefault(); this.blur(); }
+        });
+      } else {
+        self.append('<img src="' + settings.iconPath + settings.icons.search + '" alt="Search!" title="Search!" class="' + settings.iconClass + '" />');
+        self.find('.' + settings.iconClass).css({'cursor':'pointer','border':'0px'}).click(function() {
+          base.execute(self, self.text());
+        });
+      }
     });
   };
 }(jQuery));
