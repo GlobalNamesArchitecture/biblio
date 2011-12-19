@@ -47,7 +47,7 @@ class CitationsController < ApplicationController
   def make_requests(parsed)
     hydra = setup_hydra
     co = context_object(parsed)
-    requests = [crossref(co), bhl(co)]
+    requests = [crossref(co), bhl(co), biostor(co)]
     requests.each do |r|
       hydra.queue r[:req]
     end
@@ -98,7 +98,7 @@ class CitationsController < ApplicationController
     #TODO: ignore books?
     transport = OpenURL::Transport.new('http://www.crossref.org/openurl', co)
     transport.extra_args = { :pid => 'dshorthouse@eol.org', :noredirect => true }
-    req = Typhoeus::Request.new('http://www.crossref.org' << transport.get_path, :timeout => 3000, cache_timeout: 1.day)
+    req = Typhoeus::Request.new('http://www.crossref.org' << transport.get_path, :timeout => 3000, :cache_timeout => 1.day)
     req.on_complete do |r|
       if r.success?
         Nokogiri::XML(r.body).css("doi")[0].children.to_s rescue nil
@@ -115,7 +115,7 @@ class CitationsController < ApplicationController
     #TODO: ignore journal articles?
     transport = OpenURL::Transport.new('http://www.biodiversitylibrary.org/openurl', co)
     transport.extra_args = { :format => 'xml' }
-    req = Typhoeus::Request.new('http://www.biodiversitylibrary.org' << transport.get_path, :timeout => 5000, cache_timeout: 1.day)
+    req = Typhoeus::Request.new('http://www.biodiversitylibrary.org' << transport.get_path, :timeout => 5000, :cache_timeout => 1.day)
     req.on_complete do |r|
       if r.success?
         #TODO: check if multiple results returned from BHL
@@ -127,6 +127,20 @@ class CitationsController < ApplicationController
       end
     end
     return { "type" => "bhl", :req => req }
+  end
+  
+  def biostor(co)
+    transport = OpenURL::Transport.new('http://biostor.org/openurl', co)
+    transport.extra_args = { :format => 'json' }
+    req = Typhoeus::Request.new('http://biostor.org' << transport.get_path, :timeout => 5000, :cache_timeout => 1.day)
+    req.on_complete do |r|
+      if r.success?
+        "http://biostor.org/reference/" << JSON.parse(r.body)["reference_id"] rescue nil
+      elsif r.timed_out?
+      else
+      end
+    end
+    return { "type" => "biostor", :req => req }
   end
 
 end

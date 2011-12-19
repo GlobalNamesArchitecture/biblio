@@ -11,6 +11,7 @@
 			<td>Pages</td>
 			<td>DOI</td>
 			<td>BHL</td>
+			<td>BioStor</td>
 		</tr>
 	</thead>
 	<tbody>
@@ -36,6 +37,8 @@
     <td><%= link_to h(doi), "http://dx.doi.org/" << doi, :target => "_blank" unless doi.nil? %></td>
     <% bhl = record["identifiers"].select{ |k| k["type"] == "bhl" }[0]["id"] rescue nil %>
     <td><%= link_to h(bhl), bhl, :target => "_blank" unless bhl.nil? %></td>
+    <% biostor = record["identifiers"].select{ |k| k["type"] == "biostor" }[0]["id"] rescue nil %>
+    <td><%= link_to h(biostor), biostor, :target => "_blank" unless biostor.nil? %></td>
     <% end %>
   </tr>
 <% end %>
