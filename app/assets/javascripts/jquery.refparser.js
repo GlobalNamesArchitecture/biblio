@@ -43,6 +43,9 @@
           // set the target for the final click event (if there is one)
           target      : '',
 
+          // sources
+          sources     : ["crossref", "bhl", "biostor"],
+
           //set a timeout in milliseconds (should be at least 4000)
           timeout     : 5000,
 
@@ -55,13 +58,16 @@
       target  = (settings.target) ? " target=\""+settings.target+"\" " : "";
 
     base.execute = function(obj, ref) {
-      var icon = obj.find('.' + settings.iconClass), identifiers = "", title = "", link = "";
+      var icon = obj.find('.' + settings.iconClass), identifiers = "", title = "", link = "", sources = "";
+      $.each(settings.sources, function() {
+        sources += "&amp;sources[" + this + "]=true";
+      });
 
       icon.attr({src : settings.iconPath + settings.icons.loader, alt : 'Looking for reference...', title : 'Looking for reference...'}).css({'cursor':'auto'}).unbind('click');
       $.ajax({
         type : 'GET',
         dataType : 'jsonp',
-        url : settings.parserUrl + '?q=' + escape(ref) + '&callback=?',
+        url : settings.parserUrl + '?q=' + escape(ref) + sources + '&amp;callback=?',
         timeout : (settings.timeout || 5000),
         success : function(data) {
           identifiers = data.records[0].identifiers || "";

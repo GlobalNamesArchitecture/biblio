@@ -9,36 +9,42 @@
 			<td>Journal</td>
 			<td>Volume</td>
 			<td>Pages</td>
-			<td>DOI</td>
-			<td>BHL</td>
-			<td>BioStor</td>
+			<% params["sources"].each do |key, source| %>
+			  <td><%= key.to_s.camelize %></td>
+			<% end %>
 		</tr>
 	</thead>
 	<tbody>
 <% @records.each do |record| %>
   <tr class="<%= cycle("even", "odd") %> <%= record["status"] %>">
 	<% if(record["status"] == "failed") %>
-	<td colspan="8"><span title="<%= record["status"] %>">&nbsp;</span><%= record["verbatim"] %></td>
+	  <td colspan="8"><span title="<%= record["status"] %>">&nbsp;</span><%= record["verbatim"] %></td>
 	<% else %>
-	<td>
-	  <% record["author"].each_with_index do |author, i| %>
-	    <%= author["family"] %>, <%= author["given"] %>
-	    <% if i < record["author"].length-1 %>
-	      <%= "|" %>
+	  <td>
+	    <% record["author"].each_with_index do |author, i| %>
+	      <%= author["family"] %>, <%= author["given"] %>
+	      <% if i < record["author"].length-1 %>
+	        <%= "|" %>
+	      <% end %>
 	    <% end %>
-	  <% end %>
-	</td>
-	<td><%= record["issued"]["date-parts"][0][0] unless record["issued"].nil? %></td>
-    <td><%= record["title"] unless record["title"].nil? %></td>
-    <td><%= record["container-title"] unless record["container-title"].nil? %></td>
-    <td><%= record["volume"] unless record["volume"].nil? %></td>
-    <td><%= record["page"] unless record["page"].nil? %></td>
-    <% doi = record["identifiers"].select{ |k| k["type"] == "doi" }[0]["id"] rescue nil %>
-    <td><%= link_to h(doi), "http://dx.doi.org/" << doi, :target => "_blank" unless doi.nil? %></td>
-    <% bhl = record["identifiers"].select{ |k| k["type"] == "bhl" }[0]["id"] rescue nil %>
-    <td><%= link_to h(bhl), bhl, :target => "_blank" unless bhl.nil? %></td>
-    <% biostor = record["identifiers"].select{ |k| k["type"] == "biostor" }[0]["id"] rescue nil %>
-    <td><%= link_to h(biostor), biostor, :target => "_blank" unless biostor.nil? %></td>
+	  </td>
+	  <td><%= record["issued"]["date-parts"][0][0] unless record["issued"].nil? %></td>
+      <td><%= record["title"] unless record["title"].nil? %></td>
+      <td><%= record["container-title"] unless record["container-title"].nil? %></td>
+      <td><%= record["volume"] unless record["volume"].nil? %></td>
+      <td><%= record["page"] unless record["page"].nil? %></td>
+      <% doi = record["identifiers"].select{ |k| k["type"] == "doi" }[0]["id"] rescue nil %>
+      <% if !doi.nil? %>
+        <td><%= link_to h(doi), "http://dx.doi.org/" << doi, :target => "_blank" %></td>
+      <% end %>
+      <% bhl = record["identifiers"].select{ |k| k["type"] == "bhl" }[0]["id"] rescue nil %>
+      <% if !bhl.nil? %>
+        <td><%= link_to h(bhl), bhl, :target => "_blank" %></td>
+      <% end %>
+      <% biostor = record["identifiers"].select{ |k| k["type"] == "biostor" }[0]["id"] rescue nil %>
+      <% if !biostor.nil? %>
+        <td><%= link_to h(biostor), biostor, :target => "_blank" %></td>
+      <% end %>
     <% end %>
   </tr>
 <% end %>

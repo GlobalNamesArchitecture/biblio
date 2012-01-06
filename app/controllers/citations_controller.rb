@@ -6,6 +6,7 @@ class CitationsController < ApplicationController
   def index
     citation = params[:q] rescue nil
     callback = params[:callback] rescue nil
+    sources = params[:sources] rescue nil
     parsed = parse(citation) unless citation.nil?
     parsed["identifiers"] = make_requests(parsed) unless parsed.nil?
     render :json => { :metadata => make_metadata, :records => [parsed] }, :callback => callback
@@ -24,6 +25,7 @@ class CitationsController < ApplicationController
     end
 
     respond_to do |format|
+      callback = params[:callback] rescue nil
       format.json do
         render :json => { :metadata => make_metadata, :records => @records }, :callback => callback
       end
@@ -47,7 +49,13 @@ class CitationsController < ApplicationController
   def make_requests(parsed)
     hydra = setup_hydra
     co = context_object(parsed)
-    requests = [crossref(co), bhl(co), biostor(co)]
+    requests = []
+    allowed = [:crossref,:bhl,:biostor]
+    params[:sources].each do |key, source|
+      if allowed.include? key.to_sym
+        requests << send(key, co)
+      end
+    end unless params[:sources].nil?
     requests.each do |r|
       hydra.queue r[:req]
     end

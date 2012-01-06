@@ -2,10 +2,21 @@
 <p>This pre-alpha, Rails-based application uses three ruby gems at is core:
   <a href="http://rubygems.org/gems/anystyle-parser">anystyle-parser</a>,
   <a href="http://rubygems.org/gems/openurl">openurl</a>, and
-  <a href="http://rubygems.org/gems/typhoeus">typhoeus</a>. Successfully parsed citations are each sent to <a href="http://www.crossref.org/">CrossRef</a>, the <a href="http://www.biodiversitylibrary.org/">Biodiversity Heritage Library</a> and <a href="http://biostor.org">BioStor</a> for discovery. This utility is exposed via a configurable <%= link_to "jQuery plug-in", examples_path %> and code may be examined in a <a href="https://github.com/GlobalNamesArchitecture/biblio">GitHub repository</a>.
+  <a href="http://rubygems.org/gems/typhoeus">typhoeus</a>. Successfully parsed citations are each sent in parallel to <a href="http://www.crossref.org/">CrossRef</a>, the <a href="http://www.biodiversitylibrary.org/">Biodiversity Heritage Library</a> and <a href="http://biostor.org">BioStor</a> for discovery. This utility is exposed via a configurable <%= link_to "jQuery plug-in", examples_path %> and code may be examined in a <a href="https://github.com/GlobalNamesArchitecture/biblio">GitHub repository</a>.
 </p>
 <h2>Paste a List of Citations</h2>
+
 <%= form_tag("/citations", :method => "POST") do %>
   <%= text_area_tag(:citations, "", :size => "80x20") %>
+  <%= field_set_tag 'Discovery Sources' do %>
+    <%= check_box_tag 'sources[crossref]', 'yes', true %>
+    <%= label(:crossref, :name, 'CrossRef') %>
+    <%= check_box_tag 'sources[bhl]', 'yes', true %>
+    <%= label(:bhl, :name, 'BHL') %>
+    <%= check_box_tag 'sources[biostor]', 'yes', true %>
+    <%= label(:source, :name, 'BioStor') %>
+    <span>Deselect all checkboxes to only produce parsed citations</span>
+  <% end %>
+  </div>
   <%= submit_tag "Submit", :class => "submit-button" %>
 <% end %>
