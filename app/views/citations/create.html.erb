@@ -2,34 +2,34 @@
 <div class="intro">Although parsing may be fully successful (<em>e.g.</em> all author given and surnames separated), this proof-of-concept produces very minimal presentation, merely to illustrate the potential.</div>
 <h2>Results</h2>
 <table>
-	<thead>
-		<tr>
-			<td>Author(s)</td>
-			<td>Year</td>
-			<td>Title</td>
-			<td>Journal</td>
-			<td>Volume</td>
-			<td>Pages</td>
-			<% params["sources"].each do |key, source| %>
-			  <td><%= key.to_s.camelize %></td>
-			<% end %>
-		</tr>
-	</thead>
-	<tbody>
+    <thead>
+        <tr>
+            <td>Author(s)</td>
+            <td>Year</td>
+            <td>Title</td>
+            <td>Journal</td>
+            <td>Volume</td>
+            <td>Pages</td>
+            <% params["sources"].each do |key, source| %>
+              <td><%= key.to_s.camelize %></td>
+            <% end unless params["sources"].nil? %>
+        </tr>
+    </thead>
+    <tbody>
 <% @records.each do |record| %>
   <tr class="<%= cycle("even", "odd") %> <%= record["status"] %>">
-	<% if(record["status"] == "failed") %>
-	  <td colspan="8"><span title="<%= record["status"] %>">&nbsp;</span><%= record["verbatim"] %></td>
-	<% else %>
-	  <td>
-	    <% record["author"].each_with_index do |author, i| %>
-	      <%= author["family"] %>, <%= author["given"] %>
-	      <% if i < record["author"].length-1 %>
-	        <%= "|" %>
-	      <% end %>
-	    <% end %>
-	  </td>
-	  <td><%= record["issued"]["date-parts"][0][0] unless record["issued"].nil? %></td>
+    <% if(record["status"] == "failed") %>
+      <td colspan="8"><span title="<%= record["status"] %>">&nbsp;</span><%= record["verbatim"] %></td>
+    <% else %>
+      <td>
+        <% record["author"].each_with_index do |author, i| %>
+          <%= author["family"] %>, <%= author["given"] %>
+          <% if i < record["author"].length-1 %>
+            <%= "|" %>
+          <% end %>
+        <% end %>
+      </td>
+      <td><%= record["issued"]["date-parts"][0][0] unless record["issued"].nil? %></td>
       <td><%= record["title"] unless record["title"].nil? %></td>
       <td><%= record["container-title"] unless record["container-title"].nil? %></td>
       <td><%= record["volume"] unless record["volume"].nil? %></td>
