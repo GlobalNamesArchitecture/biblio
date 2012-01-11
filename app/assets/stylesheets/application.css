@@ -7,10 +7,18 @@
 */
 
 h2{
-    background-color: #E5ECF9;
-    border-bottom: medium none;
-    border-top: 1px solid #3366CC;
-    font-size: 1.3em;
-    margin: 1em 1em 0.5em 0;
-    padding: 0.1em;
+  background-color: #E5ECF9;
+  border-bottom: medium none;
+  border-top: 1px solid #3366CC;
+  font-size: 1.3em;
+  margin: 1em 1em 0.5em 0;
+  padding: 0.1em;
+}
+
+.intro{
+  border:1px solid #3366CC;
+  border-radius:6px;
+  background-color:#E5ECF9;
+  padding:1em;
+  width:75%;
 }
