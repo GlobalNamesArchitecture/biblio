@@ -3,7 +3,7 @@
  *
  * jQuery Reference Parser is a jQuery, javascript front-end to a JSON-producing, bibliographic citation parser.
  * 
- * Version 2.0
+ * Version 2.1
  * November 14, 2010
  *
  * Copyright (c) 2010 David P. Shorthouse
@@ -25,16 +25,46 @@
           iconPath  : '/icons/',
           iconClass : 'refparser-icon',
           icons     : {
-            search   : 'magnifier.png',
-            loader   : 'ajax-loader.gif',
-            error    : 'error.png',
-            timeout  : 'clock_red.png',
-            pdf      : 'page_white_acrobat.png',
-            html     : 'world_go.png',
-            doi      : 'world_go.png',
-            hdl      : 'world_go.png',
-            scholar  : 'g_scholar.png',
-            bhl      : 'page_white_go.png'
+            search   : {
+              title : "Search",
+              icon  : 'magnifier.png'
+            },
+            loader   : {
+              title : "Loooking for reference...",
+              icon  : "ajax-loader.gif"
+            },
+            error    : {
+              title : "Unsuccessful parse",
+              icon  : "error.png"
+            },
+            timeout  : {
+              title : "Timeout",
+              icon  : "clock_red.png"
+            },
+            pdf      : {
+              title : "PDF",
+              icon  : "page_white_acrobat.png"
+            },
+            html     : {
+              title : "HTML",
+              icon  : "world_go.png"
+            },
+            doi      : {
+              title : "To publisher...",
+              icon  : "world_go.png"
+            },
+            hdl      : {
+              title : "To repository...",
+              icon  : "world_go.png"
+            },
+            scholar  : {
+              title : "Search Google Scholar...",
+              icon  : "g_scholar.png"
+            },
+            bhl      : {
+              title : "Biodiversity Heritage Library...",
+              icon  : "page_white_go.png"
+            }
           },
 
           // JSONP-based web service parser
@@ -55,15 +85,16 @@
       },
 
       settings = $.extend({}, defaults, options),
-      target  = (settings.target) ? " target=\""+settings.target+"\" " : "";
+      target  = settings.target || "";
 
     base.execute = function(obj, ref) {
-      var icon = obj.find('.' + settings.iconClass), identifiers = "", title = "", link = "", sources = "";
+      var icon = obj.find('.'+settings.iconClass), identifiers = "", title = "", sources = "";
+
       $.each(settings.sources, function() {
         sources += "&amp;sources[" + this + "]=true";
       });
 
-      icon.attr({src : settings.iconPath + settings.icons.loader, alt : 'Looking for reference...', title : 'Looking for reference...'}).css({'cursor':'auto'}).unbind('click');
+      icon.unbind("click").find("img").attr({ src : settings.iconPath+settings.icons.loader.icon, alt : settings.icons.loader.title, title : settings.icons.loader.title });
       $.ajax({
         type : 'GET',
         dataType : 'jsonp',
@@ -73,30 +104,19 @@
           identifiers = data.records[0].identifiers || "";
           title = data.records[0].title || "";
           if(!title) {
-            icon.attr({src : settings.iconPath + settings.icons.error, alt : 'Unsuccessful parse', title : 'Unsuccessful parse'}).css('cursor', 'auto').unbind('click');
+            icon.click(function() { return false; }).find("img").attr({ src : settings.iconPath+settings.icons.error.icon, alt : settings.icons.error.title, title : settings.icons.error.title });
             settings.onFailedParse.call(this);
           } else {
             if (identifiers.length === 0 && title) {
-                icon.attr({src : settings.iconPath + settings.icons.scholar, alt : 'Search Google Scholar', title : 'Search Google Scholar'})
-                    .css({'cursor':'pointer'})
-                    .unbind('click')
-                    .wrap("<a href=\"http://scholar.google.com/scholar?q="+escape(title)+"\"" + target + " />");
+                icon.attr({ "href" : "http://scholar.google.com/scholar?q="+escape(title), "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.scholar.icon, alt : settings.icons.scholar.title, title : settings.icons.scholar.title });
             } else {
               $.each(identifiers, function(i,v) {
                 i = null;
                 if(v.type === "doi") {
-                  link = "http://dx.doi.org/"+v.id;
-                  icon.attr({src : settings.iconPath + settings.icons.doi, alt : 'To publisher...', title : 'To publisher...'})
-                      .css({'cursor':'pointer'})
-                      .unbind('click')
-                      .wrap("<a href=\"" + link + "\"" + target + " />");
+                  icon.attr({ "href" : "http://dx.doi.org/"+v.id, "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.doi.icon, alt : settings.icons.doi.title, title : settings.icons.doi.title });
                   return false;
                 } else if (v.type === "bhl") {
-                  link = v.id;
-                  icon.attr({src : settings.iconPath + settings.icons.bhl, alt : 'To BHL...', title : 'To BHL...'})
-                      .css({'cursor':'pointer'})
-                      .unbind('click')
-                      .wrap("<a href=\"" + v.id + "\"" + target + " />");
+                  icon.attr({ "href" : v.id, "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.bhl.icon, alt : settings.icons.bhl.title, title : settings.icons.bhl.title });
                   return false;
                 }
               });
@@ -105,7 +125,7 @@
           }
         },
         error : function() {
-          icon.attr({src : settings.iconPath + settings.icons.timeout, alt : 'Query timedout. Please try later', title : 'Query timedout. Please try later'}).css('cursor', 'auto').unbind('click');
+          icon.click(function() { return false; }).find("img").attr({ src : settings.iconPath+settings.icons.timeout.icon, alt : settings.icons.timeout.title, title : settings.icons.timeout.title });
           settings.onError.call(this);
         }
       });
@@ -118,7 +138,7 @@
             .live("blur", function() {
               self.parent().find("." + settings.iconClass).remove();
               if(self.val() !== "") {
-                self.parent().append('<img src="' + settings.iconPath + settings.icons.loader + '" alt="Looking for reference..." title="Looking for reference..." class="' + settings.iconClass + '" />');
+                self.parent().append('<a href="#" class="'+settings.iconClass+'"><img src="'+settings.iconPath+settings.icons.loader.icon+'" alt="'+settings.icons.loader.title+'" title="'+settings.icons.loader.title+'" /></a>').find('.'+settings.iconClass).click(function() { return false; });
                 base.execute(self.parent(), self.val());
               }
             })
@@ -127,9 +147,10 @@
               if(key === 13 || key === 9) { e.preventDefault(); this.blur(); }
         });
       } else {
-        self.append('<img src="' + settings.iconPath + settings.icons.search + '" alt="Search!" title="Search!" class="' + settings.iconClass + '" />');
-        self.find('.' + settings.iconClass).css({'cursor':'pointer','border':'0px'}).click(function() {
+        self.append('<a href="#" class="'+settings.iconClass+'"><img src="'+settings.iconPath+settings.icons.search.icon+'" alt="' + settings.icons.search.title+'" title="'+settings.icons.search.title+'" /></a>');
+        self.find('.'+settings.iconClass).css({'border':'0px'}).click(function() {
           base.execute(self, self.text());
+          return false;
         });
       }
     });

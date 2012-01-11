@@ -23,16 +23,46 @@ $(function(){
      iconPath  : '/icons/',
      iconClass : 'refparser-icon',
      icons     : {
-       search   : 'magnifier.png',
-       loader   : 'ajax-loader.gif',
-       error    : 'error.png',
-       timeout  : 'clock_red.png',
-       pdf      : 'page_white_acrobat.png',
-       html     : 'world_go.png',
-       doi      : 'world_go.png',
-       hdl      : 'world_go.png',
-       scholar  : 'g_scholar.png',
-       bhl      : 'page_white_go.png'
+       search   : {
+         title : "Search",
+         icon  : 'magnifier.png'
+       },
+       loader   : {
+         title : "Loooking for reference...",
+         icon  : "ajax-loader.gif"
+       },
+       error    : {
+         title : "Unsuccessful parse",
+         icon  : "error.png"
+       },
+       timeout  : {
+         title : "Timeout",
+         icon  : "clock_red.png"
+       },
+       pdf      : {
+         title : "PDF",
+         icon  : "page_white_acrobat.png"
+       },
+       html     : {
+         title : "HTML",
+         icon  : "world_go.png"
+       },
+       doi      : {
+         title : "To publisher...",
+         icon  : "world_go.png"
+       },
+       hdl      : {
+         title : "To repository...",
+         icon  : "world_go.png"
+       },
+       scholar  : {
+         title : "Search Google Scholar...",
+         icon  : "g_scholar.png"
+       },
+       bhl      : {
+         title : "Biodiversity Heritage Library...",
+         icon  : "page_white_go.png"
+       }
      },
 
      // JSONP-based web service parser
