@@ -22,7 +22,7 @@
         defaults = {
 
           // URL path to the icons directory & icons themselves
-          iconPath  : '/icons/',
+          iconPath  : 'http://refparser.shorthouse.net/assets/',
           iconClass : 'refparser-icon',
           icons     : {
             search   : {
@@ -68,7 +68,7 @@
           },
 
           // JSONP-based web service parser
-          parserUrl   : '/citations/',
+          parserUrl   : 'http://refparser.shorthouse.net/citations/',
 
           // set the target for the final click event (if there is one)
           target      : '',
