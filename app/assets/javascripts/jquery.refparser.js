@@ -33,37 +33,21 @@
               title : "Loooking for reference...",
               icon  : "ajax-loader.gif"
             },
-            error    : {
-              title : "Unsuccessful parse",
-              icon  : "error.png"
-            },
             timeout  : {
               title : "Timeout",
               icon  : "clock_red.png"
-            },
-            pdf      : {
-              title : "PDF",
-              icon  : "page_white_acrobat.png"
-            },
-            html     : {
-              title : "HTML",
-              icon  : "world_go.png"
             },
             doi      : {
               title : "To publisher...",
               icon  : "world_go.png"
             },
-            hdl      : {
-              title : "To repository...",
-              icon  : "world_go.png"
+            bhl      : {
+              title : "Biodiversity Heritage Library...",
+              icon  : "page_white_go.png"
             },
             scholar  : {
               title : "Search Google Scholar...",
               icon  : "g_scholar.png"
-            },
-            bhl      : {
-              title : "Biodiversity Heritage Library...",
-              icon  : "page_white_go.png"
             }
           },
 
@@ -91,14 +75,14 @@
       var icon = obj.find('.'+settings.iconClass), identifiers = "", title = "", sources = "";
 
       $.each(settings.sources, function() {
-        sources += "&amp;sources[" + this + "]=true";
+        sources += "&amp;sources["+this+"]=true";
       });
 
       icon.unbind("click").find("img").attr({ src : settings.iconPath+settings.icons.loader.icon, alt : settings.icons.loader.title, title : settings.icons.loader.title });
       $.ajax({
         type : 'GET',
         dataType : 'jsonp',
-        url : settings.parserUrl + '?q=' + escape(ref) + sources + '&amp;callback=?',
+        url : settings.parserUrl+'?q='+escape(ref)+sources+'&amp;callback=?',
         timeout : (settings.timeout || 5000),
         success : function(data) {
           identifiers = data.records[0].identifiers || "";

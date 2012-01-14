@@ -1,4 +1,4 @@
-<h1>Bibliographic Citation Discovery Service jQuery Plugin</h1>
+<h1>Bibliographic Citation Parsing &amp; Discovery jQuery Plugin</h1>
 
 <h2>Example - Pre-compiled List</h2>
 <% @references.each do |reference| %>
@@ -19,9 +19,26 @@ $(function(){
 
   // Configure some options
   var options = {
-     // URL path to the icons directory & icons themselves
-     iconPath  : 'http://refparser.shorthouse.net/assets/',
+
+     // JSONP-based web service parser
+     parserUrl   : "<%= url_for( :controller => 'citations', :action => 'index', :only_path => false ) %>",
+
+     // select 3rd party sources to query, pass empty array if no querying desired
+     sources     : ["crossref", "bhl", "biostor"],
+
+     // set the target for the final click event (e.g. '_blank')
+     target      : "",
+
+     // set a timeout in milliseconds (should be at least 4000 because BHL can be slow)
+     timeout     : 5000,
+
+     // URL or path to the icons directory & icons themselves
+     iconPath  : "<%= root_url.to_s << 'assets/' %>",
+
+     // class for the icons for more control over styling
      iconClass : 'refparser-icon',
+
+     // title/alt text and icons
      icons     : {
        search   : {
          title : "Search",
@@ -31,51 +48,23 @@ $(function(){
          title : "Loooking for reference...",
          icon  : "ajax-loader.gif"
        },
-       error    : {
-         title : "Unsuccessful parse",
-         icon  : "error.png"
-       },
        timeout  : {
          title : "Timeout",
          icon  : "clock_red.png"
-       },
-       pdf      : {
-         title : "PDF",
-         icon  : "page_white_acrobat.png"
-       },
-       html     : {
-         title : "HTML",
-         icon  : "world_go.png"
        },
        doi      : {
          title : "To publisher...",
          icon  : "world_go.png"
        },
-       hdl      : {
-         title : "To repository...",
-         icon  : "world_go.png"
+       bhl      : {
+         title : "Biodiversity Heritage Library...",
+         icon  : "page_white_go.png"
        },
        scholar  : {
          title : "Search Google Scholar...",
          icon  : "g_scholar.png"
-       },
-       bhl      : {
-         title : "Biodiversity Heritage Library...",
-         icon  : "page_white_go.png"
        }
      },
-
-     // JSONP-based web service parser
-     parserUrl   : 'http://refparser.shorthouse.net/citations/',
-
-     // set the target for the final click event (if there is one)
-     target      : '',
-
-     // select which sources to query
-     sources     : ["crossref", "bhl", "biostor"],
-
-     //set a timeout in milliseconds (should be at least 4000)
-     timeout     : 5000,
 
      onSuccessfulParse : function(data, obj){
        /* 'data' is a CITEPROC JS object for parsed reference, 'obj' is the jQuery object */
@@ -86,19 +75,32 @@ $(function(){
      onError           : function(){}
  };
 
+ /* Pre-compiled list of citations */
  $(".biblio-entry").refParser(options);
 
-// AND/OR
-
+ /* User input box */
  $(".biblio-input").refParser(options);
 
 });
 </script>
 
+<body>
+<!-- Pre-compiled list of citations -->
 <p class="biblio-entry">My reference here that may include HTML.</p>
-<!-- AND/OR -->
+
+<!-- User input box -->
 <input class="biblio-input"></input>
+</body>
 </xmp>
 
 <h2>Download</h2>
-<p>jQuery plug-in: <%= link_to 'jquery.refparser.js', @root_url.to_s << '/assets/jquery.refparser.js' %></p>
+<p>jQuery plug-in: <%= link_to 'jquery.refparser.js', root_url.to_s << '/assets/jquery.refparser.js' %></p>
+
+<h2>Icons</h2>
+<%= image_tag("magnifier.png") %>
+<%= image_tag("ajax-loader.gif") %>
+<%= image_tag("clock_red.png") %>
+<%= image_tag("world_go.png") %>
+<%= image_tag("page_white_go.png") %>
+<%= image_tag("g_scholar.png") %>
+<p><%= link_to 'famfamfam silk icons', 'http://www.famfamfam.com/lab/icons/silk/' %></p>
