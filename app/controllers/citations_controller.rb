@@ -43,7 +43,16 @@ class CitationsController < ApplicationController
   end
   
   def make_metadata
-    return { :format => "citeproc" }
+    metadata = {
+      :format => "citeproc",
+      :id => "refparser",
+      :owner => "David P. Shorthouse",
+      :specification => "0.81",
+      :namespaces => {
+            :bibo => "http://purl.org/ontology/bibo/"
+        }
+    }
+    return metadata
   end
   
   def make_requests(parsed)

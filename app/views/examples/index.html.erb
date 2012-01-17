@@ -66,13 +66,16 @@ $(function(){
        }
      },
 
-     onSuccessfulParse : function(data, obj){
+     /* Callbacks */
+     onSuccessfulParse : function(obj, data){
        /* 'data' is a CITEPROC JS object for parsed reference, 'obj' is the jQuery object */
      },
      onFailedParse     : function(obj){
        /* 'obj' is the jQuery object */
      },
-     onError           : function(){}
+     onError           : function(obj){
+       /* 'obj' is the jQuery object */
+     }
  };
 
  /* Pre-compiled list of citations */
@@ -94,7 +97,7 @@ $(function(){
 </xmp>
 
 <h2>Download</h2>
-<p>jQuery plug-in: <%= link_to 'jquery.refparser.js', root_url.to_s << '/assets/jquery.refparser.js' %></p>
+<p>jQuery plug-in: <%= link_to 'jquery.refparser.js', root_url.to_s << 'assets/jquery.refparser.js' %></p>
 
 <h2>Icons</h2>
 <%= image_tag("magnifier.png") %>

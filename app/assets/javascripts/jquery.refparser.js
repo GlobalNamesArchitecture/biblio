@@ -21,6 +21,18 @@
     var base     = this,
         defaults = {
 
+          // JSONP-based web service parser
+          parserUrl   : 'http://refparser.shorthouse.net/citations/',
+
+          // set the target for the final click event (if there is one)
+          target      : '',
+
+          // sources
+          sources     : ["crossref", "bhl", "biostor"],
+
+          //set a timeout in milliseconds (should be at least 4000)
+          timeout     : 5000,
+
           // URL path to the icons directory & icons themselves
           iconPath  : 'http://refparser.shorthouse.net/assets/',
           iconClass : 'refparser-icon',
@@ -51,21 +63,10 @@
             }
           },
 
-          // JSONP-based web service parser
-          parserUrl   : 'http://refparser.shorthouse.net/citations/',
-
-          // set the target for the final click event (if there is one)
-          target      : '',
-
-          // sources
-          sources     : ["crossref", "bhl", "biostor"],
-
-          //set a timeout in milliseconds (should be at least 4000)
-          timeout     : 5000,
-
-          onSuccessfulParse : function(){},
-          onFailedParse     : function(){},
-          onError           : function(){}
+          /* Callbacks */
+          onSuccessfulParse : function(data,obj){ data=null; obj=null},
+          onFailedParse     : function(obj){obj=null;},
+          onError           : function(obj){obj=null;}
       },
 
       settings = $.extend({}, defaults, options),
@@ -89,7 +90,7 @@
           title = data.records[0].title || "";
           if(!title) {
             icon.click(function() { return false; }).find("img").attr({ src : settings.iconPath+settings.icons.error.icon, alt : settings.icons.error.title, title : settings.icons.error.title });
-            settings.onFailedParse.call(this);
+            settings.onFailedParse.call(this, obj);
           } else {
             if (identifiers.length === 0 && title) {
                 icon.attr({ "href" : "http://scholar.google.com/scholar?q="+escape(title), "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.scholar.icon, alt : settings.icons.scholar.title, title : settings.icons.scholar.title });
@@ -105,12 +106,12 @@
                 }
               });
             }
-            settings.onSuccessfulParse.call(this, data, obj);
+            settings.onSuccessfulParse.call(this, obj, data);
           }
         },
         error : function() {
           icon.click(function() { return false; }).find("img").attr({ src : settings.iconPath+settings.icons.timeout.icon, alt : settings.icons.timeout.title, title : settings.icons.timeout.title });
-          settings.onError.call(this);
+          settings.onError.call(this, obj);
         }
       });
     };
