@@ -4,7 +4,7 @@
 //= require jquery.refparser
 $ ->
  config = {
-   parserUrl: "/citations",
+   parserUrl: "/citations/",
    iconPath : "/assets/",
    target   : "_blank",
    timeout  : 6000,
