@@ -1,5 +1,6 @@
 class CitationsController < ApplicationController
   require 'anystyle/parser'
+  require 'citeproc'
   require 'openurl'
   require 'typhoeus'
 
@@ -8,7 +9,8 @@ class CitationsController < ApplicationController
     callback = params[:callback] rescue nil
     sources = params[:sources] rescue nil
     if citation =~ /10.(\d)+(\S)+/
-      parsed = doi_lookup(citation)
+      parsed = doi_lookup(citation.match(/10.(\d)+(\S)+/)[0].chomp('.'))
+      parsed["formatted"] = format_citeproc(parsed) unless parsed.empty?
     else
       parsed = parse(citation)
       parsed["identifiers"] = make_requests(parsed).flatten unless parsed["type"].nil?
@@ -63,6 +65,10 @@ class CitationsController < ApplicationController
     req.handled_response
   end
   
+  def format_citeproc(cp)
+    CiteProc.process(cp)
+  end
+  
   def parse(citation)
     Anystyle.parse(citation, :citeproc)[0]
   end
@@ -74,8 +80,8 @@ class CitationsController < ApplicationController
       :owner => "David P. Shorthouse",
       :specification => "0.81",
       :namespaces => {
-            :bibo => "http://purl.org/ontology/bibo/"
-        }
+        :bibo => "http://purl.org/ontology/bibo/"
+      }
     }
     return metadata
   end

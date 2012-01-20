@@ -8,6 +8,7 @@ gem 'therubyracer'
 
 gem 'sqlite3'
 gem 'anystyle-parser'
+gem 'citeproc-ruby'
 gem 'marc'
 gem 'openurl'
 gem 'typhoeus'

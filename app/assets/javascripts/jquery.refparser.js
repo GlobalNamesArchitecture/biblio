@@ -81,7 +81,7 @@
       target  = settings.target || "";
 
     base.execute = function(obj, ref) {
-      var icon = obj.find('.'+settings.iconClass), identifiers = "", title = "", sources = "", timeout = 10000;
+      var icon = obj.find('.'+settings.iconClass), identifiers = "", title = "", formatted = "", sources = "", timeout = 10000;
 
       $.each(settings.sources, function() {
         sources += "&amp;sources["+this+"]=true";
@@ -98,6 +98,7 @@
         success : function(data) {
           identifiers = data.records[0].identifiers || "";
           title = data.records[0].title || "";
+          formatted = data.records[0].formatted || "";
           if(!title) {
             icon.click(function() { return false; }).find("img").attr({ src : settings.iconPath+settings.icons.error.icon, alt : settings.icons.error.title, title : settings.icons.error.title });
             settings.onFailedParse.call(this, obj);
@@ -109,6 +110,9 @@
                 i = null;
                 if(v.type === "doi") {
                   icon.attr({ "href" : "http://dx.doi.org/"+v.id, "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.doi.icon, alt : settings.icons.doi.title, title : settings.icons.doi.title });
+                  if(ref.match(/10.(\d)+(\S)+/) && obj.find(":first").is(':input[type="text"]')) {
+                    obj.find(":first").val(formatted);
+                  }
                 } else if (v.type === "bhl") {
                   icon.attr({ "href" : v.id, "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.bhl.icon, alt : settings.icons.bhl.title, title : settings.icons.bhl.title });
                 } else if (v.type === "biostor") {
