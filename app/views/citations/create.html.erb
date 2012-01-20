@@ -11,7 +11,7 @@
             <td>Volume</td>
             <td>Pages</td>
             <% params["sources"].each do |key, source| %>
-              <td><%= key.to_s.camelize %></td>
+              <td><%= key.to_s.upcase %></td>
             <% end unless params["sources"].nil? %>
         </tr>
     </thead>
@@ -34,7 +34,7 @@
       <td><%= record["container-title"] unless record["container-title"].nil? %></td>
       <td><%= record["volume"] unless record["volume"].nil? %></td>
       <td><%= record["page"] unless record["page"].nil? %></td>
-      <% if params["sources"].include? "doi" %>
+      <% if params["sources"].include? "crossref" %>
       <% doi = record["identifiers"].select{ |k| k[:type] == "doi" }[0][:id] rescue nil %>
       <td>
         <% if !doi.nil? %>
@@ -44,6 +44,7 @@
       <% end %>
       <% if params["sources"].include? "bhl" %>
       <% bhl = record["identifiers"].select{ |k| k[:type] == "bhl" }[0][:id] rescue nil %>
+      <td>
         <% if !bhl.nil? %>
           <%= link_to h(bhl), bhl, :target => "_blank" %>
         <% end %>

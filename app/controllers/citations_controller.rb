@@ -9,7 +9,6 @@ class CitationsController < ApplicationController
     sources = params[:sources] rescue nil
     if citation =~ /10.(\d)+(\S)+/
       parsed = doi_lookup(citation)
-      parsed["identifiers"] = [ {:id => citation, :type => "doi"} ]
     else
       parsed = parse(citation)
       parsed["identifiers"] = make_requests(parsed).flatten unless parsed["type"].nil?
@@ -45,12 +44,17 @@ class CitationsController < ApplicationController
   def doi_lookup(doi)
     req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 10000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
     req.on_complete do |r|
+      result = []
       if r.success?
-        JSON.parse(r.body) rescue nil
+        result = JSON.parse(r.body)
+        result["identifiers"] = [{ "id" => doi, "type" => "doi"}]
+        result
       elsif r.timed_out?
         #TODO: do something here
+        result
       else
         #TODO: do something here
+        result
       end
     end
     hydra = setup_hydra
@@ -165,7 +169,7 @@ class CitationsController < ApplicationController
       if r.success?
         #TODO: refine multiple results returned from BHL
         JSON.parse(r.body)["citations"].each do |c|
-          result << { :id => c["Url"], :type => "bhl", :raw_metadata => c } unless c["Url"].nil?
+          result << { :id => c["TitleUrl"], :type => "bhl", :raw_metadata => c } unless c["TitleUrl"].nil?
         end rescue nil
         result
       elsif r.timed_out?

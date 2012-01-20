@@ -29,7 +29,7 @@ $(function(){
      // set the target for the final click event (e.g. '_blank')
      target      : "",
 
-     // set a timeout in milliseconds (should be at least 4000 because BHL can be slow)
+     // set a timeout in milliseconds, max 10000 (should be at least 5000 because BHL can be slow)
      timeout     : 5000,
 
      // URL or path to the icons directory & icons themselves
@@ -60,6 +60,10 @@ $(function(){
          title : "Biodiversity Heritage Library...",
          icon  : "page_white_go.png"
        },
+       biostor  : {
+         title : "BioStor...",
+         icon  : "page_white_go.png"
+       },
        scholar  : {
          title : "Search Google Scholar...",
          icon  : "g_scholar.png"
@@ -68,7 +72,7 @@ $(function(){
 
      /* Callbacks */
      onSuccessfulParse : function(obj, data){
-       /* 'data' is a CITEPROC JS object for parsed reference (examine the Firebug console), 'obj' is the jQuery object */
+       /* 'obj' is the jQuery object, 'data' is a CITEPROC JS object for parsed reference (examine the Firebug console) */
      },
      onFailedParse     : function(obj){
        /* 'obj' is the jQuery object */

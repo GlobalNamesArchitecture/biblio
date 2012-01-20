@@ -30,8 +30,8 @@
           // sources
           sources     : ["crossref", "bhl", "biostor"],
 
-          //set a timeout in milliseconds (should be at least 4000)
-          timeout     : 9000,
+          //set a timeout in milliseconds, max 10000 (should be at least 5000)
+          timeout     : 10000,
 
           // URL path to the icons directory & icons themselves
           iconPath  : 'http://refparser.shorthouse.net/assets/',
@@ -66,7 +66,7 @@
               icon  : "g_scholar.png"
             },
             error    : {
-              title : "Failed parse",
+              title : "Failed parse or DOI look-up",
               icon  : "error.png"
             }
           },
@@ -81,18 +81,20 @@
       target  = settings.target || "";
 
     base.execute = function(obj, ref) {
-      var icon = obj.find('.'+settings.iconClass), identifiers = "", title = "", sources = "";
+      var icon = obj.find('.'+settings.iconClass), identifiers = "", title = "", sources = "", timeout = 10000;
 
       $.each(settings.sources, function() {
         sources += "&amp;sources["+this+"]=true";
       });
+
+      timeout = (settings.timeout && settings.timeout <= timeout) ? settings.timeout : timeout;
 
       icon.unbind("click").find("img").attr({ src : settings.iconPath+settings.icons.loader.icon, alt : settings.icons.loader.title, title : settings.icons.loader.title });
       $.ajax({
         type : 'GET',
         dataType : 'jsonp',
         url : settings.parserUrl+'?q='+encodeURIComponent(ref)+sources+'&amp;callback=?',
-        timeout : (settings.timeout || 5000),
+        timeout : timeout,
         success : function(data) {
           identifiers = data.records[0].identifiers || "";
           title = data.records[0].title || "";
