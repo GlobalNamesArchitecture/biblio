@@ -10,7 +10,7 @@
  * Licensed under the MIT license.
  * http://creativecommons.org/licenses/MIT/
  **/
-/*global $, jQuery, escape, Right */
+/*global $, jQuery, encodeURIComponent, Right */
 
 (function($){
 
@@ -31,7 +31,7 @@
           sources     : ["crossref", "bhl", "biostor"],
 
           //set a timeout in milliseconds (should be at least 4000)
-          timeout     : 5000,
+          timeout     : 9000,
 
           // URL path to the icons directory & icons themselves
           iconPath  : 'http://refparser.shorthouse.net/assets/',
@@ -57,9 +57,17 @@
               title : "Biodiversity Heritage Library...",
               icon  : "page_white_go.png"
             },
+            biostor  : {
+              title : "BioStor...",
+              icon  : "page_white_go.png"
+            },
             scholar  : {
               title : "Search Google Scholar...",
               icon  : "g_scholar.png"
+            },
+            error    : {
+              title : "Failed parse",
+              icon  : "error.png"
             }
           },
 
@@ -83,7 +91,7 @@
       $.ajax({
         type : 'GET',
         dataType : 'jsonp',
-        url : settings.parserUrl+'?q='+escape(ref)+sources+'&amp;callback=?',
+        url : settings.parserUrl+'?q='+encodeURIComponent(ref)+sources+'&amp;callback=?',
         timeout : (settings.timeout || 5000),
         success : function(data) {
           identifiers = data.records[0].identifiers || "";
@@ -93,17 +101,18 @@
             settings.onFailedParse.call(this, obj);
           } else {
             if (identifiers.length === 0 && title) {
-                icon.attr({ "href" : "http://scholar.google.com/scholar?q="+escape(title), "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.scholar.icon, alt : settings.icons.scholar.title, title : settings.icons.scholar.title });
+                icon.attr({ "href" : "http://scholar.google.com/scholar?q="+encodeURIComponent(title), "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.scholar.icon, alt : settings.icons.scholar.title, title : settings.icons.scholar.title });
             } else {
               $.each(identifiers, function(i,v) {
                 i = null;
                 if(v.type === "doi") {
                   icon.attr({ "href" : "http://dx.doi.org/"+v.id, "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.doi.icon, alt : settings.icons.doi.title, title : settings.icons.doi.title });
-                  return false;
                 } else if (v.type === "bhl") {
                   icon.attr({ "href" : v.id, "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.bhl.icon, alt : settings.icons.bhl.title, title : settings.icons.bhl.title });
-                  return false;
+                } else if (v.type === "biostor") {
+                  icon.attr({ "href" : v.id, "target" : target}).find("img").attr({ src : settings.iconPath+settings.icons.biostor.icon, alt : settings.icons.biostor.title, title : settings.icons.biostor.title });
                 }
+                return false;
               });
             }
             settings.onSuccessfulParse.call(this, obj, data);

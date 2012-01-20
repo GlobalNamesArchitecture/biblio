@@ -34,17 +34,28 @@
       <td><%= record["container-title"] unless record["container-title"].nil? %></td>
       <td><%= record["volume"] unless record["volume"].nil? %></td>
       <td><%= record["page"] unless record["page"].nil? %></td>
-      <% doi = record["identifiers"].select{ |k| k["type"] == "doi" }[0]["id"] rescue nil %>
-      <% if !doi.nil? %>
-        <td><%= link_to h(doi), "http://dx.doi.org/" << doi, :target => "_blank" %></td>
+      <% if params["sources"].include? "doi" %>
+      <% doi = record["identifiers"].select{ |k| k[:type] == "doi" }[0][:id] rescue nil %>
+      <td>
+        <% if !doi.nil? %>
+          <%= link_to h(doi), "http://dx.doi.org/" << doi, :target => "_blank" %>
+        <% end %>
+      </td>
       <% end %>
-      <% bhl = record["identifiers"].select{ |k| k["type"] == "bhl" }[0]["id"] rescue nil %>
-      <% if !bhl.nil? %>
-        <td><%= link_to h(bhl), bhl, :target => "_blank" %></td>
+      <% if params["sources"].include? "bhl" %>
+      <% bhl = record["identifiers"].select{ |k| k[:type] == "bhl" }[0][:id] rescue nil %>
+        <% if !bhl.nil? %>
+          <%= link_to h(bhl), bhl, :target => "_blank" %>
+        <% end %>
+      </td>
       <% end %>
-      <% biostor = record["identifiers"].select{ |k| k["type"] == "biostor" }[0]["id"] rescue nil %>
-      <% if !biostor.nil? %>
-        <td><%= link_to h(biostor), biostor, :target => "_blank" %></td>
+      <% if params["sources"].include? "biostor" %>
+      <% biostor = record["identifiers"].select{ |k| k[:type] == "biostor" }[0][:id] rescue nil %>
+      <td>
+        <% if !biostor.nil? %>
+          <%= link_to h(biostor), biostor, :target => "_blank" %>
+        <% end %>
+      </td>
       <% end %>
     <% end %>
   </tr>

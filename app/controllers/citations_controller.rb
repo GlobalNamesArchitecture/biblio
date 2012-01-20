@@ -7,20 +7,24 @@ class CitationsController < ApplicationController
     citation = params[:q] rescue nil
     callback = params[:callback] rescue nil
     sources = params[:sources] rescue nil
-    parsed = parse(citation) unless citation.nil?
-    parsed["identifiers"] = make_requests(parsed) unless parsed.nil?
+    if citation =~ /10.(\d)+(\S)+/
+      parsed = doi_lookup(citation)
+      parsed["identifiers"] = [ {:id => citation, :type => "doi"} ]
+    else
+      parsed = parse(citation)
+      parsed["identifiers"] = make_requests(parsed).flatten unless parsed["type"].nil?
+    end
     render :json => { :metadata => make_metadata, :records => [parsed] }, :callback => callback
   end
 
   def create
     @records = []
-
     citations = params[:citations].split("\r\n").delete_if { |r| r == "" }
     citations.each do |citation|
       parsed = parse(citation)
       parsed["status"] = (parsed["author"].nil? || parsed["title"].nil?) ? "failed" : "success"
       parsed["verbatim"] = citation
-      parsed["identifiers"] = make_requests(parsed) unless parsed["status"] == "failed"
+      parsed["identifiers"] = make_requests(parsed).flatten unless parsed["status"] == "failed"
       @records << parsed
     end
 
@@ -38,10 +42,27 @@ class CitationsController < ApplicationController
   
   protected
 
+  def doi_lookup(doi)
+    req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 10000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
+    req.on_complete do |r|
+      if r.success?
+        JSON.parse(r.body) rescue nil
+      elsif r.timed_out?
+        #TODO: do something here
+      else
+        #TODO: do something here
+      end
+    end
+    hydra = setup_hydra
+    hydra.queue req
+    hydra.run
+    req.handled_response
+  end
+  
   def parse(citation)
     Anystyle.parse(citation, :citeproc)[0]
   end
-  
+
   def make_metadata
     metadata = {
       :format => "citeproc",
@@ -66,13 +87,12 @@ class CitationsController < ApplicationController
       end
     end unless params[:sources].nil?
     requests.each do |r|
-      hydra.queue r[:req]
+      hydra.queue r
     end
     hydra.run
     responses = []
     requests.each do |r|
-      id = (r[:req].handled_response.is_a? String) ? r[:req].handled_response : nil
-      responses << { "id" => id, "type" => r["type"] } unless id.nil?
+      responses << r.handled_response
     end
     return responses
   end
@@ -90,6 +110,7 @@ class CitationsController < ApplicationController
   
   def context_object(parsed)
     co = OpenURL::ContextObject.new
+    
     co.referent.set_format(parsed["type"])
     co.referent.set_metadata('genre', parsed["type"])
     
@@ -108,6 +129,7 @@ class CitationsController < ApplicationController
     co.referent.set_metadata('pages', parsed["page"]) unless parsed["page"].nil?
     pages = parsed["page"].split("--") unless parsed["page"].nil?
     co.referent.set_metadata('spage', pages[0]) unless pages.nil?
+
     return co
   end
   
@@ -115,49 +137,68 @@ class CitationsController < ApplicationController
     #TODO: ignore books?
     transport = OpenURL::Transport.new('http://www.crossref.org/openurl', co)
     transport.extra_args = { :pid => 'dshorthouse@eol.org', :noredirect => true }
-    req = Typhoeus::Request.new('http://www.crossref.org' << transport.get_path, :timeout => 3000, :cache_timeout => 1.day)
+    req = Typhoeus::Request.new('http://www.crossref.org' << transport.get_path, :timeout => 10000, :cache_timeout => 1.day)
     req.on_complete do |r|
+      result = []
       if r.success?
-        Nokogiri::XML(r.body).css("doi")[0].children.to_s rescue nil
+        response = Hash.from_xml(r.body)["crossref_result"]["query_result"]["body"]["query"] rescue nil
+        doi = response["doi"] rescue nil
+        result << { :id => doi, :type => "doi", :raw_metadata => response } unless doi.nil?
+        result
       elsif r.timed_out?
         #TODO: do something here
+        result
       else
         #TODO: do something here
+        result
       end
     end
-    return { "type" => "doi", :req => req }
+    return req
   end
   
   def bhl(co)
-    #TODO: ignore journal articles?
     transport = OpenURL::Transport.new('http://www.biodiversitylibrary.org/openurl', co)
-    transport.extra_args = { :format => 'xml' }
-    req = Typhoeus::Request.new('http://www.biodiversitylibrary.org' << transport.get_path, :timeout => 5000, :cache_timeout => 1.day)
+    transport.extra_args = { :format => 'json' }
+    req = Typhoeus::Request.new('http://www.biodiversitylibrary.org' << transport.get_path, :timeout => 10000, :cache_timeout => 1.day)
     req.on_complete do |r|
+      result = []
       if r.success?
-        #TODO: check if multiple results returned from BHL
-        Nokogiri::XML(r.body.gsub! "utf-16", "utf-8").css("ItemUrl")[0].children.to_s rescue nil
+        #TODO: refine multiple results returned from BHL
+        JSON.parse(r.body)["citations"].each do |c|
+          result << { :id => c["Url"], :type => "bhl", :raw_metadata => c } unless c["Url"].nil?
+        end rescue nil
+        result
       elsif r.timed_out?
         #TODO: do something here
+        result
       else
         #TODO: do something here
+        result
       end
     end
-    return { "type" => "bhl", :req => req }
+    return req
   end
   
   def biostor(co)
     transport = OpenURL::Transport.new('http://biostor.org/openurl', co)
     transport.extra_args = { :format => 'json' }
-    req = Typhoeus::Request.new('http://biostor.org' << transport.get_path, :timeout => 5000, :cache_timeout => 1.day)
+    req = Typhoeus::Request.new('http://biostor.org' << transport.get_path, :timeout => 10000, :cache_timeout => 1.day)
     req.on_complete do |r|
+      result = []
       if r.success?
-        "http://biostor.org/reference/" << JSON.parse(r.body)["reference_id"] rescue nil
+        #TODO: check if multiple results returned from BioStor
+        response = JSON.parse(r.body) rescue nil
+        result << { :id => "http://biostor.org/reference/" << response["reference_id"], :type => "biostor", :raw_metadata => response } unless response["reference_id"].nil?
+        result
       elsif r.timed_out?
+        #TODO: do something here
+        result
       else
+        #TODO: do something here
+        result
       end
     end
-    return { "type" => "biostor", :req => req }
+    return req
   end
 
 end

@@ -7,7 +7,6 @@ $ ->
    parserUrl: "/citations/",
    iconPath : "/assets/",
    target   : "_blank",
-   timeout  : 6000,
    onSuccessfulParse : (obj, data) -> console.log(data),
    onFailedParse : (obj) -> console.log(obj),
    onError : (obj) -> console.log(obj)
