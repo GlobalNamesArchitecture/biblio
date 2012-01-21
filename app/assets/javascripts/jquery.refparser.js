@@ -30,7 +30,7 @@
           // sources
           sources     : ["crossref", "bhl", "biostor"],
 
-          // input box auto-formatter. Options are "ala", "ama", "apa", or "asa"
+          // input box auto-formatter. Options are "ama", "apa", or "asa"
           style       : "apa",
 
           //set a timeout in milliseconds, max 10000 (should be at least 5000)
@@ -80,7 +80,7 @@
           onError           : function(obj){obj=null;}
       },
 
-      styles = ["ala", "ama", "apa"],
+      styles = ["ama", "apa", "asa"],
 
       settings = $.extend({}, defaults, options);
 
