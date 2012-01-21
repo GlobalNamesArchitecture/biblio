@@ -30,6 +30,9 @@
           // sources
           sources     : ["crossref", "bhl", "biostor"],
 
+          // input box auto-formatter. Options are "ala", "ama", "apa", or "asa"
+          style       : "apa",
+
           //set a timeout in milliseconds, max 10000 (should be at least 5000)
           timeout     : 10000,
 
@@ -77,23 +80,29 @@
           onError           : function(obj){obj=null;}
       },
 
-      settings = $.extend({}, defaults, options),
-      target  = settings.target || "";
+      styles = ["ala", "ama", "apa"],
+
+      settings = $.extend({}, defaults, options);
 
     base.execute = function(obj, ref) {
-      var icon = obj.find('.'+settings.iconClass), identifiers = "", title = "", formatted = "", sources = "", timeout = 10000;
+      var icon        = obj.find('.'+settings.iconClass),
+          identifiers = "",
+          title       = "",
+          formatted   = "",
+          sources     = "",
+          target      = settings.target || "",
+          timeout     = (settings.timeout <= 10000) ? settings.timeout : 10000,
+          style       = ($.inArray(settings.style, styles) > 0) ? settings.style : "apa";
 
       $.each(settings.sources, function() {
         sources += "&amp;sources["+this+"]=true";
       });
 
-      timeout = (settings.timeout && settings.timeout <= timeout) ? settings.timeout : timeout;
-
       icon.unbind("click").find("img").attr({ src : settings.iconPath+settings.icons.loader.icon, alt : settings.icons.loader.title, title : settings.icons.loader.title });
       $.ajax({
         type : 'GET',
         dataType : 'jsonp',
-        url : settings.parserUrl+'?q='+encodeURIComponent(ref)+sources+'&amp;callback=?',
+        url : settings.parserUrl+'?q='+encodeURIComponent(ref)+sources+'&amp;style='+style+'&amp;callback=?',
         timeout : timeout,
         success : function(data) {
           identifiers = data.records[0].identifiers || "";

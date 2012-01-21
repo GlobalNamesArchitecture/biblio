@@ -8,11 +8,13 @@ class CitationsController < ApplicationController
     citation = params[:q] rescue nil
     callback = params[:callback] rescue nil
     sources = params[:sources] rescue nil
+    style = params[:style] || "asa"
     if citation =~ /10.(\d)+(\S)+/
       parsed = doi_lookup(citation.match(/10.(\d)+(\S)+/)[0].chomp('.'))
-      parsed["formatted"] = format_citeproc(parsed) unless parsed.empty?
+      parsed["formatted"] = format_citeproc(parsed, style) unless parsed.empty?
     else
       parsed = parse(citation)
+      parsed["formatted"] = format_citeproc(parsed, style) unless parsed["type"].nil?
       parsed["identifiers"] = make_requests(parsed).flatten unless parsed["type"].nil?
     end
     render :json => { :metadata => make_metadata, :records => [parsed] }, :callback => callback
@@ -65,8 +67,8 @@ class CitationsController < ApplicationController
     req.handled_response
   end
   
-  def format_citeproc(cp)
-    CiteProc.process(cp)
+  def format_citeproc(cp, style)
+    CiteProc.process(cp, :style => style)
   end
   
   def parse(citation)
