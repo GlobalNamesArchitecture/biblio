@@ -46,7 +46,7 @@ class CitationsController < ApplicationController
   protected
 
   def doi_lookup(doi)
-    req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 10000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
+    req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 8000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
     req.on_complete do |r|
       result = []
       if r.success?
@@ -149,7 +149,7 @@ class CitationsController < ApplicationController
     #TODO: ignore books?
     transport = OpenURL::Transport.new('http://www.crossref.org/openurl', co)
     transport.extra_args = { :pid => 'dshorthouse@eol.org', :noredirect => true }
-    req = Typhoeus::Request.new('http://www.crossref.org' << transport.get_path, :timeout => 10000, :cache_timeout => 1.day)
+    req = Typhoeus::Request.new('http://www.crossref.org' << transport.get_path, :timeout => 8000, :cache_timeout => 1.day)
     req.on_complete do |r|
       result = []
       if r.success?
@@ -171,7 +171,7 @@ class CitationsController < ApplicationController
   def bhl(co)
     transport = OpenURL::Transport.new('http://www.biodiversitylibrary.org/openurl', co)
     transport.extra_args = { :format => 'json' }
-    req = Typhoeus::Request.new('http://www.biodiversitylibrary.org' << transport.get_path, :timeout => 10000, :cache_timeout => 1.day)
+    req = Typhoeus::Request.new('http://www.biodiversitylibrary.org' << transport.get_path, :timeout => 8000, :cache_timeout => 1.day)
     req.on_complete do |r|
       result = []
       if r.success?
@@ -194,7 +194,7 @@ class CitationsController < ApplicationController
   def biostor(co)
     transport = OpenURL::Transport.new('http://biostor.org/openurl', co)
     transport.extra_args = { :format => 'json' }
-    req = Typhoeus::Request.new('http://biostor.org' << transport.get_path, :timeout => 10000, :cache_timeout => 1.day)
+    req = Typhoeus::Request.new('http://biostor.org' << transport.get_path, :timeout => 8000, :cache_timeout => 1.day)
     req.on_complete do |r|
       result = []
       if r.success?
