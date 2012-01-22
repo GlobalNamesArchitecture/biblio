@@ -29,7 +29,7 @@ $(function(){
      // select 3rd party sources to query, pass empty array if no querying desired
      sources     : ["crossref", "bhl", "biostor"],
 
-     // input auto-formatter. Options are "ala", "ama", "apa", or "asa"
+     // input auto-formatter. Options are "ama", "apa", or "asa"
      style       : "apa",
 
      // set the target for the final click event (e.g. '_blank')
@@ -54,10 +54,6 @@ $(function(){
          title : "Loooking for reference...",
          icon  : "ajax-loader.gif"
        },
-       timeout  : {
-         title : "Timeout",
-         icon  : "clock_red.png"
-       },
        doi      : {
          title : "To publisher...",
          icon  : "world_go.png"
@@ -73,6 +69,14 @@ $(function(){
        scholar  : {
          title : "Search Google Scholar...",
          icon  : "g_scholar.png"
+       },
+       timeout  : {
+         title : "Timeout",
+         icon  : "clock_red.png"
+       },
+       error    : {
+         title : "Failed parse or DOI look-up",
+         icon  : "error.png"
        }
      },
 
@@ -112,8 +116,9 @@ $(function(){
 <h2>Icons</h2>
 <%= image_tag("magnifier.png") %>
 <%= image_tag("ajax-loader.gif") %>
-<%= image_tag("clock_red.png") %>
 <%= image_tag("world_go.png") %>
 <%= image_tag("page_white_go.png") %>
 <%= image_tag("g_scholar.png") %>
+<%= image_tag("clock_red.png") %>
+<%= image_tag("error.png") %>
 <p><%= link_to 'famfamfam silk icons', 'http://www.famfamfam.com/lab/icons/silk/' %></p>

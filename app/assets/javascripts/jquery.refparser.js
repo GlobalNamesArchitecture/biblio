@@ -31,7 +31,7 @@
           sources     : ["crossref", "bhl", "biostor"],
 
           // input box auto-formatter. Options are "ama", "apa", or "asa"
-          style       : "apa",
+          style       : 'apa',
 
           //set a timeout in milliseconds, max 10000 (should be at least 5000)
           timeout     : 10000,
@@ -48,10 +48,6 @@
               title : "Loooking for reference...",
               icon  : "ajax-loader.gif"
             },
-            timeout  : {
-              title : "Timeout",
-              icon  : "clock_red.png"
-            },
             doi      : {
               title : "To publisher...",
               icon  : "world_go.png"
@@ -67,6 +63,10 @@
             scholar  : {
               title : "Search Google Scholar...",
               icon  : "g_scholar.png"
+            },
+            timeout  : {
+              title : "Timeout",
+              icon  : "clock_red.png"
             },
             error    : {
               title : "Failed parse or DOI look-up",
