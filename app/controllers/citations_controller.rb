@@ -5,75 +5,49 @@ class CitationsController < ApplicationController
   require 'typhoeus'
 
   def index
-    citation = params[:q] rescue nil
-    callback = params[:callback] rescue nil
-    sources = params[:sources] rescue nil
-    style = params[:style] rescue nil
-    if citation =~ /10.(\d)+(\S)+/
-      parsed = doi_lookup(citation.match(/10.(\d)+(\S)+/)[0].chomp('.'))
-      parsed["formatted"] = format_citeproc(parsed, style) unless parsed.empty?
-    else
-      parsed = parse(citation) rescue nil
-      parsed["formatted"] = format_citeproc(parsed, style) unless parsed.nil? || parsed["type"].nil?
-      parsed["identifiers"] = make_requests(parsed).flatten unless parsed.nil? || parsed["type"].nil?
+    valid_sources = ["crossref", "bhl", "biostor"]
+    valid_styles  = ["ama", "apa", "asa"]
+
+    @citation = params[:q] || ""
+    @sources  = params[:sources] || valid_sources
+    @style    = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
+
+    @sources.each do |key, source|
+      if !valid_sources.include?(key)
+        @sources.delete(key)
+      end
     end
-    render :json => { :metadata => make_metadata, :records => [parsed] }, :callback => callback
+
+    response = (@citation =~ /10.(\d)+(\S)+/) ? doi_response : parse_response
+
+    render :json => { :metadata => make_metadata, :records => [response] }, :callback => params[:callback]
   end
 
   def create
-    @records = []
-    citations = params[:citations].split("\r\n").delete_if { |r| r == "" }
-    citations.each do |citation|
-      parsed = parse(citation)
-      parsed["status"] = (parsed["author"].nil? || parsed["title"].nil?) ? "failed" : "success"
-      parsed["verbatim"] = citation
-      parsed["identifiers"] = make_requests(parsed).flatten unless parsed["status"] == "failed"
-      @records << parsed
+    valid_sources = ["crossref", "bhl", "biostor"]
+
+    @sources = params[:sources] || valid_sources
+
+    @sources.each do |key, source|
+      if !valid_sources.include?(key)
+        @sources.delete(key)
+      end
     end
 
+    @records = multiparse_response
+
     respond_to do |format|
-      callback = params[:callback] rescue nil
       format.json do
-        render :json => { :metadata => make_metadata, :records => @records }, :callback => callback
+        render :json => { :metadata => make_metadata, :records => @records }, :callback => params[:callback]
       end
-      
+
       format.html do
       end
     end
-    
-  end
-  
-  protected
 
-  def doi_lookup(doi)
-    req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 8000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
-    req.on_complete do |r|
-      result = []
-      if r.success?
-        result = JSON.parse(r.body)
-        result["identifiers"] = [{ "id" => doi, "type" => "doi"}]
-        result
-      elsif r.timed_out?
-        #TODO: do something here
-        result
-      else
-        #TODO: do something here
-        result
-      end
-    end
-    hydra = setup_hydra
-    hydra.queue req
-    hydra.run
-    req.handled_response
   end
-  
-  def format_citeproc(cp, style)
-    CiteProc.process(cp, :style => style)
-  end
-  
-  def parse(citation)
-    Anystyle.parse(citation, :citeproc)[0]
-  end
+
+  protected
 
   def make_metadata
     metadata = {
@@ -85,19 +59,68 @@ class CitationsController < ApplicationController
         :bibo => "http://purl.org/ontology/bibo/"
       }
     }
-    return metadata
   end
-  
+
+  def doi_response
+    begin
+      parsed = doi_lookup
+      parsed["identifiers"] = [{ "id" => parsed["DOI"], "type" => "doi" }]
+      parsed["formatted"] = format_citeproc(parsed)
+      parsed["type"] = (parsed["type"] == "article-journal") ? "article" : parsed["type"]
+      parsed["status"] = "success"
+    rescue
+      parsed = {}
+      parsed["status"] = "failed"
+    end
+    parsed
+  end
+
+  def parse_response
+    begin
+      parsed = parse
+      parsed["identifiers"] = make_requests(parsed).flatten
+      parsed["formatted"] = format_citeproc(parsed)
+      parsed["status"] = get_status(parsed)
+    rescue
+      parsed = {}
+      parsed["status"] = "failed"
+    end
+    parsed
+  end
+
+  def multiparse_response
+    records = []
+    citations = params[:citations].split("\r\n").delete_if { |r| r == "" }
+    citations.each do |citation|
+      parsed = parse(citation)
+      parsed["identifiers"] = make_requests(parsed).flatten unless parsed["status"] == "failed"
+      parsed["verbatim"] = citation
+      parsed["status"] = get_status(parsed)
+      records << parsed
+    end
+    records
+  end
+
+  def get_status(parsed)
+    return "failed" if parsed["author"].nil? || parsed["issued"]["date-parts"].nil? || parsed["title"].nil?
+    "success"
+  end
+
+  def format_citeproc(cp)
+    CiteProc.process(cp, :style => @style)
+  end
+
+  def parse(citation = nil)
+    Anystyle.parse(citation || @citation, :citeproc)[0]
+  end
+
   def make_requests(parsed)
     hydra = setup_hydra
     co = context_object(parsed)
     requests = []
-    allowed = [:crossref,:bhl,:biostor]
-    params[:sources].each do |key, source|
-      if allowed.include? key.to_sym
-        requests << send(key, co)
-      end
-    end unless params[:sources].nil?
+    @sources.each do |key, source|
+      requests << send(key, co)
+    end
     requests.each do |r|
       hydra.queue r
     end
@@ -108,24 +131,24 @@ class CitationsController < ApplicationController
     end
     return responses
   end
-  
+
   def setup_hydra
     hydra = Typhoeus::Hydra.new
-#    hydra.cache_getter do |request|
-#      Rails.cache.read(request.cache_key) rescue nil
-#    end
-#    hydra.cache_setter do |request|
-#      Rails.cache.write(request.cache_key,request.response,expires_in: request.cache_timeout)
-#    end
+    hydra.cache_getter do |request|
+      Rails.cache.read(request.cache_key) rescue nil
+    end
+    hydra.cache_setter do |request|
+      Rails.cache.write(request.cache_key,request.response,expires_in: request.cache_timeout)
+    end
     return hydra
   end
-  
+
   def context_object(parsed)
     co = OpenURL::ContextObject.new
-    
+
     co.referent.set_format(parsed["type"])
     co.referent.set_metadata('genre', parsed["type"])
-    
+
     if parsed["type"] == 'journal' || parsed["type"] == 'article'
       co.referent.set_format("journal")
       co.referent.set_metadata('atitle', parsed["title"]) unless parsed["title"].nil?
@@ -144,7 +167,28 @@ class CitationsController < ApplicationController
 
     return co
   end
-  
+
+  def doi_lookup
+    doi = @citation.match(/10.(\d)+(\S)+/)[0].chomp('.')
+    req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 8000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
+    req.on_complete do |r|
+      result = []
+      if r.success?
+        result = JSON.parse(r.body)
+      elsif r.timed_out?
+        #TODO: do something here
+        result
+      else
+        #TODO: do something here
+        result
+      end
+    end
+    hydra = setup_hydra
+    hydra.queue req
+    hydra.run
+    req.handled_response
+  end
+
   def crossref(co)
     #TODO: ignore books?
     transport = OpenURL::Transport.new('http://www.crossref.org/openurl', co)
@@ -153,9 +197,13 @@ class CitationsController < ApplicationController
     req.on_complete do |r|
       result = []
       if r.success?
-        response = Hash.from_xml(r.body)["crossref_result"]["query_result"]["body"]["query"] rescue nil
-        doi = response["doi"] rescue nil
-        result << { :id => doi, :type => "doi", :raw_metadata => response } unless doi.nil?
+        begin
+          response = Hash.from_xml(r.body)["crossref_result"]["query_result"]["body"]["query"]
+          doi = response["doi"]
+          result << { :id => doi, :type => "doi", :raw_metadata => response } if doi
+        rescue
+          nil
+        end
         result
       elsif r.timed_out?
         #TODO: do something here
@@ -167,7 +215,7 @@ class CitationsController < ApplicationController
     end
     return req
   end
-  
+
   def bhl(co)
     transport = OpenURL::Transport.new('http://www.biodiversitylibrary.org/openurl', co)
     transport.extra_args = { :format => 'json' }
@@ -176,9 +224,14 @@ class CitationsController < ApplicationController
       result = []
       if r.success?
         #TODO: refine multiple results returned from BHL
-        JSON.parse(r.body)["citations"].each do |c|
-          result << { :id => c["TitleUrl"], :type => "bhl", :raw_metadata => c } unless c["TitleUrl"].nil?
-        end rescue nil
+        begin
+          JSON.parse(r.body)["citations"].each do |c|
+            id = c["TitleUrl"]
+            result << { :id => id, :type => "bhl", :raw_metadata => c } if id
+          end
+        rescue
+          nil
+        end
         result
       elsif r.timed_out?
         #TODO: do something here
@@ -190,7 +243,7 @@ class CitationsController < ApplicationController
     end
     return req
   end
-  
+
   def biostor(co)
     transport = OpenURL::Transport.new('http://biostor.org/openurl', co)
     transport.extra_args = { :format => 'json' }
@@ -199,8 +252,13 @@ class CitationsController < ApplicationController
       result = []
       if r.success?
         #TODO: check if multiple results returned from BioStor
-        response = JSON.parse(r.body) rescue nil
-        result << { :id => "http://biostor.org/reference/" << response["reference_id"], :type => "biostor", :raw_metadata => response } unless response["reference_id"].nil?
+        begin
+          response = JSON.parse(r.body)
+          id = response["reference_id"]
+          result << { :id => "http://biostor.org/reference/" << id, :type => "biostor", :raw_metadata => response } if id
+        rescue
+          nil
+        end
         result
       elsif r.timed_out?
         #TODO: do something here

@@ -75,7 +75,7 @@
           },
 
           /* Callbacks */
-          onSuccessfulParse : function(data,obj){ data=null; obj=null},
+          onSuccessfulParse : function(data,obj){ data=null; obj=null;},
           onFailedParse     : function(obj){obj=null;},
           onError           : function(obj){obj=null;}
       },
@@ -119,7 +119,7 @@
                 i = null;
                 if(v.type === "doi") {
                   icon.attr({ "href" : "http://dx.doi.org/"+v.id, "target" : target }).find("img").attr({ src : settings.iconPath+settings.icons.doi.icon, alt : settings.icons.doi.title, title : settings.icons.doi.title });
-                  if(ref.match(/10.(\d)+(\S)+/) && obj.find(":first").is(':input[type="text"]')) {
+                  if(ref.match(/10\.(\d)+(\S)+/) && obj.find(":first").is(':input[type="text"]')) {
                     obj.find(":first").val(formatted);
                   }
                 } else if (v.type === "bhl") {
