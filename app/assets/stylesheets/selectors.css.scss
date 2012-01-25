@@ -1,0 +1,41 @@
+.biblio-selector{
+  background-color:#FFF;
+  line-height:1.5em;
+}
+
+/* selectors css */
+#refselector-initializer{}
+#refselector-initializer .refselector-selectors-buttons{margin-bottom:1em;}
+#refselector-initializer button{
+  cursor:pointer;
+  border:0 solid #0F1215;
+  color:#FFF;
+  font-size: 1em;
+  font-weight: bold;
+  margin:0.2em 0.5em 0 0;
+  min-height: 1em;
+  padding:0.25em 0.5em;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  background: #969696;
+  background: -moz-linear-gradient(center bottom , #969696 4%, #afafaf 58%, #c8c8c8 98%) repeat scroll 0 0 transparent;
+  background-image:-webkit-gradient(linear, 0 100%, 0 0%, color-stop(0.04, #969696), color-stop(0.58, #afafaf), color-stop(0.98, #c8c8c8));
+}
+#refselector-initializer button:hover{
+  box-shadow: 1px 1px 5px 1px rgb(125, 125, 125) inset, 0 1.5px 2px 1px rgba(26, 26, 26, 0.9);
+  -moz-box-shadow: 1px 1px 5px 1px rgb(125, 125, 125) inset, 0 1.5px 2px 1px rgba(26, 26, 26, 0.9);
+  -webkit-box-shadow: 1px 1px 5px 1px rgb(125, 125, 125) inset, 0 1.5px 2px 1px rgba(26, 26, 26, 0.9);
+}
+#refselector-initializer button.selected{
+  background: #5aa52b;
+  background: -moz-linear-gradient(center bottom , #1B7004 4%, #5AA52B 58%, #90CF4C 98%) repeat scroll 0 0 transparent;
+  background-image:-webkit-gradient(linear, 0 100%, 0 0%, color-stop(0.04, #1B7004), color-stop(0.58, #5AA52B), color-stop(0.98, #90CF4C));
+}
+#refselector-initializer button.selected:hover{
+  box-shadow: 1px 1px 5px 1px rgb(126, 229, 44) inset, 0 1.5px 2px 1px rgba(26, 26, 26, 0.9);
+  -moz-box-shadow: 1px 1px 5px 1px rgb(126, 229, 44) inset, 0 1.5px 2px 1px rgba(26, 26, 26, 0.9);
+  -webkit-box-shadow: 1px 1px 5px 1px rgb(126, 229, 44) inset, 0 1.5px 2px 1px rgba(26, 26, 26, 0.9);
+}
+#refselector-initializer .refselector-selectors-type{display:none;margin:0.5em 0;}
+#refselector-initializer span.refparser-selectors{margin-right:0.5em;padding:0.25em;border:1px solid #E0E0E0;cursor:pointer;}
+span.refselector-selected-item{border:1px solid #E0E0E0;padding:2px;}

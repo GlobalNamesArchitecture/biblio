@@ -1,0 +1,17 @@
+<h1>Bibliographic Citation Tagger jQuery Plugin</h1>
+
+<h2>Bibliographic Citations</h2>
+
+<div id="refselector-initializer"></div>
+
+<% @references.each do |reference| %>
+<p class="intro biblio-selector"><%= reference %></p>
+<% end %>
+
+<%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
+  <%= text_area_tag "marked-citations", "", :placeholder => "Select parts of above citation to help improve parsing accuracy", :size => "40x5" %>
+  <div>
+    <!--<%= submit_tag "Submit", :class => "form-button submit-button" %>-->
+    <%= submit_tag "Clear", :class => "form-button clear-button", :type => "reset" %>
+  </div>
+<% end %>

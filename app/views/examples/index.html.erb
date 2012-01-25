@@ -81,22 +81,22 @@ $(function(){
      },
 
      /* Callbacks */
-     onSuccessfulParse : function(obj, data){
+     onSuccessfulParse : function(obj, data) {
        /* 'obj' is the jQuery object, 'data' is a CITEPROC JS object for parsed reference (examine the Firebug console) */
      },
-     onFailedParse     : function(obj){
+     onFailedParse     : function(obj) {
        /* 'obj' is the jQuery object */
      },
-     onError           : function(obj){
+     onError           : function(obj) {
        /* 'obj' is the jQuery object */
      }
  };
 
  /* Pre-compiled list of citations */
- $(".biblio-entry").refParser(options);
+ $(".biblio-entry").refparser(options);
 
  /* User input box */
- $(".biblio-input").refParser(options);
+ $(".biblio-input").refparser(options);
 
 });
 </script>

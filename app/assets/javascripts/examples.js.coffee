@@ -11,5 +11,5 @@ $ ->
    onFailedParse : (obj) -> console.log(obj),
    onError : (obj) -> console.log(obj)
  }
- $(".biblio-item").refParser(config)
- $(".biblio-input").refParser(config)
+ $(".biblio-item").refparser(config)
+ $(".biblio-input").refparser(config)

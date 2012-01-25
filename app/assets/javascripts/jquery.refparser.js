@@ -16,7 +16,7 @@
 
   "use strict";
 
-  $.fn.refParser = function(options) {
+  $.fn.refparser = function(options) {
 
     var base     = this,
         defaults = {
@@ -75,9 +75,9 @@
           },
 
           /* Callbacks */
-          onSuccessfulParse : function(data,obj){ data=null; obj=null;},
-          onFailedParse     : function(obj){obj=null;},
-          onError           : function(obj){obj=null;}
+          onSuccessfulParse : function(data, obj) { data=null; obj=null; },
+          onFailedParse     : function(obj) { obj=null; },
+          onError           : function(obj) { obj=null; }
       },
 
       styles = ["ama", "apa", "asa"],
