@@ -5,10 +5,11 @@
   width:75%;
 }
 
-/* selectors css */
-#refselector-initializer{}
-#refselector-initializer .refselector-selectors-buttons{margin-bottom:1em;}
-#refselector-initializer button{
+/* grabtag css */
+
+/* buttons */
+#grabtag-initializer .grabtag-selectors-buttons{margin-bottom:1em;}
+#grabtag-initializer button{
   cursor:pointer;
   border:0px solid #0F1215;
   color:#FFF;
@@ -23,19 +24,23 @@
   background: -moz-linear-gradient(center bottom , #969696 4%, #afafaf 58%, #c8c8c8 98%) repeat scroll 0 0 transparent;
   background-image:-webkit-gradient(linear, 0 100%, 0 0%, color-stop(0.04, #969696), color-stop(0.58, #afafaf), color-stop(0.98, #c8c8c8));
 }
-#refselector-initializer button:hover{
+#grabtag-initializer button:hover{
   box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);
 }
-#refselector-initializer button.selected{
+#grabtag-initializer button.selected{
   background: #5aa52b;
   background: -moz-linear-gradient(center bottom , #1B7004 4%, #5AA52B 58%, #90CF4C 98%) repeat scroll 0 0 transparent;
   background-image:-webkit-gradient(linear, 0 100%, 0 0%, color-stop(0.04, #1B7004), color-stop(0.58, #5AA52B), color-stop(0.98, #90CF4C));
 }
-#refselector-initializer button.selected:hover{
+#grabtag-initializer button.selected:hover{
   box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);
 }
-#refselector-initializer .refselector-selectors-type{display:none;margin:0.5em 0;}
-#refselector-initializer span.refparser-selectors{
+
+/* grabtag biblio citation type */
+#grabtag-initializer .grabtag-selectors-type{display:none;margin:0.5em 0;}
+
+/* grabtag biblio selectors and tags */
+.grabtag-selector{
   font-family: Droid Serif, Georgia, serif;
   margin-right:0.5em;
   padding:0.15em 0.35em;
@@ -44,17 +49,17 @@
   color: rgba(0, 0, 0, 0.75);
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
   box-shadow: -1px -1px 0 rgba(0, 0, 0, 0.1) inset;
+  display:inline;
 }
-#refselector-initializer span.refparser-selectors:hover{
+.grabtag-selector.selected{
+  box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9) inset;
+}
+.grabtag-selector.grabtag-tag{
+  margin:0px;
+  padding:0.15em;
+  position:relative;
+  cursor:auto;
+}
+#grabtag-initializer .grabtag-selector:hover{
   box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);
-}
-span.refselector-selected-item{
-  border-radius: 3px;
-  padding: 0.15em;
-  color: rgba(0, 0, 0, 0.75);
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
-  box-shadow: -1px -1px 0 rgba(0, 0, 0, 0.1) inset;
-}
-.refselector-selectors-type span.selected{
-  box-shadow: 0 1px 2px 1px rgba(125, 125, 125, 0.9) inset !important;
 }

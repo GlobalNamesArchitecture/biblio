@@ -1,8 +1,8 @@
-//= require jquery.refselector
+//= require jquery.grabtag
 $ ->
- $(".biblio-selector").refselector()
+ $(".biblio-selector").grabtag()
 
  $(".clear-button").bind 'click', (event) =>
-   $(".biblio-selector").refselector("remove")
+   $(".biblio-selector").grabtag("remove")
 
   

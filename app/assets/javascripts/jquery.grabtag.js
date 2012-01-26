@@ -1,10 +1,10 @@
 /**
- * jQuery Reference Selector
+ * jQuery Grab Tag
  *
- * jQuery Reference Selector is a jQuery, javascript front-end to select components of scientific citations.
+ * A tool to highlight and tag parts of text
  * 
  * Version 0.1
- * Janurary 22, 2012
+ * January 22, 2012
  *
  * Copyright (c) 2012 David P. Shorthouse
  * Licensed under the MIT license.
@@ -12,7 +12,7 @@
  **/
 /*global $, jQuery, window, document, alert */
 
-(function($, rs){
+(function($, gt){
 
   "use strict";
 
@@ -26,7 +26,7 @@
     }
   };
 
-  var eventName = "mouseup." + rs,
+  var eventName = "mouseup." + gt,
       selectors = {
        "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
        "book"    : [ "author", "date", "title", "booktitle", "pages", "edition", "editor", "publisher", "institution", "location", "isbn", "doi" ],
@@ -42,13 +42,13 @@
     var snippet = "",
         result = obj.clone();
 
-    //TODO: strip html tags yet retain biblio tags
+//TODO: ignore html tags yet retain biblio tags
 
     $.each(all_selectors, function() {
       snippet = $('[data=' + this + ']', result);
       snippet.wrap('<' + this + '>' + snippet.text() + '</' + this + '>').remove();
     });
-    $('#marked-citations').val(result.html());
+    $('#' + gt + '-output').val(result.html());
   },
 
   clear_selected = function() {
@@ -62,10 +62,15 @@
     }
   },
 
+  remove_tag = function(id) {
+    $('#' + id).remove();
+  },
+
   get_selected = function(e) {
     var sel     = "",
         range   = 0,
-        newNode = {};
+        newNode = {},
+        childNode = {};
 
     if(window.getSelection) {
       sel = window.getSelection();
@@ -75,27 +80,46 @@
       sel = document.selection.createRange();
     }
 
-    if($('#' + rs + "-" + e.data.item).length === 1) {
+    if($('#' + gt + "-" + e.data.item).length === 1) {
+      clear_selected();
       alert(e.data.settings.selector_warning);
+      return;
     }
 
-    if($.trim(sel) !== "" && $('#' + rs + "-" + e.data.item).length === 0) {
+//TODO: add resizers for selectors akin to that in jCrop
+
+    if($.trim(sel) !== "") {
+
+      newNode = document.createElement("div");
+      newNode.setAttribute('id', gt + '-' + e.data.item);
+      newNode.setAttribute('class', gt + '-selector ' + gt + '-tag');
+      newNode.setAttribute('style', get_style(e.data.settings.tags[e.data.item] || e.data.settings.base_styles[e.data.item]));
+      newNode.setAttribute('title', e.data.item);
+      newNode.setAttribute('data', e.data.item);
+
+      childNode = document.createElement("div");
+      childNode.setAttribute('class', gt + '-resizer left');
+      newNode.appendChild(childNode);
+
+      childNode = document.createElement("div");
+      childNode.setAttribute('class', gt + '-resizer right');
+      newNode.appendChild(childNode);
+
       if(sel.getRangeAt) {
         try {
           range = sel.getRangeAt(0);
-          newNode = document.createElement("span");
-          newNode.setAttribute('id', rs + "-" + e.data.item);
-          newNode.setAttribute('class', 'refselector-selected-item');
-          newNode.setAttribute('style', get_style(e.data.settings.styles[e.data.item] || e.data.settings.base_styles[e.data.item]));
-          newNode.setAttribute('title', e.data.item);
-          newNode.setAttribute('data', e.data.item);
           range.surroundContents(newNode);
         } catch(err) {
+          remove_tag(gt + "-" + e.data.item);
+          clear_selected();
           alert(e.data.settings.selector_warning);
+          return;
         }
       } else {
-        sel.pasteHTML('<span id="' + e.data.item + '" class="refselector-selected-item" style="' + get_style(e.data.settings.styles[e.data.item] || e.data.settings.base_styles[e.data.item]) + '" title="' + e.data.item + '" data="' + e.data.item + '">'+sel.text+'</span>');
+        newNode.innerText = sel.text;
+        sel.pasteHTML($('#' + gt + "-" + e.data.item).html());
       }
+
       convert_markup($(this));
     }
 
@@ -103,48 +127,48 @@
   },
 
   build_selector = function(title, settings) {
-    return '<span class="refparser-selectors" style="' + get_style(settings.styles[title] || settings.base_styles[title]) + '">' + title + '</span>';
+    return '<div class="' + gt + '-selector" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '">' + title + '</div>';
   },
 
   build_initializer = function(obj, settings) {
     var content, button, selector;
 
-    content  = '<div class="refselector-selectors">' + settings.config_text + '</div>';
-    content += '<div class="refselector-selectors-buttons"></div>';
+    content  = '<div class="' + gt + '-selectors">' + settings.config_text + '</div>';
+    content += '<div class="' + gt + '-selectors-buttons"></div>';
 
     $.each(selectors, function(index, value) {
       value = null;
-      content += '<div class="refselector-selectors-type ' + index + '"></div>';
+      content += '<div class="' + gt + '-selectors-type ' + index + '"></div>';
     });
 
     $(settings.config_element).append(content);
 
     $.each(selectors, function(index, value) {
-      button = '<button class="refselector-selectors-button ' + index + '">' + index + '</button>';
-      $('.refselector-selectors-buttons').append(button);
+      button = '<button class="' + gt + '-selectors-button ' + index + '">' + index + '</button>';
+      $('.' + gt + '-selectors-buttons').append(button);
       $.each(value, function() {
         selector = build_selector(this, settings);
-        $('.refselector-selectors-type.' + index).append(selector);
-        if(this === settings.initial_selector) { $('.refparser-selectors:contains('+this+')').addClass('selected'); }
+        $('.' + gt + '-selectors-type.' + index).append(selector);
+        if(this === settings.initial_selector) { $('.' + gt + '-selector:contains('+this+')').addClass('selected'); }
       });
     });
 
-    $(settings.config_element).find('.refselector-selectors-button').each(function() {
+    $(settings.config_element).find('.' + gt + '-selectors-button').each(function() {
       $(this).bind('click', function(e) {
         e.preventDefault();
         $(this).addClass("selected").siblings().removeClass("selected");
-        $('.refselector-selectors-type', settings.config_element).hide();
+        $('.' + gt + '-selectors-type', settings.config_element).hide();
         $.each($(this).attr("class").split(/\s+/), function() {
-          $('.refselector-selectors-type.' + this, settings.config_element).show();
+          $('.' + gt + '-selectors-type.' + this, settings.config_element).show();
         });
       });
       if($(this).hasClass(settings.initial_type)) { $(this).trigger('click'); }
-    }).end().find('.refparser-selectors').each(function() {
+    }).end().find('.' + gt + '-selector').each(function() {
       $(this).click(function(e) {
+        var self = $(this);
         e.preventDefault();
-        $('.refparser-selectors').removeClass("selected");
-        $(this).addClass("selected");
-        $(obj).refselector("destroy").refselector({"config_activate" : false, "initial_selector" : $(this).text(), "styles" : settings.styles });
+        self.siblings().removeClass("selected").end().addClass("selected").parent().siblings().children().removeClass("selected");
+        $(obj)[gt]("destroy")[gt]({"config_activate" : false, "initial_selector" : self.text(), "tags" : settings.styles });
       });
     });
   },
@@ -153,7 +177,7 @@
     init : function(f, options) {
       f = null;
       return this.each(function() {
-        var self = $(this), settings = $.extend({}, $.fn[rs].defaults, options);
+        var self = $(this), settings = $.extend({}, $.fn[gt].defaults, options);
 
 //TODO: have one initializer work for multiple citations, tagged in one textarea
 
@@ -171,7 +195,7 @@
     }
   };
 
-  $.fn[rs] = function(method) {
+  $.fn[gt] = function(method) {
     if (methods[method]) {
       return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
     } else if (typeof method === "function" || !method) {
@@ -179,14 +203,14 @@
     } else if (typeof method === "object") {
       return methods.init.apply(this, [null, method]);
     } else {
-      $.error( 'Method ' +  method + ' does not exist on jQuery ' + rs );
+      $.error( 'Method ' +  method + ' does not exist on jQuery ' + gt );
     }
   };
 
-  $.fn[rs].defaults = {
+  $.fn[gt].defaults = {
     'initial_type'     : 'journal',
     'initial_selector' : 'author',
-    'styles' : {},
+    'tags' : {},
     'base_styles'  : {
       'author'      : { 'background-color' : '#8dd3c7' },
       'booktitle'   : { 'background-color' : '#ffa1ff' },
@@ -210,13 +234,13 @@
       'url'         : { 'background-color' : '#c8c8c8' },
       'volume'      : { 'background-color' : '#80b1d3' }
     },
-    'selector_warning' : 'Your citation has already has that tag or your selection is overlapping with a previously created tag. Please try again.',
-    'config_element'   : '#refselector-initializer',
+    'selector_warning' : 'Either you already used that tag or your selection is overlapping with a previously created tag. Please try again.',
+    'config_element'   : '#' + gt + '-initializer',
     'config_text'      : '',
     'config_activate'  : true //feels like a hack
 
-    //TODO: create user-supplied callback
+//TODO: create user-supplied callback
 
   };
 
-}(jQuery, 'refselector'));
+}(jQuery, 'grabtag'));

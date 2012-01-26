@@ -2,14 +2,14 @@
 
 <h2>Bibliographic Citations</h2>
 
-<div id="refselector-initializer"></div>
+<div id="grabtag-initializer"></div>
 
 <% @references.each do |reference| %>
 <p class="biblio-selector"><%= raw reference %></p>
 <% end %>
 
 <%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
-  <%= text_area_tag "marked-citations", "", :placeholder => "Select parts of above citation to help improve parsing accuracy", :size => "40x5" %>
+  <%= text_area_tag "grabtag-output", "", :placeholder => "Select parts of above citation to help improve parsing accuracy", :size => "40x5" %>
   <div>
     <!--<%= submit_tag "Submit", :class => "form-button submit-button" %>-->
     <%= submit_tag "Clear", :class => "form-button clear-button", :type => "reset" %>
@@ -19,19 +19,19 @@
 <h2>Configuration</h2>
 <xmp>
 <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="jquery.refselector.js"></script>
+<script type="text/javascript" src="jquery.grabtag.js"></script>
 <script type="text/javascript">
 $(function(){
-  $('.biblio-selector').refselector({
-    'config_element' : '#refselector-initializer'
+  $('.biblio-selector').grabtag({
+    'config_element' : '#grabtag-initializer'
     ...more coming soon...
   });
 });
 </script>
 
 <body>
-<div id="refselector-initializer"></div>
+<div id="grabtag-initializer"></div>
 <p class="biblio-selector">My reference here that may include HTML.</p>
-<textarea id="marked-citations"></textarea>
+<textarea id="grabtag-output"></textarea>
 </body>
 </xmp>
