@@ -118,6 +118,8 @@
     }).end().find('.refparser-selectors').each(function() {
       $(this).click(function(e) {
         e.preventDefault();
+        $('.refparser-selectors').removeClass("selected");
+        $(this).addClass("selected");
         $(obj).refselector("destroy").refselector({"config_activate" : false, "initial_selector" : $(this).text() });
       });
     });
@@ -161,27 +163,27 @@
     'initial_type'     : 'journal',
     'initial_selector' : 'author',
     'selector_styles'  : {
-      'author'      : { 'color' : 'blue' },
-      'booktitle'   : { 'color' : '#FF00FF' },
-      'container'   : { 'color' : '#999' },
-      'date'        : { 'color' : 'red' },
+      'author'      : { 'background-color' : '#8dd3c7' },
+      'booktitle'   : { 'background-color' : '#ffa1ff' },
+      'container'   : { 'background-color' : '#c8c8c8' },
+      'date'        : { 'background-color' : '#ffffb3' },
       'doi'         : { 'background-color' : '#79fc72' },
       'edition'     : { 'background-color' : '#72f3fc' },
       'editor'      : { 'background-color' : '#7284fc', 'color' : 'white' },
       'institution' : { 'background-color' : '#ffabab' },
       'isbn'        : { 'background-color' : '#ffc054' },
-      'journal'     : { 'color' : '#9900FF' },
-      'location'    : { 'color' : '#996600' },
-      'note'        : { 'color' : '#999' },
-      'pages'       : { 'background-color' : '#000', 'color' : '#00FFFF' },
-      'publisher'   : { 'background-color' : '#000', 'color' : '#FFFF00' },
-      'retrieved'   : { 'color' : '#999' },
-      'tech'        : { 'color' : '#999' },
-      'title'       : { 'color' : 'green' },
-      'translator'  : { 'color' : '#999' },
-      'unknown'     : { 'color' : '#999' },
-      'url'         : { 'color' : '#999' },
-      'volume'      : { 'color' : '#FF9900' }
+      'journal'     : { 'background-color' : '#fb8072' },
+      'location'    : { 'background-color' : '#948669', 'color' : 'white' },
+      'note'        : { 'background-color' : '#c8c8c8' },
+      'pages'       : { 'background-color' : '#fdb562' },
+      'publisher'   : { 'background-color' : '#000', 'color' : 'white' },
+      'retrieved'   : { 'background-color' : '#c8c8c8' },
+      'tech'        : { 'background-color' : '#c8c8c8' },
+      'title'       : { 'background-color' : '#bfbada' },
+      'translator'  : { 'background-color' : '#c8c8c8' },
+      'unknown'     : { 'background-color' : '#c8c8c8' },
+      'url'         : { 'background-color' : '#c8c8c8' },
+      'volume'      : { 'background-color' : '#80b1d3' }
     },
     'selector_warning' : "Your selected region overlapped with a previously created tag. Please try again.",
     'config_element' : '#refselector-initializer',
