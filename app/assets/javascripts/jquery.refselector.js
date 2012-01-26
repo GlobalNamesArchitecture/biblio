@@ -47,6 +47,10 @@
       sel = document.selection.createRange();
     }
 
+    if($('#' + rs + "-" + e.data.item).length === 1) {
+      alert(e.data.settings.selector_warning);
+    }
+
     if($.trim(sel) !== "" && $('#' + rs + "-" + e.data.item).length === 0) {
       if(sel.getRangeAt) {
         try {
@@ -54,7 +58,7 @@
           newNode = document.createElement("span");
           newNode.setAttribute('id', rs + "-" + e.data.item);
           newNode.setAttribute('class', 'refselector-selected-item');
-          newNode.setAttribute('style', get_style(e.data.settings.selector_styles[e.data.item]));
+          newNode.setAttribute('style', get_style(e.data.settings.styles[e.data.item] || e.data.settings.base_styles[e.data.item]));
           newNode.setAttribute('title', e.data.item);
           newNode.setAttribute('data', e.data.item);
           range.surroundContents(newNode);
@@ -62,9 +66,22 @@
           alert(e.data.settings.selector_warning);
         }
       } else {
-        sel.pasteHTML('<span id="' + e.data.item + '" class="refselector-selected-item" style="' + get_style(e.data.settings.selector_styles[e.data.item]) + '" title="' + e.data.item + '" data="' + e.data.item + '">'+sel.text+'</span>');
+        sel.pasteHTML('<span id="' + e.data.item + '" class="refselector-selected-item" style="' + get_style(e.data.settings.styles[e.data.item] || e.data.settings.base_styles[e.data.item]) + '" title="' + e.data.item + '" data="' + e.data.item + '">'+sel.text+'</span>');
       }
       convert_markup($(this));
+    }
+
+    clear_selected();
+  },
+
+  clear_selected = function() {
+    var sel;
+
+    if(document.selection && document.selection.empty){
+      document.selection.empty() ;
+    } else if(window.getSelection) {
+      sel = window.getSelection();
+      if(sel && sel.removeAllRanges) { sel.removeAllRanges(); }
     }
   },
 
@@ -76,9 +93,11 @@
     var snippet = "",
         result = obj.clone();
 
+    //TODO: strip html tags yet retain biblio tags
+
     $.each(all_selectors, function() {
       snippet = $('[data=' + this + ']', result);
-      snippet.wrap('<' + this + '>' + snippet.html() + '</' + this + '>').remove();
+      snippet.wrap('<' + this + '>' + snippet.text() + '</' + this + '>').remove();
     });
     $('#marked-citations').val(result.html());
   },
@@ -102,6 +121,7 @@
       $.each(value, function() {
         selector = build_selector(this, settings);
         $('.refselector-selectors-type.' + index).append(selector);
+        if(this === settings.initial_selector) { $('.refparser-selectors:contains('+this+')').addClass('selected'); }
       });
     });
 
@@ -120,19 +140,22 @@
         e.preventDefault();
         $('.refparser-selectors').removeClass("selected");
         $(this).addClass("selected");
-        $(obj).refselector("destroy").refselector({"config_activate" : false, "initial_selector" : $(this).text() });
+        $(obj).refselector("destroy").refselector({"config_activate" : false, "initial_selector" : $(this).text(), "styles" : settings.styles });
       });
     });
   },
 
   build_selector = function(title, settings) {
-    return '<span class="refparser-selectors" style="' + get_style(settings.selector_styles[title]) + '">' + title + '</span>';
+    return '<span class="refparser-selectors" style="' + get_style(settings.styles[title] || settings.base_styles[title]) + '">' + title + '</span>';
   },
 
   methods = {
     init : function(f, options) {
       return this.each(function() {
         var self = $(this), settings = $.extend({}, $.fn[rs].defaults, options);
+
+//TODO: have one initializer work for multiple citations, tagged in one textarea
+
         if(settings.config_activate) { build_initializer(self, settings); }
         self.bind(eventName, { 'item' : settings.initial_selector, settings : settings }, get_selected);
       });
@@ -162,7 +185,8 @@
   $.fn[rs].defaults = {
     'initial_type'     : 'journal',
     'initial_selector' : 'author',
-    'selector_styles'  : {
+    'styles' : {},
+    'base_styles'  : {
       'author'      : { 'background-color' : '#8dd3c7' },
       'booktitle'   : { 'background-color' : '#ffa1ff' },
       'container'   : { 'background-color' : '#c8c8c8' },
@@ -171,7 +195,7 @@
       'edition'     : { 'background-color' : '#72f3fc' },
       'editor'      : { 'background-color' : '#7284fc', 'color' : 'white' },
       'institution' : { 'background-color' : '#ffabab' },
-      'isbn'        : { 'background-color' : '#ffc054' },
+      'isbn'        : { 'background-color' : '#d19a41', 'color' : 'white' },
       'journal'     : { 'background-color' : '#fb8072' },
       'location'    : { 'background-color' : '#948669', 'color' : 'white' },
       'note'        : { 'background-color' : '#c8c8c8' },
@@ -185,10 +209,13 @@
       'url'         : { 'background-color' : '#c8c8c8' },
       'volume'      : { 'background-color' : '#80b1d3' }
     },
-    'selector_warning' : "Your selected region overlapped with a previously created tag. Please try again.",
-    'config_element' : '#refselector-initializer',
-    'config_text'    : "",
-    'config_activate': true
+    'selector_warning' : 'Your citation has already has that tag or your selection is overlapping with a previously created tag. Please try again.',
+    'config_element'   : '#refselector-initializer',
+    'config_text'      : '',
+    'config_activate'  : true //feels like a hack
+
+    //TODO: create user-supplied callback
+
   };
 
 }(jQuery, 'refselector'))

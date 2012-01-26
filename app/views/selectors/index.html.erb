@@ -5,7 +5,7 @@
 <div id="refselector-initializer"></div>
 
 <% @references.each do |reference| %>
-<p class="intro biblio-selector"><%= reference %></p>
+<p class="biblio-selector"><%= raw reference %></p>
 <% end %>
 
 <%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
@@ -15,3 +15,23 @@
     <%= submit_tag "Clear", :class => "form-button clear-button", :type => "reset" %>
   </div>
 <% end %>
+
+<h2>Configuration</h2>
+<xmp>
+<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="jquery.refselector.js"></script>
+<script type="text/javascript">
+$(function(){
+  $('.biblio-selector').refselector({
+    'config_element' : '#refselector-initializer'
+    ...more coming soon...
+  });
+});
+</script>
+
+<body>
+<div id="refselector-initializer"></div>
+<p class="biblio-selector">My reference here that may include HTML.</p>
+<textarea id="marked-citations"></textarea>
+</body>
+</xmp>
