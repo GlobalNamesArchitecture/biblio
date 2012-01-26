@@ -10,17 +10,17 @@
  * Licensed under the MIT license.
  * http://creativecommons.org/licenses/MIT/
  **/
-/*global $, jQuery, window, document */
+/*global $, jQuery, window, document, alert */
 
 (function($, rs){
 
   "use strict";
 
-  $.unique = function(arr){
-    if (!!arr[0].nodeType){
+  $.unique = function(arr) {
+    if (!!arr[0].nodeType) {
       return _old.apply(this,arguments);
     } else {
-      return $.grep(arr,function(v,k){
+      return $.grep(arr,function(v,k) {
         return $.inArray(v,arr) === k;
       });
     }
@@ -33,6 +33,34 @@
        "extra"   : [ "note", "container", "retrieved", "tech", "translator", "unknown", "url" ]
       },
       all_selectors = $.unique(selectors.journal.concat(selectors.book).concat(selectors.extra)),
+
+  get_style = function(obj) {
+    return JSON.stringify(obj).replace(/[{}"]/g, "").replace(",", ";");
+  },
+
+  convert_markup = function(obj) {
+    var snippet = "",
+        result = obj.clone();
+
+    //TODO: strip html tags yet retain biblio tags
+
+    $.each(all_selectors, function() {
+      snippet = $('[data=' + this + ']', result);
+      snippet.wrap('<' + this + '>' + snippet.text() + '</' + this + '>').remove();
+    });
+    $('#marked-citations').val(result.html());
+  },
+
+  clear_selected = function() {
+    var sel;
+
+    if(document.selection && document.selection.empty){
+      document.selection.empty() ;
+    } else if(window.getSelection) {
+      sel = window.getSelection();
+      if(sel && sel.removeAllRanges) { sel.removeAllRanges(); }
+    }
+  },
 
   get_selected = function(e) {
     var sel     = "",
@@ -74,32 +102,8 @@
     clear_selected();
   },
 
-  clear_selected = function() {
-    var sel;
-
-    if(document.selection && document.selection.empty){
-      document.selection.empty() ;
-    } else if(window.getSelection) {
-      sel = window.getSelection();
-      if(sel && sel.removeAllRanges) { sel.removeAllRanges(); }
-    }
-  },
-
-  get_style = function(obj) {
-    return JSON.stringify(obj).replace(/[{}"]/g, "").replace(",", ";");
-  },
-
-  convert_markup = function(obj) {
-    var snippet = "",
-        result = obj.clone();
-
-    //TODO: strip html tags yet retain biblio tags
-
-    $.each(all_selectors, function() {
-      snippet = $('[data=' + this + ']', result);
-      snippet.wrap('<' + this + '>' + snippet.text() + '</' + this + '>').remove();
-    });
-    $('#marked-citations').val(result.html());
+  build_selector = function(title, settings) {
+    return '<span class="refparser-selectors" style="' + get_style(settings.styles[title] || settings.base_styles[title]) + '">' + title + '</span>';
   },
 
   build_initializer = function(obj, settings) {
@@ -145,12 +149,9 @@
     });
   },
 
-  build_selector = function(title, settings) {
-    return '<span class="refparser-selectors" style="' + get_style(settings.styles[title] || settings.base_styles[title]) + '">' + title + '</span>';
-  },
-
   methods = {
     init : function(f, options) {
+      f = null;
       return this.each(function() {
         var self = $(this), settings = $.extend({}, $.fn[rs].defaults, options);
 
@@ -167,7 +168,7 @@
     },
     destroy : function() {
       return this.unbind(eventName);
-    },
+    }
   };
 
   $.fn[rs] = function(method) {
@@ -218,4 +219,4 @@
 
   };
 
-}(jQuery, 'refselector'))
+}(jQuery, 'refselector'));
