@@ -75,7 +75,7 @@
           },
 
           /* Callbacks */
-          onSuccessfulParse : function(data, obj) { data=null; obj=null; },
+          onSuccessfulParse : function(obj, data) { obj=null; data=null; },
           onFailedParse     : function(obj) { obj=null; },
           onError           : function(obj) { obj=null; }
       },

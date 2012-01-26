@@ -40,7 +40,7 @@
 
   convert_markup = function(obj) {
     var snippet = "",
-        result = obj.clone();
+        result = $(obj).clone();
 
 //TODO: ignore html tags yet retain biblio tags
 
@@ -49,6 +49,7 @@
       snippet.wrap('<' + this + '>' + snippet.text() + '</' + this + '>').remove();
     });
     $('#' + gt + '-output').val(result.html());
+    return result.html();
   },
 
   clear_selected = function() {
@@ -69,6 +70,7 @@
   get_selected = function(e) {
     var sel     = "",
         range   = 0,
+        output  = {},
         newNode = {},
         childNode = {};
 
@@ -120,7 +122,7 @@
         sel.pasteHTML($('#' + gt + "-" + e.data.item).html());
       }
 
-      convert_markup($(this));
+      e.data.settings.onTagged.call(this, $(this), convert_markup(this));
     }
 
     clear_selected();
@@ -168,7 +170,10 @@
         var self = $(this);
         e.preventDefault();
         self.siblings().removeClass("selected").end().addClass("selected").parent().siblings().children().removeClass("selected");
-        $(obj)[gt]("destroy")[gt]({"config_activate" : false, "initial_selector" : self.text(), "tags" : settings.styles });
+        settings["config_activate"] = false;
+        settings["initial_selector"] = self.text();
+        settings["tags"] = settings.tags;
+        $(obj)[gt]("destroy")[gt](settings);
       });
     });
   },
@@ -237,10 +242,10 @@
     'selector_warning' : 'Either you already used that tag or your selection is overlapping with a previously created tag. Please try again.',
     'config_element'   : '#' + gt + '-initializer',
     'config_text'      : '',
-    'config_activate'  : true //feels like a hack
+    'config_activate'  : true,
 
-//TODO: create user-supplied callback
-
+    //Callback
+    'onTagged'         : function(obj, data) { obj = null; data = null; }
   };
 
 }(jQuery, 'grabtag'));
