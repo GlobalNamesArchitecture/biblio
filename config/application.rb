@@ -11,6 +11,9 @@ end
 
 module Biblio
   class Application < Rails::Application
+    initializer :after_append_asset_paths, :group => :all, :after => :append_assets_path do
+      config.assets.paths.unshift Rails.root.join("vendor", "assets", "stylesheets", "jquery-ui", "smoothness").to_s
+    end
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
     # -- all .rb files in that directory are automatically loaded.

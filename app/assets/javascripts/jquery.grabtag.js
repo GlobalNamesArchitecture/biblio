@@ -63,8 +63,21 @@
     }
   },
 
-  remove_tag = function(id) {
-    $('#' + id).remove();
+  resize_tag = function(newNode, range) {
+    $(newNode).resizable({
+      handles: 'e, w',
+      ghost: true,
+      start : function(e, ui) {
+//See http://www.quirksmode.org/dom/range_intro.html
+//TODO: how to remove 
+      },
+      resize : function(e, ui) {
+
+      },
+      stop : function(e, ui) {
+
+      }
+    });
   },
 
   get_selected = function(e) {
@@ -82,44 +95,37 @@
       sel = document.selection.createRange();
     }
 
-    if($('#' + gt + "-" + e.data.item).length === 1) {
+    if(!e.data.settings.multitag && $('.' + gt + '-tag[data=' + e.data.item + ']').length === 1) {
       clear_selected();
       alert(e.data.settings.selector_warning);
       return;
     }
 
-//TODO: add resizers for selectors akin to that in jCrop
+//TODO: add resizers for selectors akin jCrop
 
     if($.trim(sel) !== "") {
 
-      newNode = document.createElement("div");
-      newNode.setAttribute('id', gt + '-' + e.data.item);
+      newNode = document.createElement("span");
       newNode.setAttribute('class', gt + '-selector ' + gt + '-tag');
       newNode.setAttribute('style', get_style(e.data.settings.tags[e.data.item] || e.data.settings.base_styles[e.data.item]));
       newNode.setAttribute('title', e.data.item);
       newNode.setAttribute('data', e.data.item);
 
-      childNode = document.createElement("div");
-      childNode.setAttribute('class', gt + '-resizer left');
-      newNode.appendChild(childNode);
-
-      childNode = document.createElement("div");
-      childNode.setAttribute('class', gt + '-resizer right');
-      newNode.appendChild(childNode);
-
       if(sel.getRangeAt) {
         try {
           range = sel.getRangeAt(0);
           range.surroundContents(newNode);
+          resize_tag(newNode, range);
         } catch(err) {
-          remove_tag(gt + "-" + e.data.item);
+          remove_tag($(newNode).remove());
           clear_selected();
           alert(e.data.settings.selector_warning);
           return;
         }
       } else {
         newNode.innerText = sel.text;
-        sel.pasteHTML($('#' + gt + "-" + e.data.item).html());
+        sel.pasteHTML($(newNode).html());
+        resize_tag(newNode);
       }
 
       e.data.settings.onTagged.call(this, $(this), convert_markup(this));
@@ -129,7 +135,7 @@
   },
 
   build_selector = function(title, settings) {
-    return '<div class="' + gt + '-selector" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '">' + title + '</div>';
+    return '<span class="' + gt + '-selector" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '">' + title + '</span>';
   },
 
   build_initializer = function(obj, settings) {
@@ -151,7 +157,6 @@
       $.each(value, function() {
         selector = build_selector(this, settings);
         $('.' + gt + '-selectors-type.' + index).append(selector);
-        if(this === settings.initial_selector) { $('.' + gt + '-selector:contains('+this+')').addClass('selected'); }
       });
     });
 
@@ -165,17 +170,18 @@
         });
       });
       if($(this).hasClass(settings.initial_type)) { $(this).trigger('click'); }
-    }).end().find('.' + gt + '-selector').each(function() {
-      $(this).click(function(e) {
-        var self = $(this);
-        e.preventDefault();
-        self.siblings().removeClass("selected").end().addClass("selected").parent().siblings().children().removeClass("selected");
-        settings["config_activate"] = false;
-        settings["initial_selector"] = self.text();
-        settings["tags"] = settings.tags;
-        $(obj)[gt]("destroy")[gt](settings);
+    }).end().find('.' + gt + '-selector', '.' + gt + '-selectors-type').each(function() {
+        if($(this).text() === settings.initial_tag) { $(this).addClass('selected'); }
+        $(this).click(function(e) {
+          var self = $(this);
+          e.preventDefault();
+          $('.' + gt + '-selector', '.' + gt + '-selectors-type').removeClass("selected");
+          self.addClass("selected");
+          settings["config_activate"] = false;
+          settings["initial_tag"] = self.text();
+          $(obj)[gt]("destroy")[gt](settings);
+        });
       });
-    });
   },
 
   methods = {
@@ -187,7 +193,7 @@
 //TODO: have one initializer work for multiple citations, tagged in one textarea
 
         if(settings.config_activate) { build_initializer(self, settings); }
-        self.bind(eventName, { 'item' : settings.initial_selector, settings : settings }, get_selected);
+        self.bind(eventName, { 'item' : settings.initial_tag, settings : settings }, get_selected);
       });
     },
     remove : function() {
@@ -214,7 +220,8 @@
 
   $.fn[gt].defaults = {
     'initial_type'     : 'journal',
-    'initial_selector' : 'author',
+    'initial_tag' : 'author',
+    'multitag'      : true,
     'tags' : {},
     'base_styles'  : {
       'author'      : { 'background-color' : '#8dd3c7' },
@@ -244,7 +251,7 @@
     'config_text'      : '',
     'config_activate'  : true,
 
-    //Callback
+    //Callbacks
     'onTagged'         : function(obj, data) { obj = null; data = null; }
   };
 
