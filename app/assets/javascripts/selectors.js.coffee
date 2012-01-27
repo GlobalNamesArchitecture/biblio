@@ -2,7 +2,8 @@
 $ ->
  config = {
    multitag : false,
-   onTagged : (obj, data) -> console.log(data)
+   onTagged : (obj, data) -> 
+     $('#grabtag-output').val(data)
  }
  $(".biblio-selector").grabtag(config)
 

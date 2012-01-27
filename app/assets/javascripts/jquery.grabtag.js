@@ -26,6 +26,7 @@
     }
   };
 
+//TODO: make configurable
   var eventName = "mouseup." + gt,
       selectors = {
        "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
@@ -42,13 +43,13 @@
     var snippet = "",
         result = $(obj).clone();
 
-//TODO: ignore html tags yet retain biblio tags
-
     $.each(all_selectors, function() {
-      snippet = $('[data=' + this + ']', result);
-      snippet.wrap('<' + this + '>' + snippet.text() + '</' + this + '>').remove();
+      var tag = this;
+      snippet = $('[data=' + tag + ']', result);
+      snippet.each(function() {
+        $(this).wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
+      });
     });
-    $('#' + gt + '-output').val(result.html());
     return result.html();
   },
 
@@ -63,29 +64,21 @@
     }
   },
 
-  resize_tag = function(newNode, range) {
-    $(newNode).resizable({
-      handles: 'e, w',
-      ghost: true,
-      start : function(e, ui) {
-//See http://www.quirksmode.org/dom/range_intro.html
-//TODO: how to remove 
-      },
-      resize : function(e, ui) {
+  build_resizer = function(type) {
+    return '<span class="' + gt + '-resizer ' + gt + '-resizer-' + type + '"></span>';
+  },
 
-      },
-      stop : function(e, ui) {
+  add_resizers = function(newNode, range) {
+    var resizer_w = $(build_resizer('w')),
+        resizer_e = $(build_resizer('e'));
 
-      }
-    });
+    $(newNode).prepend(resizer_w).append(resizer_e);
+
+    //TODO: build resizer capability here
   },
 
   get_selected = function(e) {
-    var sel     = "",
-        range   = 0,
-        output  = {},
-        newNode = {},
-        childNode = {};
+    var sel, range, newNode;
 
     if(window.getSelection) {
       sel = window.getSelection();
@@ -95,13 +88,11 @@
       sel = document.selection.createRange();
     }
 
-    if(!e.data.settings.multitag && $('.' + gt + '-tag[data=' + e.data.item + ']').length === 1) {
+    if(!e.data.settings.multitag && $('.' + gt + '-tag[data=' + e.data.item + ']', $(this)).length === 1) {
       clear_selected();
-      alert(e.data.settings.selector_warning);
+      e.data.settings.onMultitagWarning.call();
       return;
     }
-
-//TODO: add resizers for selectors akin jCrop
 
     if($.trim(sel) !== "") {
 
@@ -115,17 +106,19 @@
         try {
           range = sel.getRangeAt(0);
           range.surroundContents(newNode);
-          resize_tag(newNode, range);
+          add_resizers(newNode, range);
         } catch(err) {
-          remove_tag($(newNode).remove());
           clear_selected();
-          alert(e.data.settings.selector_warning);
+          e.data.settings.onOverlapWarning.call();
           return;
         }
-      } else {
+      } else { //IE 6/7
+        alert("Sory, Internet Explorer < 9 is not supported.");
+/*
         newNode.innerText = sel.text;
         sel.pasteHTML($(newNode).html());
-        resize_tag(newNode);
+        add_resizers(newNode);
+*/
       }
 
       e.data.settings.onTagged.call(this, $(this), convert_markup(this));
@@ -141,15 +134,14 @@
   build_initializer = function(obj, settings) {
     var content, button, selector;
 
-    content  = '<div class="' + gt + '-selectors">' + settings.config_text + '</div>';
-    content += '<div class="' + gt + '-selectors-buttons"></div>';
+    content  = '<div class="' + gt + '-selectors-buttons"></div>';
 
     $.each(selectors, function(index, value) {
       value = null;
       content += '<div class="' + gt + '-selectors-type ' + index + '"></div>';
     });
 
-    $(settings.config_element).append(content);
+    $(settings.config_ele).append(content);
 
     $.each(selectors, function(index, value) {
       button = '<button class="' + gt + '-selectors-button ' + index + '">' + index + '</button>';
@@ -160,16 +152,16 @@
       });
     });
 
-    $(settings.config_element).find('.' + gt + '-selectors-button').each(function() {
+    $(settings.config_ele).find('.' + gt + '-selectors-button').each(function() {
       $(this).bind('click', function(e) {
         e.preventDefault();
         $(this).addClass("selected").siblings().removeClass("selected");
-        $('.' + gt + '-selectors-type', settings.config_element).hide();
+        $('.' + gt + '-selectors-type', settings.config_ele).hide();
         $.each($(this).attr("class").split(/\s+/), function() {
-          $('.' + gt + '-selectors-type.' + this, settings.config_element).show();
+          $('.' + gt + '-selectors-type.' + this, settings.config_ele).show();
         });
       });
-      if($(this).hasClass(settings.initial_type)) { $(this).trigger('click'); }
+      if($(this).hasClass(settings.initial_group)) { $(this).trigger('click'); }
     }).end().find('.' + gt + '-selector', '.' + gt + '-selectors-type').each(function() {
         if($(this).text() === settings.initial_tag) { $(this).addClass('selected'); }
         $(this).click(function(e) {
@@ -177,8 +169,8 @@
           e.preventDefault();
           $('.' + gt + '-selector', '.' + gt + '-selectors-type').removeClass("selected");
           self.addClass("selected");
-          settings["config_activate"] = false;
-          settings["initial_tag"] = self.text();
+          settings.config_activate = false;
+          settings.initial_tag = self.text();
           $(obj)[gt]("destroy")[gt](settings);
         });
       });
@@ -219,10 +211,11 @@
   };
 
   $.fn[gt].defaults = {
-    'initial_type'     : 'journal',
-    'initial_tag' : 'author',
+    'initial_group' : 'journal',
+    'initial_tag'   : 'author',
     'multitag'      : true,
-    'tags' : {},
+    'tags'          : {},
+//TODO: permit user-supplied tags
     'base_styles'  : {
       'author'      : { 'background-color' : '#8dd3c7' },
       'booktitle'   : { 'background-color' : '#ffa1ff' },
@@ -246,13 +239,13 @@
       'url'         : { 'background-color' : '#c8c8c8' },
       'volume'      : { 'background-color' : '#80b1d3' }
     },
-    'selector_warning' : 'Either you already used that tag or your selection is overlapping with a previously created tag. Please try again.',
-    'config_element'   : '#' + gt + '-initializer',
-    'config_text'      : '',
-    'config_activate'  : true,
+    'config_ele'      : '#' + gt + '-initializer',
+    'config_activate' : true,
 
     //Callbacks
-    'onTagged'         : function(obj, data) { obj = null; data = null; }
+    'onTagged'          : function(obj, data) { obj = null; data = null; },
+    'onMultitagWarning' : function() { alert('You already used that tag. Please choose another.'); },
+    'onOverlapWarning'  : function() { alert('Your selection overlapped with a previously created tag. Please try again.'); }
   };
 
 }(jQuery, 'grabtag'));

@@ -40,6 +40,7 @@
 /* grabtag selectors and tags */
 .grabtag-selector{
   font-family: Droid Serif, Georgia, serif;
+  display:inline;
   margin-right:0.5em;
   padding:0.15em 0.35em;
   cursor:pointer;
@@ -51,12 +52,18 @@
 .grabtag-selector.selected{
   box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9) inset;
 }
+.grabtag-selector .grabtag-resizer{
+  border-left:5px solid transparent;
+}
+.grabtag-selector .grabtag-resizer-e{cursor:e-resize;margin-left:-0.15em;}
+.grabtag-selector .grabtag-resizer-w{cursor:w-resize;margin-right:-0.15em;}
 .grabtag-selector.grabtag-tag{
   margin:0px;
-  padding:0.15em;
-  position:relative;
+  padding:0.15em 0;
   cursor:auto;
 }
+.grabtag-selector .ui-resizable-e{right:0;width:5px;}
+.grabtag-selector .ui-resizable-w{left:0;width:5px;}
 #grabtag-initializer .grabtag-selector:hover{
   box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);
 }
