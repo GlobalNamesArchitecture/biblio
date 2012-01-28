@@ -2,6 +2,8 @@
 $ ->
  config = {
    multitag : false,
+   onActivate : (obj, data) -> 
+     $('#grabtag-output').val(data)
    onTagged : (obj, data) -> 
      $('#grabtag-output').val(data)
  }

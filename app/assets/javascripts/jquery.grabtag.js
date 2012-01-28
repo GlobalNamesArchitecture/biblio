@@ -26,7 +26,6 @@
     }
   };
 
-//TODO: make configurable
   var eventName = "mouseup." + gt,
       selectors = {
        "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
@@ -41,11 +40,11 @@
 
   convert_markup = function(obj) {
     var snippet = "",
-        result = $(obj).clone();
+        result  = $(obj).clone();
 
     $.each(all_selectors, function() {
       var tag = this;
-      snippet = $('[data=' + tag + ']', result);
+      snippet = $('[data-' + gt + '=' + tag + ']', result);
       snippet.each(function() {
         $(this).wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
       });
@@ -53,32 +52,38 @@
     return result.html();
   },
 
-  clear_selected = function() {
+  preloader = function(obj, settings) {
+    $.each(all_selectors, function() {
+      var tag = this, snippet, style;
+      snippet = $('[data-' + gt + '=' + tag + ']', obj);
+      snippet.each(function() {
+        style = get_style(settings.tags[tag] || settings.base_styles[tag]);
+        $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
+        add_resizers(obj, $(this));
+      });
+    });
+    settings.onActivate.call(this, obj, convert_markup(obj));
+  },
+
+  clear_selections = function() {
     var sel;
 
     if(document.selection && document.selection.empty){
       document.selection.empty() ;
     } else if(window.getSelection) {
       sel = window.getSelection();
-      if(sel && sel.removeAllRanges) { sel.removeAllRanges(); }
+    } else if(document.getSelection) {
+      sel = document.getSelection();
     }
+    if(sel && sel.removeAllRanges) { sel.removeAllRanges(); }
   },
 
   build_resizer = function(type) {
     return '<span class="' + gt + '-resizer ' + gt + '-resizer-' + type + '"></span>';
   },
 
-  add_resizers = function(newNode, range) {
-    var resizer_w = $(build_resizer('w')),
-        resizer_e = $(build_resizer('e'));
-
-    $(newNode).prepend(resizer_w).append(resizer_e);
-
-    //TODO: build resizer capability here
-  },
-
-  get_selected = function(e) {
-    var sel, range, newNode;
+  get_selections = function() {
+    var sel;
 
     if(window.getSelection) {
       sel = window.getSelection();
@@ -87,44 +92,77 @@
     } else if(document.selection) {
       sel = document.selection.createRange();
     }
+    return sel;
+  },
 
-    if(!e.data.settings.multitag && $('.' + gt + '-tag[data=' + e.data.item + ']', $(this)).length === 1) {
-      clear_selected();
+  add_resizers = function(obj, newNode) {
+    var resizer_w = build_resizer('w'),
+        resizer_e = build_resizer('e'),
+        sel, selector = $(newNode).attr("data-" + gt), new_range;
+
+    $(newNode).prepend(resizer_w).append(resizer_e);
+
+//WIP: building resizer capability here
+/*
+    $('.' + gt + '-resizer-e', $(newNode)).hover(
+      function() {
+        clear_selections();
+        $(newNode).attr("data-" + gt, "");
+        new_range = document.createRange();
+        sel = window.getSelection();
+        sel.removeAllRanges();
+        new_range.setStart(obj, 0);
+        new_range.setEnd(obj.childNodes[2], 10);
+        sel.addRange(new_range);
+        var content = $(newNode).text();
+        $(newNode).before(content).remove();
+      },
+      function() {
+        $(newNode).attr("data-" + gt, selector);
+      }
+    );
+*/
+  },
+
+  tag_selected = function(e) {
+    var sel, range, newNode;
+
+    sel = get_selections();
+
+    if(!e.data.settings.multitag && $('.' + gt + '-tag[data-' + gt + '=' + e.data.item + ']', $(this)).length === 1) {
+      clear_selections();
       e.data.settings.onMultitagWarning.call();
       return;
     }
 
     if($.trim(sel) !== "") {
 
+      e.data.settings.beforeTagged.call(this, $(this));
+
       newNode = document.createElement("span");
       newNode.setAttribute('class', gt + '-selector ' + gt + '-tag');
       newNode.setAttribute('style', get_style(e.data.settings.tags[e.data.item] || e.data.settings.base_styles[e.data.item]));
       newNode.setAttribute('title', e.data.item);
-      newNode.setAttribute('data', e.data.item);
+      newNode.setAttribute('data-' + gt, e.data.item);
 
       if(sel.getRangeAt) {
         try {
           range = sel.getRangeAt(0);
           range.surroundContents(newNode);
-          add_resizers(newNode, range);
+          add_resizers(this, newNode);
         } catch(err) {
-          clear_selected();
+          clear_selections();
           e.data.settings.onOverlapWarning.call();
           return;
         }
-      } else { //IE 6/7
+      } else { //IE < 9
         alert("Sory, Internet Explorer < 9 is not supported.");
-/*
-        newNode.innerText = sel.text;
-        sel.pasteHTML($(newNode).html());
-        add_resizers(newNode);
-*/
       }
 
       e.data.settings.onTagged.call(this, $(this), convert_markup(this));
     }
 
-    clear_selected();
+    clear_selections();
   },
 
   build_selector = function(title, settings) {
@@ -182,10 +220,9 @@
       return this.each(function() {
         var self = $(this), settings = $.extend({}, $.fn[gt].defaults, options);
 
-//TODO: have one initializer work for multiple citations, tagged in one textarea
-
         if(settings.config_activate) { build_initializer(self, settings); }
-        self.bind(eventName, { 'item' : settings.initial_tag, settings : settings }, get_selected);
+        preloader(self, settings);
+        self.bind(eventName, { 'item' : settings.initial_tag, settings : settings }, tag_selected);
       });
     },
     remove : function() {
@@ -243,6 +280,8 @@
     'config_activate' : true,
 
     //Callbacks
+    'onActivate'        : function(obj, data) { obj = null; data = null; },
+    'beforeTagged'      : function(obj) { obj = null; },
     'onTagged'          : function(obj, data) { obj = null; data = null; },
     'onMultitagWarning' : function() { alert('You already used that tag. Please choose another.'); },
     'onOverlapWarning'  : function() { alert('Your selection overlapped with a previously created tag. Please try again.'); }
