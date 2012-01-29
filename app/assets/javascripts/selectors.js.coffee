@@ -3,9 +3,10 @@ $ ->
  config = {
    multitag : false,
    onActivate : (obj, data) -> 
-     $('#grabtag-output').val(data)
+     $('#grabtag-output').val(data.content)
    onTagged : (obj, data) -> 
-     $('#grabtag-output').val(data)
+     console.log(data.tag.type + ": " + data.tag.value)
+     $('#grabtag-output').val(data.content)
  }
  $(".biblio-selector").grabtag(config)
 

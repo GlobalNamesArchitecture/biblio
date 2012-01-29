@@ -27,7 +27,6 @@
   };
 
   var eventName = "mouseup." + gt,
-      settings = {},
       selectors = {
        "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
        "book"    : [ "author", "date", "title", "booktitle", "pages", "edition", "editor", "publisher", "institution", "location", "isbn", "doi" ],
@@ -68,7 +67,7 @@
         });
       }
     });
-    settings.onActivate.call(this, obj, convert_markup(obj));
+    settings.onActivate.call(this, obj, { "content" : convert_markup(obj) });
   },
 
   clear_selections = function() {
@@ -156,6 +155,7 @@
           range = sel.getRangeAt(0);
           range.surroundContents(newNode);
           add_resizers(this, newNode);
+          e.data.settings.onTagged.call(this, $(this), { "tag" : { "value" : range, "type" : e.data.item }, "content" : convert_markup(this) });
         } catch(err) {
           clear_selections();
           e.data.settings.onOverlapWarning.call();
@@ -165,7 +165,6 @@
         alert("Sory, Internet Explorer < 9 is not supported.");
       }
 
-      e.data.settings.onTagged.call(this, $(this), convert_markup(this));
     }
 
     clear_selections();
@@ -233,6 +232,7 @@
     },
     remove : function() {
       return this.each(function() {
+//TODO: unwrap added spans rather than strip all HTML
         $(this).html($(this).text());
       });
     },
