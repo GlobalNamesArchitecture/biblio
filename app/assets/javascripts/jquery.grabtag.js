@@ -52,24 +52,6 @@
     return result.html();
   },
 
-  preloader = function(obj, settings) {
-    $.each(all_selectors, function() {
-      var tag = this, snippet, style;
-      snippet = $('[data-' + gt + '=' + tag + ']', obj);
-      style = get_style(settings.tags[tag] || settings.base_styles[tag]);
-      if(snippet.length > 1 && !settings.multitag) {
-        $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
-        add_resizers(obj, $(snippet[0]));
-      } else {
-        snippet.each(function() {
-          $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
-          add_resizers(obj, $(this));
-        });
-      }
-    });
-    settings.onActivate.call(this, obj, { "content" : convert_markup(obj) });
-  },
-
   clear_selections = function() {
     var sel;
 
@@ -105,28 +87,49 @@
         resizer_e = build_resizer('e'),
         sel, selector = $(newNode).attr("data-" + gt), new_range;
 
-    $(newNode).prepend(resizer_w).append(resizer_e);
+    if($(newNode).children('.' + gt + '-resizer').length === 0) { $(newNode).prepend(resizer_w).append(resizer_e); }
 
 //WIP: building resizer capability here
 /*
-    $('.' + gt + '-resizer-e', $(newNode)).hover(
+    $('.' + gt + '-resizer', $(newNode)).hover(
       function() {
         clear_selections();
         $(newNode).attr("data-" + gt, "");
         new_range = document.createRange();
         sel = window.getSelection();
-        sel.removeAllRanges();
-        new_range.setStart(obj, 0);
-        new_range.setEnd(obj.childNodes[2], 10);
+        new_range.setStart(newNode[0].childNodes[1], 0);
+        new_range.setEnd(newNode[0].childNodes[1], 3);
         sel.addRange(new_range);
-        var content = $(newNode).text();
-        $(newNode).before(content).remove();
       },
       function() {
         $(newNode).attr("data-" + gt, selector);
       }
     );
 */
+  },
+
+  build_selector = function(title, settings, selectable) {
+    var classes = gt + '-selector', data = "", innerTitle = "";
+    if(selectable) { classes += ' ' + gt + '-tag'; data = 'data-' + gt +'=' + title; } else { innerTitle = title; }
+    return '<span class="' + classes + '" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '" title="' + title + '"' + data + '>' + innerTitle + '</span>';
+  },
+
+  preloader = function(obj, settings) {
+    $.each(all_selectors, function() {
+      var tag = this, snippet, style;
+      snippet = $('[data-' + gt + '=' + tag + ']', obj);
+      style = get_style(settings.tags[tag] || settings.base_styles[tag]);
+      if(snippet.length > 1 && !settings.multitag) {
+        $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
+        add_resizers(obj, $(snippet[0]));
+      } else {
+        snippet.each(function() {
+          $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
+          add_resizers(obj, $(this));
+        });
+      }
+    });
+    settings.onActivate.call(this, obj, { "content" : convert_markup(obj) });
   },
 
   tag_selected = function(e) {
@@ -144,16 +147,12 @@
 
       e.data.settings.beforeTagged.call(this, $(this));
 
-      newNode = document.createElement("span");
-      newNode.setAttribute('class', gt + '-selector ' + gt + '-tag');
-      newNode.setAttribute('style', get_style(e.data.settings.tags[e.data.item] || e.data.settings.base_styles[e.data.item]));
-      newNode.setAttribute('title', e.data.item);
-      newNode.setAttribute('data-' + gt, e.data.item);
+      newNode = $(build_selector(e.data.item, e.data.settings, true));
 
       if(sel.getRangeAt) {
         try {
           range = sel.getRangeAt(0);
-          range.surroundContents(newNode);
+          range.surroundContents(newNode[0]);
           add_resizers(this, newNode);
           e.data.settings.onTagged.call(this, $(this), { "tag" : { "value" : range, "type" : e.data.item }, "content" : convert_markup(this) });
         } catch(err) {
@@ -168,10 +167,6 @@
     }
 
     clear_selections();
-  },
-
-  build_selector = function(title, settings) {
-    return '<span class="' + gt + '-selector" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '">' + title + '</span>';
   },
 
   build_initializer = function(obj, settings) {
