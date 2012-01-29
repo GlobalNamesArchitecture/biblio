@@ -27,6 +27,7 @@
   };
 
   var eventName = "mouseup." + gt,
+      settings = {},
       selectors = {
        "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
        "book"    : [ "author", "date", "title", "booktitle", "pages", "edition", "editor", "publisher", "institution", "location", "isbn", "doi" ],
@@ -56,11 +57,16 @@
     $.each(all_selectors, function() {
       var tag = this, snippet, style;
       snippet = $('[data-' + gt + '=' + tag + ']', obj);
-      snippet.each(function() {
-        style = get_style(settings.tags[tag] || settings.base_styles[tag]);
-        $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
-        add_resizers(obj, $(this));
-      });
+      style = get_style(settings.tags[tag] || settings.base_styles[tag]);
+      if(snippet.length > 1 && !settings.multitag) {
+        $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
+        add_resizers(obj, $(snippet[0]));
+      } else {
+        snippet.each(function() {
+          $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
+          add_resizers(obj, $(this));
+        });
+      }
     });
     settings.onActivate.call(this, obj, convert_markup(obj));
   },
@@ -220,8 +226,8 @@
       return this.each(function() {
         var self = $(this), settings = $.extend({}, $.fn[gt].defaults, options);
 
-        if(settings.config_activate) { build_initializer(self, settings); }
-        preloader(self, settings);
+        if(settings.config_activate) { build_initializer(self,settings); }
+        preloader(self,settings);
         self.bind(eventName, { 'item' : settings.initial_tag, settings : settings }, tag_selected);
       });
     },
