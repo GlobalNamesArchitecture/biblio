@@ -26,13 +26,14 @@
     }
   };
 
-  var eventName = "mouseup." + gt,
-      selectors = {
+  var eventName       = "mouseup." + gt,
+      eventNameResize = "mouseup." + gt + "-resize",
+      selectors       = {
        "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
        "book"    : [ "author", "date", "title", "booktitle", "pages", "edition", "editor", "publisher", "institution", "location", "isbn", "doi" ],
        "extra"   : [ "note", "container", "retrieved", "tech", "translator", "unknown", "url" ]
       },
-      all_selectors = $.unique(selectors.journal.concat(selectors.book).concat(selectors.extra)),
+      all_selectors   = $.unique(selectors.journal.concat(selectors.book).concat(selectors.extra)),
 
   get_style = function(obj) {
     return JSON.stringify(obj).replace(/[{}"]/g, "").replace(",", ";");
@@ -46,7 +47,9 @@
       var tag = this;
       snippet = $('[data-' + gt + '=' + tag + ']', result);
       snippet.each(function() {
-        $(this).wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
+        $(this).prev(".grabtag-resizer").remove().end()
+               .next(".grabtag-resizer").remove().end()
+               .wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
       });
     });
     return result.html();
@@ -82,36 +85,61 @@
     return sel;
   },
 
-  add_resizers = function(obj, newNode) {
-    var resizer_w = build_resizer('w'),
-        resizer_e = build_resizer('e'),
-        sel, selector = $(newNode).attr("data-" + gt), new_range;
-
-    if($(newNode).children('.' + gt + '-resizer').length === 0) { $(newNode).prepend(resizer_w).append(resizer_e); }
-
-//WIP: building resizer capability here
-/*
-    $('.' + gt + '-resizer', $(newNode)).hover(
-      function() {
-        clear_selections();
-        $(newNode).attr("data-" + gt, "");
-        new_range = document.createRange();
-        sel = window.getSelection();
-        new_range.setStart(newNode[0].childNodes[1], 0);
-        new_range.setEnd(newNode[0].childNodes[1], 3);
-        sel.addRange(new_range);
-      },
-      function() {
-        $(newNode).attr("data-" + gt, selector);
-      }
-    );
-*/
+  build_selector = function(title, innerContent, settings, selectable) {
+    var classes = gt + '-selector', data = "";
+    innerContent = innerContent || "";
+    if(selectable) { classes += ' ' + gt + '-tag'; data = 'data-' + gt +'=' + title; }
+    return '<span class="' + classes + '" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '" title="' + title + '"' + data + '>' + innerContent + '</span>';
   },
 
-  build_selector = function(title, settings, selectable) {
-    var classes = gt + '-selector', data = "", innerTitle = "";
-    if(selectable) { classes += ' ' + gt + '-tag'; data = 'data-' + gt +'=' + title; } else { innerTitle = title; }
-    return '<span class="' + classes + '" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '" title="' + title + '"' + data + '>' + innerTitle + '</span>';
+  add_resizers = function(obj, settings, newNode) {
+    var resizer_w = build_resizer('w'),
+        resizer_e = build_resizer('e');
+
+    if($(newNode).children('.' + gt + '-resizer').length === 0) {
+      $(newNode).prepend(resizer_w).append(resizer_e);
+    }
+
+//TODO: need to detect resize direction
+
+    $('.' + gt + '-resizer').mousedown(function() {
+      var self       = $(this),
+          tag        = obj[0].children[$(this).parent().index()],
+          sel        = get_selections(),
+          range      = document.createRange(),
+          spill      = 0,
+          contents   = "";
+
+      clear_selections();
+      $(obj)[gt]("destroy");
+
+      $(obj).unbind(eventNameResize).bind(eventNameResize, function() {
+        spill = sel.getRangeAt(0).toString().length;
+
+        try {
+          if(self.hasClass(gt + "-resizer-e")) {
+            range.setStart(tag.childNodes[1], 0);
+            range.setEnd(tag.nextSibling, spill);
+          } else {
+            range.setStart(tag.previousSibling, tag.previousSibling.length-spill);
+            range.setEnd(tag, 2);
+          }
+          sel.addRange(range);
+          contents = range.extractContents().textContent;
+          clear_selections();
+          newNode = $(build_selector($(tag).attr("title"), contents, settings, true));
+          $(tag).before(newNode).remove();
+          add_resizers($(this), settings, newNode);
+          $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
+          settings.onTagged.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : contents }, "content" : convert_markup(this) });
+        } catch(err) {
+          clear_selections();
+          settings.onOverlapWarning.call();
+          return;
+        }
+      });
+
+    });
   },
 
   preloader = function(obj, settings) {
@@ -121,11 +149,11 @@
       style = get_style(settings.tags[tag] || settings.base_styles[tag]);
       if(snippet.length > 1 && !settings.multitag) {
         $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
-        add_resizers(obj, $(snippet[0]));
+        add_resizers($(obj), settings, $(snippet[0]));
       } else {
         snippet.each(function() {
           $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
-          add_resizers(obj, $(this));
+          add_resizers($(obj), settings, $(this));
         });
       }
     });
@@ -133,37 +161,40 @@
   },
 
   tag_selected = function(e) {
-    var sel, range, newNode;
+    var sel, range, newNode, settings = e.data.settings;
 
     sel = get_selections();
 
-    if(!e.data.settings.multitag && $('.' + gt + '-tag[data-' + gt + '=' + e.data.item + ']', $(this)).length === 1) {
+    if(!settings.multitag && $('.' + gt + '-tag[data-' + gt + '=' + settings.active_tag + ']', $(this)).length === 1) {
       clear_selections();
-      e.data.settings.onMultitagWarning.call();
+      settings.onMultitagWarning.call();
       return;
     }
 
     if($.trim(sel) !== "") {
-
-      e.data.settings.beforeTagged.call(this, $(this));
-
-      newNode = $(build_selector(e.data.item, e.data.settings, true));
+      settings.beforeTagged.call(this, $(this));
+      newNode = $(build_selector(settings.active_tag, false, settings, true));
 
       if(sel.getRangeAt) {
         try {
           range = sel.getRangeAt(0);
           range.surroundContents(newNode[0]);
-          add_resizers(this, newNode);
-          e.data.settings.onTagged.call(this, $(this), { "tag" : { "value" : range, "type" : e.data.item }, "content" : convert_markup(this) });
+          if($(newNode).parent('.' + gt + '-selector').length > 0) {
+            $(newNode).before(range.toString()).remove();
+            settings.onOverlapWarning.call();
+          } else {
+            add_resizers($(this), settings, newNode);
+//TODO: get offset for tagged item and add to tag object
+            settings.onTagged.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString() }, "content" : convert_markup(this) });
+          }
         } catch(err) {
           clear_selections();
-          e.data.settings.onOverlapWarning.call();
+          settings.onOverlapWarning.call();
           return;
         }
       } else { //IE < 9
         alert("Sory, Internet Explorer < 9 is not supported.");
       }
-
     }
 
     clear_selections();
@@ -185,7 +216,7 @@
       button = '<button class="' + gt + '-selectors-button ' + index + '">' + index + '</button>';
       $('.' + gt + '-selectors-buttons').append(button);
       $.each(value, function() {
-        selector = build_selector(this, settings);
+        selector = build_selector(this, this, settings);
         $('.' + gt + '-selectors-type.' + index).append(selector);
       });
     });
@@ -199,16 +230,16 @@
           $('.' + gt + '-selectors-type.' + this, settings.config_ele).show();
         });
       });
-      if($(this).hasClass(settings.initial_group)) { $(this).trigger('click'); }
+      if($(this).hasClass(settings.active_group)) { $(this).trigger('click'); }
     }).end().find('.' + gt + '-selector', '.' + gt + '-selectors-type').each(function() {
-        if($(this).text() === settings.initial_tag) { $(this).addClass('selected'); }
+        if($(this).text() === settings.active_tag) { $(this).addClass('selected'); }
         $(this).click(function(e) {
           var self = $(this);
           e.preventDefault();
           $('.' + gt + '-selector', '.' + gt + '-selectors-type').removeClass("selected");
           self.addClass("selected");
           settings.config_activate = false;
-          settings.initial_tag = self.text();
+          settings.active_tag = self.text();
           $(obj)[gt]("destroy")[gt](settings);
         });
       });
@@ -219,13 +250,12 @@
       f = null;
       return this.each(function() {
         var self = $(this), settings = $.extend({}, $.fn[gt].defaults, options);
-
-        if(settings.config_activate) { build_initializer(self,settings); }
-        preloader(self,settings);
-        self.bind(eventName, { 'item' : settings.initial_tag, settings : settings }, tag_selected);
+        self.bind(eventName, { 'settings' : settings }, tag_selected);
+        if(settings.config_activate) { build_initializer(self, settings); }
+        preloader(self, settings);
       });
     },
-    remove : function() {
+    remove_all : function() {
       return this.each(function() {
 //TODO: unwrap added spans rather than strip all HTML
         $(this).html($(this).text());
@@ -249,8 +279,8 @@
   };
 
   $.fn[gt].defaults = {
-    'initial_group' : 'journal',
-    'initial_tag'   : 'author',
+    'active_group' : 'journal',
+    'active_tag'   : 'author',
     'multitag'      : true,
     'tags'          : {},
 //TODO: permit user-supplied tags

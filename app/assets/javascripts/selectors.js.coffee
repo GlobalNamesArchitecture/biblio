@@ -11,6 +11,4 @@ $ ->
  $(".biblio-selector").grabtag(config)
 
  $(".clear-button").bind 'click', (event) =>
-   $(".biblio-selector").grabtag("remove")
-
-  
+   $(".biblio-selector").grabtag("remove_all")
