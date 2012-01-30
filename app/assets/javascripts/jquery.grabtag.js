@@ -100,13 +100,13 @@
       $(newNode).prepend(resizer_w).append(resizer_e);
     }
 
-//TODO: need to detect resize direction
-
     $('.' + gt + '-resizer').mousedown(function() {
       var self       = $(this),
           tag        = obj[0].children[$(this).parent().index()],
+          tag_type   = $(tag).attr("data-" + gt),
           sel        = get_selections(),
           range      = document.createRange(),
+          residual   = "",
           spill      = 0,
           contents   = "";
 
@@ -115,28 +115,46 @@
 
       $(obj).unbind(eventNameResize).bind(eventNameResize, function() {
         spill = sel.getRangeAt(0).toString().length;
-
         try {
           if(self.hasClass(gt + "-resizer-e")) {
             range.setStart(tag.childNodes[1], 0);
             range.setEnd(tag.nextSibling, spill);
-          } else {
+/*
+//TODO: detect if e contracted
+//if contracted, there will also be residual content that needs to be appended
+            residual = sel.getRangeAt(0).cloneRange().toString();
+            range.setStart(tag.childNodes[1], 0);
+            range.setEnd(tag.childNodes[1], tag.childNodes[1].length-spill);
+*/
+          } else if(self.hasClass(gt + "-resizer-w")) {
             range.setStart(tag.previousSibling, tag.previousSibling.length-spill);
             range.setEnd(tag, 2);
+/*
+//TODO: detect if w contracted
+//if contracted, there will also be residual content that needs to be appended
+            residual = sel.getRangeAt(0).cloneRange().toString();
+            range.setStart(tag.childNodes[1], spill);
+            range.setEnd(tag, 2);
+*/
           }
           sel.addRange(range);
           contents = range.extractContents().textContent;
           clear_selections();
-          newNode = $(build_selector($(tag).attr("title"), contents, settings, true));
+          newNode = $(build_selector(tag_type, contents, settings, true));
+
+//if w contracted
+//          $(tag).before(residual);
+//if e contracted
+//          $(tag).after(residual);
+
           $(tag).before(newNode).remove();
           add_resizers($(this), settings, newNode);
-          $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
-          settings.onTagged.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : contents }, "content" : convert_markup(this) });
+          settings.onTagged.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : convert_markup(this) });
         } catch(err) {
           clear_selections();
           settings.onOverlapWarning.call();
-          return;
         }
+        $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
       });
 
     });
