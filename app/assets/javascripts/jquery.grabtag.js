@@ -12,7 +12,7 @@
  **/
 /*global $, jQuery, window, document, alert */
 
-(function($, gt){
+(function($, gt, gtr){
 
   "use strict";
 
@@ -27,7 +27,7 @@
   };
 
   var eventName       = "mouseup." + gt,
-      eventNameResize = "mouseup." + gt + "-resize",
+      eventNameResize = "mouseup." + gtr,
       selectors       = {
        "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
        "book"    : [ "author", "date", "title", "booktitle", "pages", "edition", "editor", "publisher", "institution", "location", "isbn", "doi" ],
@@ -114,39 +114,40 @@
       $(obj)[gt]("destroy");
 
       $(obj).unbind(eventNameResize).bind(eventNameResize, function() {
-        spill = sel.getRangeAt(0).toString().length;
+        spill      = sel.getRangeAt(0).toString().length;
+
         try {
           if(self.hasClass(gt + "-resizer-e")) {
-            range.setStart(tag.childNodes[1], 0);
-            range.setEnd(tag.nextSibling, spill);
-/*
-//TODO: detect if e contracted
-//if contracted, there will also be residual content that needs to be appended
-            residual = sel.getRangeAt(0).cloneRange().toString();
-            range.setStart(tag.childNodes[1], 0);
-            range.setEnd(tag.childNodes[1], tag.childNodes[1].length-spill);
-*/
+            if(sel.getRangeAt(0).endContainer.nodeType === 1) {
+              //contracted
+              range.setStart(tag.childNodes[1], 0);
+              range.setEnd(tag.childNodes[1], tag.childNodes[1].length-spill);
+              residual = sel.getRangeAt(0).cloneRange().toString();
+            } else {
+              range.setStart(tag.childNodes[1], 0);
+              range.setEnd(tag.nextSibling, spill);
+            }
           } else if(self.hasClass(gt + "-resizer-w")) {
-            range.setStart(tag.previousSibling, tag.previousSibling.length-spill);
-            range.setEnd(tag, 2);
-/*
-//TODO: detect if w contracted
-//if contracted, there will also be residual content that needs to be appended
-            residual = sel.getRangeAt(0).cloneRange().toString();
-            range.setStart(tag.childNodes[1], spill);
-            range.setEnd(tag, 2);
-*/
+            if(sel.getRangeAt(0).endContainer.nodeType === 3) {
+              //contracted
+              range.setStart(tag.childNodes[1], spill);
+              range.setEnd(tag, 2);
+              residual = sel.getRangeAt(0).cloneRange().toString();
+            } else {
+              range.setStart(tag.previousSibling, tag.previousSibling.length-spill);
+              range.setEnd(tag, 2);
+            }
           }
           sel.addRange(range);
           contents = range.extractContents().textContent;
-          clear_selections();
           newNode = $(build_selector(tag_type, contents, settings, true));
 
-//if w contracted
-//          $(tag).before(residual);
-//if e contracted
-//          $(tag).after(residual);
-
+          if(residual && self.hasClass(gt + "-resizer-e")) {
+            $(tag).after(residual);
+          }
+          if(residual && self.hasClass(gt + "-resizer-w")) {
+            $(tag).before(residual);
+          }
           $(tag).before(newNode).remove();
           add_resizers($(this), settings, newNode);
           settings.onTagged.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : convert_markup(this) });
@@ -154,6 +155,7 @@
           clear_selections();
           settings.onOverlapWarning.call();
         }
+        clear_selections();
         $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
       });
 
@@ -336,4 +338,4 @@
     'onOverlapWarning'  : function() { alert('Your selection overlapped with a previously created tag. Please try again.'); }
   };
 
-}(jQuery, 'grabtag'));
+}(jQuery, 'grabtag', 'grabtag-resize'));
