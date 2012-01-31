@@ -96,13 +96,23 @@
     var nodeRange = document.createRange();
     try {
       nodeRange.selectNode(node);
-    }
-    catch (e) {
+    } catch(e) {
       nodeRange.selectNodeContents(node);
     }
 
   return range.compareBoundaryPoints(Range.END_TO_START, nodeRange) === -1 &&
          range.compareBoundaryPoints(Range.START_TO_END, nodeRange) === 1;
+  },
+
+  range_intersects_tag = function(range, obj) {
+    var intersects = false;
+    $('.' + gt + '-tag', $(obj)).each(function() {
+      if(range_intersects(range, this)) {
+        intersects = true;
+        return;
+      }
+    });
+    return intersects;
   },
 
   add_resizers = function(obj, settings, newNode) {
@@ -153,16 +163,17 @@
           contents = new_range.extractContents().textContent;
           newNode = $(build_selector(tag_type, contents, settings, true));
 
-          if(residual.startOffset === 0 && self.hasClass(gt + "-resizer-e")) {
+          if(intersects && self.hasClass(gt + "-resizer-e")) {
             $(tag).after(residual.toString());
           }
-          if(residual.startOffset === 0 && self.hasClass(gt + "-resizer-w")) {
+          if(intersects && self.hasClass(gt + "-resizer-w")) {
             $(tag).before(residual.toString());
           }
           $(tag).before(newNode).remove();
+          obj[0].normalize();
           add_resizers($(this), settings, newNode);
           settings.onTagged.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : convert_markup(this) });
-        } catch(err) {
+        } catch(e) {
           clear_selections();
           $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
           settings.onOverlapWarning.call();
@@ -194,9 +205,10 @@
   },
 
   tag_selected = function(e) {
-    var sel, range, newNode, settings = e.data.settings;
-
-    sel = get_selections();
+    var sel   = get_selections(),
+        range = sel.getRangeAt(0),
+        newNode, intersects = false,
+        settings = e.data.settings;
 
     if(!settings.multitag && $('.' + gt + '-tag[data-' + gt + '=' + settings.active_tag + ']', $(this)).length === 1) {
       clear_selections();
@@ -207,30 +219,25 @@
     if($.trim(sel) !== "") {
       settings.beforeTagged.call(this, $(this));
       newNode = $(build_selector(settings.active_tag, false, settings, true));
-
-      if(sel.getRangeAt) {
-        try {
-          range = sel.getRangeAt(0);
-          range.surroundContents(newNode[0]);
-          if($(newNode).parent('.' + gt + '-selector').length > 0) {
-            $(newNode).before(range.toString()).remove();
-            settings.onOverlapWarning.call();
-          } else {
-            add_resizers($(this), settings, newNode);
-//TODO: get offset for tagged item and add to tag object
-            settings.onTagged.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString() }, "content" : convert_markup(this) });
-          }
-        } catch(err) {
+      try {
+        if(range_intersects_tag(range, $(this))) {
           clear_selections();
           settings.onOverlapWarning.call();
           return;
+        } else {
+          clear_selections();
+          range.surroundContents(newNode[0]);
+          add_resizers($(this), settings, newNode);
+//TODO: get offset for tagged item and add to tag object
+          settings.onTagged.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString() }, "content" : convert_markup(this) });
         }
-      } else { //IE < 9
-        alert("Sory, Internet Explorer < 9 is not supported.");
+      } catch(e) {
+        clear_selections();
+        settings.onOverlapWarning.call();
+        return;
       }
     }
 
-    clear_selections();
   },
 
   build_initializer = function(obj, settings) {
