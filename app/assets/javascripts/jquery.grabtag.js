@@ -10,7 +10,7 @@
  * Licensed under the MIT license.
  * http://creativecommons.org/licenses/MIT/
  **/
-/*global $, jQuery, window, document, alert */
+/*global $, jQuery, window, document, alert, Range */
 
 (function($, gt, gtr){
 
@@ -101,8 +101,8 @@
       nodeRange.selectNodeContents(node);
     }
 
-  return range.compareBoundaryPoints(Range.END_TO_START, nodeRange) == -1 &&
-         range.compareBoundaryPoints(Range.START_TO_END, nodeRange) == 1;
+  return range.compareBoundaryPoints(Range.END_TO_START, nodeRange) === -1 &&
+         range.compareBoundaryPoints(Range.START_TO_END, nodeRange) === 1;
   },
 
   add_resizers = function(obj, settings, newNode) {
