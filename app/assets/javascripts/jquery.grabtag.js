@@ -104,9 +104,20 @@
          range.compareBoundaryPoints(Range.START_TO_END, nodeRange) === 1;
   },
 
-  range_intersects_tag = function(range, obj) {
+  range_intersects_tags = function(range, obj) {
     var intersects = false;
     $('.' + gt + '-tag', $(obj)).each(function() {
+      if(range_intersects(range, this)) {
+        intersects = true;
+        return;
+      }
+    });
+    return intersects;
+  },
+
+  range_intersects_tag = function(range, obj, tag) {
+    var intersects = false;
+    $('.' + gt + '-tag', $(obj)).not($(tag)).each(function() {
       if(range_intersects(range, this)) {
         intersects = true;
         return;
@@ -139,6 +150,13 @@
             residual   = range.cloneRange(),
             offset     = range.toString().length,
             contents   = "";
+
+        if(range_intersects_tag(range, $(obj), $(tag))) {
+          clear_selections();
+          $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
+          settings.onOverlapWarning.call();
+          return;
+        }
 
         try {
           if(self.hasClass(gt + "-resizer-e")) {
@@ -220,7 +238,7 @@
       settings.beforeTagged.call(this, $(this));
       newNode = $(build_selector(settings.active_tag, false, settings, true));
       try {
-        if(range_intersects_tag(range, $(this))) {
+        if(range_intersects_tags(range, $(this))) {
           clear_selections();
           settings.onOverlapWarning.call();
           return;
