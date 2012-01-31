@@ -92,6 +92,19 @@
     return '<span class="' + classes + '" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '" title="' + title + '"' + data + '>' + innerContent + '</span>';
   },
 
+  range_intersects = function(range, node) {
+    var nodeRange = document.createRange();
+    try {
+      nodeRange.selectNode(node);
+    }
+    catch (e) {
+      nodeRange.selectNodeContents(node);
+    }
+
+  return range.compareBoundaryPoints(Range.END_TO_START, nodeRange) == -1 &&
+         range.compareBoundaryPoints(Range.START_TO_END, nodeRange) == 1;
+  },
+
   add_resizers = function(obj, settings, newNode) {
     var resizer_w = build_resizer('w'),
         resizer_e = build_resizer('e');
@@ -103,58 +116,58 @@
     $('.' + gt + '-resizer').mousedown(function() {
       var self       = $(this),
           tag        = obj[0].children[$(this).parent().index()],
-          tag_type   = $(tag).attr("data-" + gt),
-          sel        = get_selections(),
-          range      = document.createRange(),
-          residual   = "",
-          spill      = 0,
-          contents   = "";
+          tag_type   = $(tag).attr("data-" + gt);
 
       clear_selections();
       $(obj)[gt]("destroy");
 
       $(obj).unbind(eventNameResize).bind(eventNameResize, function() {
-        spill      = sel.getRangeAt(0).toString().length;
+        var sel        = get_selections(),
+            range      = sel.getRangeAt(0),
+            intersects = range_intersects(range, tag.childNodes[1]),
+            new_range  = document.createRange(),
+            residual   = range.cloneRange(),
+            offset     = range.toString().length,
+            contents   = "";
 
         try {
           if(self.hasClass(gt + "-resizer-e")) {
-            if(sel.getRangeAt(0).endContainer.nodeType === 1) {
-              //contracted
-              range.setStart(tag.childNodes[1], 0);
-              range.setEnd(tag.childNodes[1], tag.childNodes[1].length-spill);
-              residual = sel.getRangeAt(0).cloneRange().toString();
+            if(intersects) {
+              new_range.setStart(tag.childNodes[1], 0);
+              new_range.setEnd(tag.childNodes[1], tag.childNodes[1].length-offset);
             } else {
-              range.setStart(tag.childNodes[1], 0);
-              range.setEnd(tag.nextSibling, spill);
+              new_range.setStart(tag.childNodes[1], 0);
+              new_range.setEnd(tag.nextSibling, offset);
             }
           } else if(self.hasClass(gt + "-resizer-w")) {
-            if(sel.getRangeAt(0).endContainer.nodeType === 3) {
-              //contracted
-              range.setStart(tag.childNodes[1], spill);
-              range.setEnd(tag, 2);
-              residual = sel.getRangeAt(0).cloneRange().toString();
+            if(intersects) {
+              new_range.setStart(tag.childNodes[1], offset);
+              new_range.setEnd(tag, 2);
             } else {
-              range.setStart(tag.previousSibling, tag.previousSibling.length-spill);
-              range.setEnd(tag, 2);
+              new_range.setStart(tag.previousSibling, tag.previousSibling.length-offset);
+              new_range.setEnd(tag, 2);
             }
           }
-          sel.addRange(range);
-          contents = range.extractContents().textContent;
+          clear_selections();
+          sel.addRange(new_range);
+          contents = new_range.extractContents().textContent;
           newNode = $(build_selector(tag_type, contents, settings, true));
 
-          if(residual && self.hasClass(gt + "-resizer-e")) {
-            $(tag).after(residual);
+          if(residual.startOffset === 0 && self.hasClass(gt + "-resizer-e")) {
+            $(tag).after(residual.toString());
           }
-          if(residual && self.hasClass(gt + "-resizer-w")) {
-            $(tag).before(residual);
+          if(residual.startOffset === 0 && self.hasClass(gt + "-resizer-w")) {
+            $(tag).before(residual.toString());
           }
           $(tag).before(newNode).remove();
           add_resizers($(this), settings, newNode);
           settings.onTagged.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : convert_markup(this) });
         } catch(err) {
           clear_selections();
+          $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
           settings.onOverlapWarning.call();
         }
+
         clear_selections();
         $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, tag_selected);
       });
@@ -277,8 +290,9 @@
     },
     remove_all : function() {
       return this.each(function() {
-//TODO: unwrap added spans rather than strip all HTML
-        $(this).html($(this).text());
+        $('.' + gt + '-tag', $(this)).each(function() {
+          $(this).children('.' + gt + '-resizer').remove().end().before($(this).html()).remove();
+        });
       });
     },
     destroy : function() {
@@ -330,7 +344,6 @@
     'config_ele'      : '#' + gt + '-initializer',
     'config_activate' : true,
 
-    //Callbacks
     'onActivate'        : function(obj, data) { obj = null; data = null; },
     'beforeTagged'      : function(obj) { obj = null; },
     'onTagged'          : function(obj, data) { obj = null; data = null; },
