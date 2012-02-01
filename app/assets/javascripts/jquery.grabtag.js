@@ -274,7 +274,7 @@
     $(settings.config_ele).append(content);
 
     $.each(selectors, function(index, value) {
-      button = '<li><a class="' + gt + '-selectors-button ' + index + '">' + index + '</a></li>';
+      button = '<li><a href="#" class="' + gt + '-selectors-button ' + index + '">' + index + '</a></li>';
       $('.' + gt + '-selectors-buttons ul').append(button);
       $.each(value, function() {
         selector = build_selector(this, this, settings, true);
