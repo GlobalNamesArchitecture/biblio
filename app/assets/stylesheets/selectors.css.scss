@@ -6,14 +6,15 @@
 }
 
 /* grabtag buttons */
-#grabtag-initializer .grabtag-selectors-buttons{margin-bottom:1em;}
-#grabtag-initializer button{
+.grabtag-selectors-buttons{margin-bottom:1em;}
+.grabtag-selectors-buttons ul{list-style-type:none;margin:0px;padding:0px;}
+.grabtag-selectors-buttons li{display:inline;margin:0.2em 0.5em 0 0;}
+.grabtag-selectors-buttons a{
   cursor:pointer;
   border:0px solid #0F1215;
   color:#FFF;
   font-size: 1em;
   font-weight: bold;
-  margin:0.2em 0.5em 0 0;
   min-height: 1em;
   padding:0.25em 0.5em;
   text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
@@ -22,26 +23,27 @@
   background: -moz-linear-gradient(center bottom , #969696 4%, #afafaf 58%, #c8c8c8 98%) repeat scroll 0 0 transparent;
   background-image:-webkit-gradient(linear, 0 100%, 0 0%, color-stop(0.04, #969696), color-stop(0.58, #afafaf), color-stop(0.98, #c8c8c8));
 }
-#grabtag-initializer button:hover{
+.grabtag-selectors-buttons a:hover{
   box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);
 }
-#grabtag-initializer button.selected{
+.grabtag-selectors-buttons a.selected{
   background: #5aa52b;
   background: -moz-linear-gradient(center bottom , #1B7004 4%, #5AA52B 58%, #90CF4C 98%) repeat scroll 0 0 transparent;
   background-image:-webkit-gradient(linear, 0 100%, 0 0%, color-stop(0.04, #1B7004), color-stop(0.58, #5AA52B), color-stop(0.98, #90CF4C));
 }
-#grabtag-initializer button.selected:hover{
+.grabtag-selectors-buttons a.selected:hover{
   box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);
 }
 
 /* grabtag type */
-#grabtag-initializer .grabtag-selectors-type{display:none;margin:0.5em 0;}
+.grabtag-selectors-type{display:none;margin:0.5em 0;}
+.grabtag-selectors-type ul{list-style-type:none;margin:0px;padding:0px;}
+.grabtag-selectors-type li{display:inline;margin:0.2em 0.5em 0 0;}
+.grabtag-selectors-type span{padding: 0.15em 0.35em;cursor:pointer;}
 
 /* grabtag selectors and tags */
 .grabtag-selector{
   font-family: Droid Serif, Georgia, serif;
-  display:inline;
-  margin-right:0.5em;
   padding:0.15em 0.35em;
   cursor:pointer;
   border-radius: 3px;
@@ -57,7 +59,7 @@
 }
 .grabtag-resizer-e{cursor:e-resize;margin-left:-0.15em;}
 .grabtag-resizer-w{cursor:w-resize;margin-right:-0.15em;}
-.grabtag-selector.grabtag-tag{
+.grabtag-tag{
   margin:0px;
   padding:0.15em 0;
   cursor:auto;

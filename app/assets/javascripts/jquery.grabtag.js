@@ -85,11 +85,14 @@
     return sel;
   },
 
-  build_selector = function(title, innerContent, settings, selectable) {
-    var classes = gt + '-selector', data = "";
+  build_selector = function(title, innerContent, settings, selector) {
+    var classes = gt + '-selector ' + gt + '-tag',
+        data    = 'data-' + gt +'=' + title,
+        output  = "";
     innerContent = innerContent || "";
-    if(selectable) { classes += ' ' + gt + '-tag'; data = 'data-' + gt +'=' + title; }
-    return '<span class="' + classes + '" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '" title="' + title + '"' + data + '>' + innerContent + '</span>';
+    output = '<span class="' + classes + '" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '" title="' + title + '"' + data + '>' + innerContent + '</span>';
+    if(selector) { output = '<li>' + output + '</li>'; }
+    return output;
   },
 
   range_intersects = function(range, node) {
@@ -179,7 +182,7 @@
           clear_selections();
           sel.addRange(new_range);
           contents = new_range.extractContents().textContent;
-          newNode = $(build_selector(tag_type, contents, settings, true));
+          newNode = $(build_selector(tag_type, contents, settings));
 
           if(intersects && self.hasClass(gt + "-resizer-e")) {
             $(tag).after(residual.toString());
@@ -236,7 +239,7 @@
 
     if($.trim(sel) !== "") {
       settings.beforeTagged.call(this, $(this));
-      newNode = $(build_selector(settings.active_tag, false, settings, true));
+      newNode = $(build_selector(settings.active_tag, false, settings));
       try {
         if(range_intersects_tags(range, $(this))) {
           clear_selections();
@@ -261,28 +264,29 @@
   build_initializer = function(obj, settings) {
     var content, button, selector;
 
-    content  = '<div class="' + gt + '-selectors-buttons"></div>';
+    content  = '<div class="' + gt + '-selectors-buttons"><ul></ul></div>';
 
     $.each(selectors, function(index, value) {
       value = null;
-      content += '<div class="' + gt + '-selectors-type ' + index + '"></div>';
+      content += '<div class="' + gt + '-selectors-type ' + index + '"><ul></ul></div>';
     });
 
     $(settings.config_ele).append(content);
 
     $.each(selectors, function(index, value) {
-      button = '<button class="' + gt + '-selectors-button ' + index + '">' + index + '</button>';
-      $('.' + gt + '-selectors-buttons').append(button);
+      button = '<li><a class="' + gt + '-selectors-button ' + index + '">' + index + '</a></li>';
+      $('.' + gt + '-selectors-buttons ul').append(button);
       $.each(value, function() {
-        selector = build_selector(this, this, settings);
-        $('.' + gt + '-selectors-type.' + index).append(selector);
+        selector = build_selector(this, this, settings, true);
+        $('.' + gt + '-selectors-type.' + index + ' ul').append(selector);
       });
     });
 
     $(settings.config_ele).find('.' + gt + '-selectors-button').each(function() {
       $(this).bind('click', function(e) {
         e.preventDefault();
-        $(this).addClass("selected").siblings().removeClass("selected");
+        $('.' + gt + '-selectors-button', settings.config_ele).removeClass("selected");
+        $(this).addClass("selected");
         $('.' + gt + '-selectors-type', settings.config_ele).hide();
         $.each($(this).attr("class").split(/\s+/), function() {
           $('.' + gt + '-selectors-type.' + this, settings.config_ele).show();
