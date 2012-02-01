@@ -1,12 +1,14 @@
-<h1>Bibliographic Citation Tagger jQuery Plugin</h1>
+<h1>Grab Tag jQuery Plugin</h1>
 
-<h2>Bibliographic Citations</h2>
+<h2>Example: Bibliographic Citations</h2>
+<p>Click a tag, select text within the citation, then expand/contract a tagged region to refine.</p>
 
+<div id="grab-tag">
 <div id="grabtag-initializer"></div>
-
 <% @references.each do |reference| %>
 <p class="biblio-selector"><%= raw reference %></p>
 <% end %>
+</div>
 
 <%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
   <%= text_area_tag "grabtag-output", "", :placeholder => "Select parts of above citation to help improve parsing accuracy", :size => "40x5" %>
@@ -16,22 +18,54 @@
   </div>
 <% end %>
 
-<h2>Configuration</h2>
-<xmp>
+<h2>Configuration for Above</h2>
+<xmp><html>
+<head>
 <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="jquery.grabtag.js"></script>
 <script type="text/javascript">
 $(function(){
-  $('.biblio-selector').grabtag({
-    'config_element' : '#grabtag-initializer'
-    ...more coming soon...
+  $('.selector').grabtag({
+    'config_ele'   : '#grabtag-initializer'
+    'multitag'     : false,
+    'tags'         : {
+      'journal' : ["author", "date", "title", "journal", "volume", "pages", "doi" ],
+      'book'    : ["author", "date", "editor", "institution"]
+    },
+    'active_group' : 'journal',
+    'active_tag'   : 'author',
+    'onActivate'   : function(obj, data) {
+      $('#grabtag-output').val(data.content);
+    },
+    'onTagged'     : function(obj, data) {
+       console.log(data.tag.type + ": " + data.tag.value);
+       $('#grabtag-output').val(data.content);
+    }
   });
 });
 </script>
-
+</head>
 <body>
 <div id="grabtag-initializer"></div>
-<p class="biblio-selector">My reference here that may include HTML.</p>
+<p class="selector">My content here.</p>
 <textarea id="grabtag-output"></textarea>
 </body>
-</xmp>
+</html></xmp>
+
+<h2>Configuration Options</h2>
+<dl>
+  <dt>config_ele</dt><dd>The element where a clickable, control panel will be created for users to choose tags</dd>
+  <dt>multitag</dt><dd>true or false to allow or disallow tagging with the same tag</dd>
+  <dt>tags</dt><dd>A simple collection of tags or a collection of tags in groups. Each tag can also be styled</dd>
+  <dt>active_group</dt><dd>Choose which group of tags to be active, if arranged in groups</dd>
+  <dt>active_tag</dt><dd>Choose which tag to be active</dd>
+  <dt>onActivate</dt><dd>Callback function that executes after the control panel initalized<dd>
+  <dt>beforeTagged</dt><dd>Callback function that executes before a tag is created</dd>
+  <dt>onTagged</dt><dd>Callback function that executes after a tag is created</dd>
+  <dt>onMultitagWarning</dt><dd>Callback function that can override default warning when user attempts to create multiple tags of same type and multitag (above) is set to false</dd>
+  <dt>onOverlapWarning</dt><dd>Callback function that can override default warning when user attempts to expand tag into pre-existing tag</dd>
+</dl>
+
+<h2>Downloads</h2>
+<p>jQuery plug-in: <%= link_to 'jquery.grabtag.js', root_url.to_s << 'assets/jquery.grabtag.js' %></p>
+<p>Stylesheet: <%= link_to 'grabtag.css', root_url.to_s << 'assets/selectors.css' %></p>

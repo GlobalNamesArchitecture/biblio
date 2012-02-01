@@ -2,6 +2,12 @@
 $ ->
  config = {
    multitag : false,
+   tags : {
+      'journal' : ["author", "date", "title", "journal", "volume", "pages", "doi" ],
+      'book'    : ["author", "date", "editor", "institution"],
+   },
+   active_group : 'journal',
+   active_tag   : 'author',
    onActivate : (obj, data) -> 
      $('#grabtag-output').val(data.content)
    onTagged : (obj, data) -> 

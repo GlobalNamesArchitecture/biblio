@@ -3,7 +3,7 @@
  *
  * A tool to highlight and tag parts of text
  * 
- * Version 0.1
+ * Version 0.5
  * January 22, 2012
  *
  * Copyright (c) 2012 David P. Shorthouse
@@ -28,12 +28,23 @@
 
   var eventName       = "mouseup." + gt,
       eventNameResize = "mouseup." + gtr,
-      selectors       = {
-       "journal" : [ "author", "date", "title", "journal", "volume", "pages", "doi" ],
-       "book"    : [ "author", "date", "title", "booktitle", "pages", "edition", "editor", "publisher", "institution", "location", "isbn", "doi" ],
-       "extra"   : [ "note", "container", "retrieved", "tech", "translator", "unknown", "url" ]
-      },
-      all_selectors   = $.unique(selectors.journal.concat(selectors.book).concat(selectors.extra)),
+      sample_styles   =  [
+        { 'background-color' : '#8dd3c7' },
+        { 'background-color' : '#ffa1ff' },
+        { 'background-color' : '#ffffb3' },
+        { 'background-color' : '#79fc72' },
+        { 'background-color' : '#72f3fc' },
+        { 'background-color' : '#7284fc', 'color' : '#fff' },
+        { 'background-color' : '#ffabab' },
+        { 'background-color' : '#d19a41', 'color' : '#fff' },
+        { 'background-color' : '#fb8072' },
+        { 'background-color' : '#948669', 'color' : '#fff' },
+        { 'background-color' : '#fdb562' },
+        { 'background-color' : '#000', 'color' : '#fff' },
+        { 'background-color' : '#bfbada' },
+        { 'background-color' : '#80b1d3' },
+        { 'background-color' : '#c8c8c8' }
+      ],
 
   get_style = function(obj) {
     return JSON.stringify(obj).replace(/[{}"]/g, "").replace(",", ";");
@@ -41,16 +52,15 @@
 
   convert_markup = function(obj) {
     var snippet = "",
-        result  = $(obj).clone();
+        result  = $(obj).clone(),
+        tag     = "";
 
-    $.each(all_selectors, function() {
-      var tag = this;
-      snippet = $('[data-' + gt + '=' + tag + ']', result);
-      snippet.each(function() {
-        $(this).prev(".grabtag-resizer").remove().end()
-               .next(".grabtag-resizer").remove().end()
-               .wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
-      });
+    snippet = $('[data-' + gt + ']', result);
+    snippet.each(function() {
+      tag = $(this).attr("data-" + gt);
+      $(this).prev(".grabtag-resizer").remove().end()
+             .next(".grabtag-resizer").remove().end()
+             .wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
     });
     return result.html();
   },
@@ -85,12 +95,11 @@
     return sel;
   },
 
-  build_selector = function(title, innerContent, settings, selector) {
+  build_selector = function(title, innerContent, style, selector) {
     var classes = gt + '-selector ' + gt + '-tag',
-        data    = 'data-' + gt +'=' + title,
         output  = "";
     innerContent = innerContent || "";
-    output = '<span class="' + classes + '" style="' + get_style(settings.tags[title] || settings.base_styles[title]) + '" title="' + title + '"' + data + '>' + innerContent + '</span>';
+    output = '<span class="' + classes + '" style="' + style + '" title="' + title + '" data-' + gt + '="' + title + '">' + innerContent + '</span>';
     if(selector) { output = '<li>' + output + '</li>'; }
     return output;
   },
@@ -182,17 +191,12 @@
           clear_selections();
           sel.addRange(new_range);
           contents = new_range.extractContents().textContent;
-          newNode = $(build_selector(tag_type, contents, settings));
-
-          if(intersects && self.hasClass(gt + "-resizer-e")) {
-            $(tag).after(residual.toString());
-          }
-          if(intersects && self.hasClass(gt + "-resizer-w")) {
-            $(tag).before(residual.toString());
-          }
+          newNode = $(build_selector(tag_type, contents, $(tag).attr("style")));
+          if(intersects && self.hasClass(gt + "-resizer-e")) { $(tag).after(residual.toString()); }
+          if(intersects && self.hasClass(gt + "-resizer-w")) { $(tag).before(residual.toString()); }
           $(tag).before(newNode).remove();
-          obj[0].normalize();
           add_resizers($(this), settings, newNode);
+          obj[0].normalize();
           settings.onTagged.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : convert_markup(this) });
         } catch(e) {
           clear_selections();
@@ -207,31 +211,46 @@
     });
   },
 
-  preloader = function(obj, settings) {
-    $.each(all_selectors, function() {
-      var tag = this, snippet, style;
-      snippet = $('[data-' + gt + '=' + tag + ']', obj);
-      style = get_style(settings.tags[tag] || settings.base_styles[tag]);
+  preloader = function(obj, selectors, settings) {
+    var tags = {}, snippet = "";
+
+    $.each(selectors, function(index0, value0) {
+      if($.isArray(value0)) {
+        $.each(value0, function(index1, value1) {
+          $.each(value1, function(index2, value2) {
+            tags[index2] = value2;
+          });
+        });
+      } else {
+        tags[index0] = value0;
+      }
+    });
+
+    $.each(tags, function(index, value) {
+      snippet = $('[data-' + gt + '=' + index + ']', obj);
       if(snippet.length > 1 && !settings.multitag) {
-        $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
+        $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', get_style(value));
         add_resizers($(obj), settings, $(snippet[0]));
       } else {
         snippet.each(function() {
-          $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', tag).attr('style', style);
+          $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', get_style(value));
           add_resizers($(obj), settings, $(this));
         });
       }
     });
+
     settings.onActivate.call(this, obj, { "content" : convert_markup(obj) });
   },
 
   tag_selected = function(e) {
-    var sel   = get_selections(),
-        range = sel.getRangeAt(0),
-        newNode, intersects = false,
-        settings = e.data.settings;
+    var sel        = get_selections(),
+        range      = sel.getRangeAt(0),
+        newNode    = "",
+        intersects = false,
+        settings   = e.data.settings,
+        selected   = '.' + gt + '-tag[data-' + gt + '=' + settings.active_tag + ']';
 
-    if(!settings.multitag && $('.' + gt + '-tag[data-' + gt + '=' + settings.active_tag + ']', $(this)).length === 1) {
+    if(!settings.multitag && $(selected, $(this)).length === 1) {
       clear_selections();
       settings.onMultitagWarning.call();
       return;
@@ -239,7 +258,7 @@
 
     if($.trim(sel) !== "") {
       settings.beforeTagged.call(this, $(this));
-      newNode = $(build_selector(settings.active_tag, false, settings));
+      newNode = $(build_selector(settings.active_tag, settings.active_tag, $(selected).attr("style"), false));
       try {
         if(range_intersects_tags(range, $(this))) {
           clear_selections();
@@ -249,7 +268,6 @@
           clear_selections();
           range.surroundContents(newNode[0]);
           add_resizers($(this), settings, newNode);
-//TODO: get offset for tagged item and add to tag object
           settings.onTagged.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString() }, "content" : convert_markup(this) });
         }
       } catch(e) {
@@ -261,26 +279,72 @@
 
   },
 
+//TODO: counts get a little wonky when there are groups
   build_initializer = function(obj, settings) {
-    var content, button, selector;
+    var counter   = 0,
+        content   = "",
+        button    = "",
+        selectors = {},
+        selector  = "",
+        obj       = {},
+        selected  = "";
 
-    content  = '<div class="' + gt + '-selectors-buttons"><ul></ul></div>';
+    $.each(settings.tags, function(index0, value0) {
+      if(typeof value0 === "object") {
+        $.each(value0, function(index1, value1) {
+          if(isNaN(index1)) {
+            selectors[index1] = value1;
+          } else {
+            selectors[index0] = selectors[index0] || [];
+            if(typeof value1 === "object") {
+              $.each(value1, function(index2, value2) {
+                obj = {};
+                obj[index2] = value2;
+                selectors[index0].push(obj);
+              });
+            } else {
+              obj = {};
+              obj[value1] = (sample_styles[counter]) ? sample_styles[counter] : sample_styles[14];
+              selectors[index0].push(obj);
+            }
+          }
+          counter += 1;
+        });
+      } else {
+        selectors[value0] = (sample_styles[counter]) ? sample_styles[counter] : sample_styles[14];
+        counter += 1;
+      }
+    });
 
     $.each(selectors, function(index, value) {
-      value = null;
-      content += '<div class="' + gt + '-selectors-type ' + index + '"><ul></ul></div>';
+      if($.isArray(value)) {
+        content = '<div class="' + gt + '-selectors-buttons"><ul></ul></div>';
+        return;
+      }
     });
 
     $(settings.config_ele).append(content);
 
-    $.each(selectors, function(index, value) {
-      button = '<li><a href="#" class="' + gt + '-selectors-button ' + index + '">' + index + '</a></li>';
-      $('.' + gt + '-selectors-buttons ul').append(button);
-      $.each(value, function() {
-        selector = build_selector(this, this, settings, true);
-        $('.' + gt + '-selectors-type.' + index + ' ul').append(selector);
+    if($('.' + gt + '-selectors-buttons', settings.config_ele).length > 0) {
+      $.each(selectors, function(index0, value0) {
+        $(settings.config_ele).append('<div class="' + gt + '-selectors-type ' + index0 + '"><ul></ul></div>');
+        selected = (index0 === settings.active_group) ?  " selected" : "";
+        button = '<li><a href="#" class="' + gt + '-selectors-button ' + index0 + selected + '">' + index0 + '</a></li>';
+        $('.' + gt + '-selectors-buttons ul').append(button);
+        $.each(value0, function() {
+          $.each(this, function(index1, value1) {
+            selector = build_selector(index1, index1, get_style(value1), true);
+            $('.' + gt + '-selectors-type.' + index0 + ' ul').append(selector);
+          });
+        });
       });
-    });
+    } else {
+      $(settings.config_ele).append('<div class="' + gt + '-selectors-type"><ul></ul></div>');
+      $.each(selectors, function(index, value) {
+        selector = build_selector(index, index, get_style(value), true);
+        $('.' + gt + '-selectors-type ul').append(selector).parent().show();
+      });
+    }
 
     $(settings.config_ele).find('.' + gt + '-selectors-button').each(function() {
       $(this).bind('click', function(e) {
@@ -305,6 +369,8 @@
           $(obj)[gt]("destroy")[gt](settings);
         });
       });
+
+    return selectors;
   },
 
   methods = {
@@ -313,8 +379,7 @@
       return this.each(function() {
         var self = $(this), settings = $.extend({}, $.fn[gt].defaults, options);
         self.bind(eventName, { 'settings' : settings }, tag_selected);
-        if(settings.config_activate) { build_initializer(self, settings); }
-        preloader(self, settings);
+        if(settings.config_activate) { preloader(self, build_initializer(self, settings), settings); }
       });
     },
     remove_all : function() {
@@ -342,36 +407,12 @@
   };
 
   $.fn[gt].defaults = {
-    'active_group' : 'journal',
-    'active_tag'   : 'author',
-    'multitag'      : true,
-    'tags'          : {},
-//TODO: permit user-supplied tags
-    'base_styles'  : {
-      'author'      : { 'background-color' : '#8dd3c7' },
-      'booktitle'   : { 'background-color' : '#ffa1ff' },
-      'container'   : { 'background-color' : '#c8c8c8' },
-      'date'        : { 'background-color' : '#ffffb3' },
-      'doi'         : { 'background-color' : '#79fc72' },
-      'edition'     : { 'background-color' : '#72f3fc' },
-      'editor'      : { 'background-color' : '#7284fc', 'color' : 'white' },
-      'institution' : { 'background-color' : '#ffabab' },
-      'isbn'        : { 'background-color' : '#d19a41', 'color' : 'white' },
-      'journal'     : { 'background-color' : '#fb8072' },
-      'location'    : { 'background-color' : '#948669', 'color' : 'white' },
-      'note'        : { 'background-color' : '#c8c8c8' },
-      'pages'       : { 'background-color' : '#fdb562' },
-      'publisher'   : { 'background-color' : '#000', 'color' : 'white' },
-      'retrieved'   : { 'background-color' : '#c8c8c8' },
-      'tech'        : { 'background-color' : '#c8c8c8' },
-      'title'       : { 'background-color' : '#bfbada' },
-      'translator'  : { 'background-color' : '#c8c8c8' },
-      'unknown'     : { 'background-color' : '#c8c8c8' },
-      'url'         : { 'background-color' : '#c8c8c8' },
-      'volume'      : { 'background-color' : '#80b1d3' }
-    },
-    'config_ele'      : '#' + gt + '-initializer',
-    'config_activate' : true,
+    'config_ele'        : '#' + gt + '-initializer',
+    'config_activate'   : true,
+    'multitag'          : true,
+    'tags'              : {},
+    'active_group'      : '',
+    'active_tag'        : '',
 
     'onActivate'        : function(obj, data) { obj = null; data = null; },
     'beforeTagged'      : function(obj) { obj = null; },
