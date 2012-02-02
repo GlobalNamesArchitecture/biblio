@@ -101,18 +101,19 @@ $(function(){
 </xmp>
 
 <h2><a name="config">Configuration Options</a></h2>
-<p>Pre-selections can be enabled as shown in Example 1 for the <em>volume</em> tag. To do so, the region should be marked-up as &lt;span data-grabtag="volume"&gt;242(1)&lt;/span&gt;</p>
+<h3>Pre-selections</h3>
+<p>Enabled as shown in <a href="#example1">Example 1</a> for the <em>volume</em> tag. The region should be marked-up as ...&lt;span data-grabtag="volume"&gt;242(1)&lt;/span&gt;...</p>
 <dl>
   <dt>config_ele</dt><dd>The element where a control panel with clickable tag types will be created</dd>
   <dt>multitag</dt><dd>true or false for tagging with the same tag</dd>
   <dt>tags</dt><dd>An array of tags such as ["this", "that", "other"] or a hash of tags in grouped arrays such as { "group1" : ["this", "that", "other"], "group2" : ["here", "there", "nowhere"] }. Each tag can also be optionally styled as shown in example 1 above, otherwise a sample of 15 included colors will be drawn.</dd>
   <dt>active_group</dt><dd>Group of tags to be made active on load (if tags are arranged in groups)</dd>
   <dt>active_tag</dt><dd>Tag to be made active on load</dd>
-  <dt>onActivate</dt><dd>Callback function that executes after the control panel loads; params are (obj, data), where obj = jQuery object being extended and data = { 'content' : 'marked up content' }<dd>
-  <dt>beforeTagged</dt><dd>Callback function that executes before a tag is created; param is (obj), where obj = jQuery object being extended</dd>
-  <dt>onTagged</dt><dd>Callback function that executes after a tag is created or expanded/contracted; params are (obj, data), where obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
-  <dt>onMultitagWarning</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type and multitag is set to false</dd>
-  <dt>onOverlapWarning</dt><dd>Callback function that overrides default warning when user attempts to expand tag into another tag</dd>
+  <dt>onActivate(obj, data)</dt><dd>Callback function that executes after the control panel loads; obj = jQuery object being extended and data = { 'content' : 'marked up content' }<dd>
+  <dt>beforeTagged(obj)</dt><dd>Callback function that executes before a tag is created; obj = jQuery object being extended</dd>
+  <dt>onTagged(obj, data)</dt><dd>Callback function that executes after a tag is created or expanded/contracted; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
+  <dt>onMultitagWarning()</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type while <strong>multitag</strong> set to false</dd>
+  <dt>onOverlapWarning()</dt><dd>Callback function that overrides default warning when user expands tag into another tag or when user attempts to create tag within another tag</dd>
 </dl>
 
 <h2><a name="limitations">Limitations</a></h2>
