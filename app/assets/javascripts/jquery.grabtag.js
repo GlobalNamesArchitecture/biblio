@@ -336,7 +336,7 @@
       $(settings.config_ele).append('<div class="' + gt + '-selectors-type"><ul></ul></div>');
       $.each(selectors, function(index, value) {
         selector = build_selector(index, index, get_style(value), true);
-        $('.' + gt + '-selectors-type ul').append(selector).parent().show();
+        $('.' + gt + '-selectors-type ul', settings.config_ele).append(selector).parent().show();
       });
     }
 
@@ -356,7 +356,7 @@
         $(this).click(function(e) {
           var self = $(this);
           e.preventDefault();
-          $('.' + gt + '-selector', '.' + gt + '-selectors-type').removeClass("selected");
+          $('.' + gt + '-selectors-type', settings.config_ele).find('.' + gt + '-selector').removeClass("selected");
           self.addClass("selected");
           settings.config_activate = false;
           settings.active_tag = self.text();
