@@ -7,7 +7,7 @@
 
 <h2>Example - User Input</h2>
 <%= form_tag("/citations", :method => "POST") do %>
-  <%= text_field_tag :citations, nil, :placeholder => "Paste full bibliographic citation (or DOI) here and press enter...", :class => 'biblio-input' %>
+  <%= text_field_tag :citations, nil, :class => 'biblio-input' %>
 <% end %>
 <h3>Examples for copy/paste</h3>
 <div class="examples">Solodovnikov, A. 2012. Rove beetle subtribes Quediina, Amblyopinina and Tanygnathinina: systematic changes affecting Central European fauna (Coleoptera, Staphylinidae, Staphylinini). <em>ZooKeys</em> <strong>162</strong>: 25-42.</div>

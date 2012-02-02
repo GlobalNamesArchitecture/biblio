@@ -11,7 +11,7 @@
 </div>
 
 <%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
-  <%= text_area_tag "grabtag-output", "", :placeholder => "Select parts of above citation to help improve parsing accuracy", :size => "40x5" %>
+  <%= text_area_tag "grabtag-output", "", :size => "40x5" %>
   <div>
     <!--<%= submit_tag "Submit", :class => "form-button submit-button" %>-->
     <%= submit_tag "Clear All", :class => "form-button clear-button", :type => "reset" %>
