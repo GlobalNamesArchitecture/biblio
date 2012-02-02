@@ -44,10 +44,12 @@ $ ->
    $(".biblio-selector").grabtag("remove_all")
 
   config = {
-    tags       : ["color", "shape"],
-    active_tag : 'color',
-    config_ele : '#freeform-config'
-    onTag      : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ':' + data.tag.value);
+    tags        : ["color", "shape"],
+    active_tag  : 'color',
+    config_ele  : '#freeform-config'
+    onTag       : (obj, data) ->
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value)
+    onTagRemove : (obj, data) ->
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (removed)')
   }
   $(".freeform").grabtag(config)
