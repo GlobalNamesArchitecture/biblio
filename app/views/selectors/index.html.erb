@@ -1,6 +1,13 @@
 <h1>GrabTag jQuery Plugin</h1>
+<p id="navigation">
+  <a href="#example1">Example 1</a>
+  <a href="#example2">Example 2</a>
+  <a href="#config">Configuration</a>
+  <a href="#limitations">Limitations</a>
+  <a href="#download">Download</a>
+</p>
 
-<h2>Example 1: Marking-Up Bibliographic Citations</h2>
+<h2><a name="example1">Example 1</a>: Marking-Up Bibliographic Citations</h2>
 <p>Click a tag, select text within the citation, then expand/contract a tagged region to refine.</p>
 
 <div id="grab-tag">
@@ -72,7 +79,7 @@ $(function(){
 </body>
 </html></xmp>
 
-<h2>Example 2: Marking-up Free-form Text</h2>
+<h2><a name="example2">Example 2</a>: Marking-up Free-form Text</h2>
 <div id="freeform-config"></div>
 <p class="freeform">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sodales nunc pharetra orci venenatis laoreet semper enim molestie. Fusce aliquet sagittis lobortis. Vivamus in nisi sem, vitae accumsan massa. Donec bibendum, ipsum a fringilla placerat, mi mi tincidunt mauris, sed dapibus diam odio in dui. Curabitur in tincidunt ipsum. Pellentesque posuere leo libero. Maecenas sit amet urna et magna varius tincidunt. Pellentesque urna ante, ornare vitae suscipit eu, tempus eu elit. Fusce id turpis quis massa lobortis sodales. Integer in nulla lectus, in tincidunt elit. Sed tempus malesuada sem ac faucibus. Aenean eleifend consectetur nisl ut consectetur. Nulla facilisi. Cras ullamcorper tincidunt convallis. Suspendisse varius vestibulum tortor eget egestas.</p>
 <%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
@@ -93,7 +100,7 @@ $(function(){
 </script>
 </xmp>
 
-<h2>Configuration Options</h2>
+<h2><a name="config">Configuration Options</a></h2>
 <p>Pre-selections can be enabled as shown in Example 1 for the <em>volume</em> tag. To do so, the region should be marked-up as &lt;span data-grabtag="volume"&gt;242(1)&lt;/span&gt;</p>
 <dl>
   <dt>config_ele</dt><dd>The element where a control panel with clickable tag types will be created</dd>
@@ -108,9 +115,9 @@ $(function(){
   <dt>onOverlapWarning</dt><dd>Callback function that overrides default warning when user attempts to expand tag into another tag</dd>
 </dl>
 
-<h2>Limitations</h2>
+<h2><a name="limitations">Limitations</a></h2>
 <p>Internet Explorer &lt; 9 will not (currently) work because it does not support the range selection method getRangeAt(0).</p>
 
-<h2>Downloads</h2>
+<h2><a name="download">Downloads</a></h2>
 <p>jQuery plug-in: <%= link_to 'jquery.grabtag.js', root_url.to_s << 'assets/jquery.grabtag.js' %></p>
 <p>Stylesheet: <%= link_to 'grabtag.css', root_url.to_s << 'assets/selectors.css' %></p>

@@ -1,5 +1,5 @@
 /**
- * jQuery Grab Tag
+ * jQuery GrabTag
  *
  * A tool to highlight and tag parts of text
  * 
