@@ -34,7 +34,7 @@
       <td><%= record["container-title"] unless record["container-title"].nil? %></td>
       <td><%= record["volume"] unless record["volume"].nil? %></td>
       <td><%= record["page"] unless record["page"].nil? %></td>
-      <% if params["sources"].include? "crossref" %>
+      <% if @sources.include? "crossref" %>
       <% doi = record["identifiers"].select{ |k| k[:type] == "doi" }[0][:id] rescue nil %>
       <td>
         <% if !doi.nil? %>
@@ -42,7 +42,7 @@
         <% end %>
       </td>
       <% end %>
-      <% if params["sources"].include? "bhl" %>
+      <% if @sources.include? "bhl" %>
       <% bhl = record["identifiers"].select{ |k| k[:type] == "bhl" }[0][:id] rescue nil %>
       <td>
         <% if !bhl.nil? %>
@@ -50,7 +50,7 @@
         <% end %>
       </td>
       <% end %>
-      <% if params["sources"].include? "biostor" %>
+      <% if @sources.include? "biostor" %>
       <% biostor = record["identifiers"].select{ |k| k[:type] == "biostor" }[0][:id] rescue nil %>
       <td>
         <% if !biostor.nil? %>

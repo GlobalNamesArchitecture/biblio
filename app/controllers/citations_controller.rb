@@ -9,7 +9,7 @@ class CitationsController < ApplicationController
     valid_styles  = ["ama", "apa", "asa"]
 
     @citation = params[:q] || ""
-    @sources  = params[:sources] || valid_sources
+    @sources  = params[:sources] || {}
     @style    = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
 
     @sources.each do |key, source|
@@ -26,7 +26,7 @@ class CitationsController < ApplicationController
   def create
     valid_sources = ["crossref", "bhl", "biostor"]
 
-    @sources = params[:sources] || valid_sources
+    @sources = params[:sources] || {}
 
     @sources.each do |key, source|
       if !valid_sources.include?(key)
@@ -93,9 +93,9 @@ class CitationsController < ApplicationController
     citations = params[:citations].split("\r\n").delete_if { |r| r == "" }
     citations.each do |citation|
       parsed = parse(citation)
+      parsed["status"] = get_status(parsed)
       parsed["identifiers"] = make_requests(parsed).flatten unless parsed["status"] == "failed"
       parsed["verbatim"] = citation
-      parsed["status"] = get_status(parsed)
       records << parsed
     end
     records

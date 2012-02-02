@@ -1,11 +1,17 @@
 <h1>Bibliographic Citation Parsing &amp; Discovery jQuery Plugin</h1>
+<p id="navigation">
+  <a href="#example1">Example 1</a>
+  <a href="#example2">Example 2</a>
+  <a href="#config">Configuration</a>
+  <a href="#download">Download</a>
+</p>
 
-<h2>Example - Pre-compiled List</h2>
+<h2><a name="example1">Example 1</a>: Pre-compiled List</h2>
 <% @references.each do |reference| %>
 <p class="biblio-item"><%= reference %></p>
 <% end %>
 
-<h2>Example - User Input</h2>
+<h2><a name="example2">Example 2</a>: User Input</h2>
 <%= form_tag("/citations", :method => "POST") do %>
   <%= text_field_tag :citations, nil, :class => 'biblio-input' %>
 <% end %>
@@ -13,7 +19,7 @@
 <div class="examples">Solodovnikov, A. 2012. Rove beetle subtribes Quediina, Amblyopinina and Tanygnathinina: systematic changes affecting Central European fauna (Coleoptera, Staphylinidae, Staphylinini). <em>ZooKeys</em> <strong>162</strong>: 25-42.</div>
 <div class="examples">10.3897/zookeys.166.1802</div>
 
-<h2>Configuration</h2>
+<h2><a name="config">Configuration</a></h2>
 <xmp>
 <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="jquery.refparser.js"></script>
@@ -110,10 +116,10 @@ $(function(){
 </body>
 </xmp>
 
-<h2>Download</h2>
+<h2><a name="download">Download</a></h2>
 <p>jQuery plug-in: <%= link_to 'jquery.refparser.js', root_url.to_s << 'assets/jquery.refparser.js' %></p>
 
-<h2>Icons</h2>
+<h3>Icons</h3>
 <%= image_tag("magnifier.png") %>
 <%= image_tag("ajax-loader.gif") %>
 <%= image_tag("world_go.png") %>
