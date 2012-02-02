@@ -28,9 +28,9 @@ $ ->
    },
    active_group : 'journal',
    active_tag   : 'author',
-   onActivate : (obj, data) -> 
+   onActivate : (obj, data) ->
      $('#grabtag-output').val(data.content)
-   onTagged : (obj, data) -> 
+   onTagged : (obj, data) ->
      console.log(data.tag.type + ": " + data.tag.value)
      $('#grabtag-output').val(data.content)
  }
@@ -42,6 +42,8 @@ $ ->
   config = {
     tags       : ["color", "shape"],
     active_tag : 'color',
-    config_ele : '#freeform-config' 
+    config_ele : '#freeform-config'
+    onTagged   : (obj, data) ->
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value);
   }
   $(".freeform").grabtag(config)

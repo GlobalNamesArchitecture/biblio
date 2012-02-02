@@ -75,6 +75,9 @@ $(function(){
 <h2>Example 2: Marking-up Free-form Text</h2>
 <div id="freeform-config"></div>
 <p class="freeform">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sodales nunc pharetra orci venenatis laoreet semper enim molestie. Fusce aliquet sagittis lobortis. Vivamus in nisi sem, vitae accumsan massa. Donec bibendum, ipsum a fringilla placerat, mi mi tincidunt mauris, sed dapibus diam odio in dui. Curabitur in tincidunt ipsum. Pellentesque posuere leo libero. Maecenas sit amet urna et magna varius tincidunt. Pellentesque urna ante, ornare vitae suscipit eu, tempus eu elit. Fusce id turpis quis massa lobortis sodales. Integer in nulla lectus, in tincidunt elit. Sed tempus malesuada sem ac faucibus. Aenean eleifend consectetur nisl ut consectetur. Nulla facilisi. Cras ullamcorper tincidunt convallis. Suspendisse varius vestibulum tortor eget egestas.</p>
+<%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
+  <%= text_area_tag "freeform-output", "", :size => "40x2" %>
+<% end %>
 
 <h3>Example 2 Configuration</h3>
 <xmp>
