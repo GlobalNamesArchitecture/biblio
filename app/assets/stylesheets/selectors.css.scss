@@ -2,7 +2,9 @@ h3{font-size:1.1em;}
 #grab-tag{border:1px solid #B0ADA3;border-radius: 6px 6px 6px 6px;width:75%;padding:1em;margin-bottom:1em;}
 .biblio-selector{background-color:#FFF;line-height: 1.8em;font-family: Droid Serif, Georgia, serif;}
 
-/* grabtag buttons */
+/*
+* grabtag buttons or groups of tags in control panel
+*/
 .grabtag-selectors-buttons{margin-bottom:1em;}
 .grabtag-selectors-buttons ul{list-style-type:none;margin:0px;padding:0px;}
 .grabtag-selectors-buttons li{display:inline;margin:0.2em 0.5em 0 0;}
@@ -28,7 +30,9 @@ h3{font-size:1.1em;}
 }
 .grabtag-selectors-buttons a.selected:hover{box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);}
 
-/* grabtag type */
+/*
+* grabtag divs for groups of tags in control panel
+*/
 .grabtag-selectors-type{display:none;margin:0.5em 0;}
 .grabtag-selectors-type ul{list-style-type:none;margin:0px;padding:0px;}
 .grabtag-selectors-type li{display:inline;margin:0.2em 0.5em 0 0;}
@@ -36,7 +40,9 @@ h3{font-size:1.1em;}
 .grabtag-selectors-type .grabtag-selector:hover{box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);}
 .grabtag-selectors-type .selected{box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9) inset;}
 
-/* grabtag selectors */
+/*
+* grabtag tag buttons in control panel
+*/
 .grabtag-selector{
   font-family: Droid Serif, Georgia, serif;
   padding:0.15em 0.35em;
@@ -47,10 +53,14 @@ h3{font-size:1.1em;}
   box-shadow: -1px -1px 0 rgba(0, 0, 0, 0.1) inset;
 }
 
-/* grabtag tags */
+/*
+* grabtag tags
+*/
 .grabtag-tag{margin:0px;padding:0.15em 0;cursor:auto;}
 
-/* grabtag resizers */
+/*
+* grabtag resizers
+*/
 .grabtag-resizer{border-left:5px solid transparent;}
 .grabtag-resizer-e{cursor:e-resize;margin-left:-0.15em;}
 .grabtag-resizer-w{cursor:w-resize;margin-right:-0.15em;}
