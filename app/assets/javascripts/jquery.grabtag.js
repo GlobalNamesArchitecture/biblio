@@ -411,8 +411,8 @@
     'onActivate'        : function(obj, data) { obj = null; data = null; },
     'beforeTagged'      : function(obj) { obj = null; },
     'onTagged'          : function(obj, data) { obj = null; data = null; },
-    'onMultitagWarning' : function() { alert('You already used that tag. Please choose another.'); },
-    'onOverlapWarning'  : function() { alert('Your selection overlapped with a previously created tag. Please try again.'); }
+    'onMultitagWarning' : function() { alert('This tag has already been used'); },
+    'onOverlapWarning'  : function() { alert('This selection overlaps a previous selection'); }
   };
 
 }(jQuery, 'grabtag', 'grabtag-resize'));
