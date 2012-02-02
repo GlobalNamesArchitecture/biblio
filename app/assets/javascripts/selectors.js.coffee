@@ -38,3 +38,10 @@ $ ->
 
  $(".clear-button").bind 'click', (event) =>
    $(".biblio-selector").grabtag("remove_all")
+
+  config = {
+    tags       : ["color", "shape"],
+    active_tag : 'color',
+    config_ele : '#freeform-config' 
+  }
+  $(".freeform").grabtag(config)
