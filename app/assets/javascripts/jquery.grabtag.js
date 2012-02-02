@@ -16,16 +16,6 @@
 
   "use strict";
 
-  $.unique = function(arr) {
-    if (!!arr[0].nodeType) {
-      return _old.apply(this,arguments);
-    } else {
-      return $.grep(arr,function(v,k) {
-        return $.inArray(v,arr) === k;
-      });
-    }
-  };
-
   var eventName       = "mouseup." + gt,
       eventNameResize = "mouseup." + gtr,
       sample_styles   =  [
@@ -98,6 +88,7 @@
   build_selector = function(title, innerContent, style, selector) {
     var classes = gt + '-selector ' + gt + '-tag',
         output  = "";
+
     innerContent = innerContent || "";
     output = '<span class="' + classes + '" style="' + style + '" title="' + title + '" data-' + gt + '="' + title + '">' + innerContent + '</span>';
     if(selector) { output = '<li>' + output + '</li>'; }
@@ -106,6 +97,7 @@
 
   range_intersects = function(range, node) {
     var nodeRange = document.createRange();
+
     try {
       nodeRange.selectNode(node);
     } catch(e) {
@@ -118,6 +110,7 @@
 
   range_intersects_tags = function(range, obj) {
     var intersects = false;
+
     $('.' + gt + '-tag', $(obj)).each(function() {
       if(range_intersects(range, this)) {
         intersects = true;
@@ -129,6 +122,7 @@
 
   range_intersects_tag = function(range, obj, tag) {
     var intersects = false;
+
     $('.' + gt + '-tag', $(obj)).not($(tag)).each(function() {
       if(range_intersects(range, this)) {
         intersects = true;

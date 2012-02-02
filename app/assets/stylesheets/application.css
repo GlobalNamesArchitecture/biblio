@@ -23,3 +23,6 @@ h2{
   padding:1em;
   width:75%;
 }
+
+dt{font-weight:bold;margin-top:1em;}
+dd{margin-left:1em;}

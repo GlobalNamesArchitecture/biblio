@@ -29,8 +29,28 @@ $(function(){
     'config_ele'   : '#grabtag-initializer'
     'multitag'     : false,
     'tags'         : {
-      'journal' : ["author", "date", "title", "journal", "volume", "pages", "doi" ],
-      'book'    : ["author", "date", "editor", "institution"]
+       "journal" : [
+         { "author"  : { 'background-color' : '#8dd3c7' }},
+         { "date"    : { 'background-color' : '#ffa1ff' }},
+         { "title"   : { 'background-color' : '#ffffb3' }},
+         { "journal" : { 'background-color' : '#79fc72' }},
+         { "volume"  : { 'background-color' : '#72f3fc' }},
+         { "pages"   : { 'background-color' : '#7284fc', 'color' : '#fff' }},
+         { "doi"     : { 'background-color' : '#ffabab' }} ],
+       "book" : [
+         { "author"      : { 'background-color' : '#8dd3c7' }},
+         { "date"        : { 'background-color' : '#ffa1ff' }},
+         { "title"       : { 'background-color' : '#ffffb3' }},
+         { "booktitle"   : { 'background-color' : '#d19a41', 'color' : '#fff' }},
+         { "pages"       : { 'background-color' : '#7284fc', 'color' : '#fff' }},
+         { "edition"     : { 'background-color' : '#fb8072' }},
+         { "editor"      : { 'background-color' : '#948669', 'color' : '#fff' }},
+         { "publisher"   : { 'background-color' : '#fdb562' }},
+         { "institution" : { 'background-color' : '#000', 'color' : '#fff' }},
+         { "location"    : { 'background-color' : '#bfbada' }},
+         { "isbn"        : { 'background-color' : '#80b1d3' }},
+         { "doi"         : { 'background-color' : '#ffabab' }} ],
+       "extra" : [ "note", "container", "retrieved", "tech", "translator", "unknown", "url" ]
     },
     'active_group' : 'journal',
     'active_tag'   : 'author',
@@ -56,15 +76,18 @@ $(function(){
 <dl>
   <dt>config_ele</dt><dd>The element where a clickable, control panel will be created for users to choose tags</dd>
   <dt>multitag</dt><dd>true or false to allow or disallow tagging with the same tag</dd>
-  <dt>tags</dt><dd>A simple collection of tags or a collection of tags in groups. Each tag can also be styled</dd>
-  <dt>active_group</dt><dd>Choose which group of tags to be active, if arranged in groups</dd>
-  <dt>active_tag</dt><dd>Choose which tag to be active</dd>
-  <dt>onActivate</dt><dd>Callback function that executes after the control panel initalized<dd>
-  <dt>beforeTagged</dt><dd>Callback function that executes before a tag is created</dd>
-  <dt>onTagged</dt><dd>Callback function that executes after a tag is created</dd>
+  <dt>tags</dt><dd>A simple collection of tags such as ["this", "that", "other"] or a collection of tags in groups such as { "group1" : ["this", "that", "other"], "group2" : ["here", "there", "nowhere"] }. Each tag can also be optionally styled as shown in the example above, otherwise a sample of 15 included colors will be used.</dd>
+  <dt>active_group</dt><dd>Group of tags to be made active on load, if arranged in groups</dd>
+  <dt>active_tag</dt><dd>Tag to be made active on load</dd>
+  <dt>onActivate</dt><dd>Callback function that executes after the control panel initialized; params are (obj, data), the former is the jQuery object being extended and the latter is one object { 'content' : 'marked up content' }<dd>
+  <dt>beforeTagged</dt><dd>Callback function that executes before a tag is created; param is (obj), the jQuery object being extended</dd>
+  <dt>onTagged</dt><dd>Callback function that executes after a tag is created or expanded/contracted; params are (obj, data), the former is the jQuery object being extended and the latter is an object containing { 'tag' : { 'type' : 'author', 'value' : 'MACDONALD'}, 'content' : 'marked up content' }</dd>
   <dt>onMultitagWarning</dt><dd>Callback function that can override default warning when user attempts to create multiple tags of same type and multitag (above) is set to false</dd>
   <dt>onOverlapWarning</dt><dd>Callback function that can override default warning when user attempts to expand tag into pre-existing tag</dd>
 </dl>
+
+<h2>Limitations</h2>
+<p>Internet Explorer &lt;9 will not (currently) work because it does not support the range selection method getRangeAt(0).</p>
 
 <h2>Downloads</h2>
 <p>jQuery plug-in: <%= link_to 'jquery.grabtag.js', root_url.to_s << 'assets/jquery.grabtag.js' %></p>
