@@ -85,7 +85,10 @@ $(function(){
   var config = {
     tags       : ["color", "shape"],
     active_tag : 'color',
-    config_ele : '#freeform-config' 
+    config_ele : '#freeform-config',
+    onTagged   : function(obj, data) {
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value);
+    }
   };
   $(".freeform").grabtag(config);
 </script>
@@ -107,7 +110,7 @@ $(function(){
 </dl>
 
 <h2>Limitations</h2>
-<p>Internet Explorer &lt;9 will not (currently) work because it does not support the range selection method getRangeAt(0).</p>
+<p>Internet Explorer &lt; 9 will not (currently) work because it does not support the range selection method getRangeAt(0).</p>
 
 <h2>Downloads</h2>
 <p>jQuery plug-in: <%= link_to 'jquery.grabtag.js', root_url.to_s << 'assets/jquery.grabtag.js' %></p>
