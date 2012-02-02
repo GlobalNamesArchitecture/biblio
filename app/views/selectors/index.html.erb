@@ -32,7 +32,7 @@
 <script type="text/javascript" src="jquery.grabtag.js"></script>
 <script type="text/javascript">
 $(function(){
-  $('.selector').grabtag({
+  $('.biblio-selector').grabtag({
     'config_ele'   : '#grabtag-initializer'
     'multitag'     : false,
     'tags'         : {
@@ -74,7 +74,8 @@ $(function(){
 </head>
 <body>
 <div id="grabtag-initializer"></div>
-<p class="selector">My content here.</p>
+<p class="biblio-selector">Buddle, C.M. and D.P. Shorthouse. (2008). Effects of experimental harvesting on spider (Araneae) assemblages 
+in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volume">140(4)</span>: 437-452, 10.4039/n07-LS01</p>
 <textarea id="grabtag-output"></textarea>
 </body>
 </html></xmp>
@@ -98,7 +99,9 @@ $(function(){
   };
   $(".freeform").grabtag(config);
 </script>
-</xmp>
+
+<div id="freeform-config"></div>
+<p class="freeform">Lorem ipsum...</p></xmp>
 
 <h2><a name="config">Configuration Options</a></h2>
 <h3>Pre-selections</h3>
