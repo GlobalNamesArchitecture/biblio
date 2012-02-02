@@ -1,3 +1,4 @@
+//= require jquery.contextMenu
 //= require jquery.grabtag
 $ ->
  config = {
@@ -30,7 +31,10 @@ $ ->
    active_tag   : 'author',
    onActivate : (obj, data) ->
      $('#grabtag-output').val(data.content)
-   onTagged : (obj, data) ->
+   onTag : (obj, data) ->
+     console.log(data.tag.type + ": " + data.tag.value)
+     $('#grabtag-output').val(data.content)
+   onTagRemove : (obj, data) ->
      console.log(data.tag.type + ": " + data.tag.value)
      $('#grabtag-output').val(data.content)
  }
@@ -43,7 +47,7 @@ $ ->
     tags       : ["color", "shape"],
     active_tag : 'color',
     config_ele : '#freeform-config'
-    onTagged   : (obj, data) ->
+    onTag      : (obj, data) ->
       $("#freeform-output").val(data.tag.type + ':' + data.tag.value);
   }
   $(".freeform").grabtag(config)

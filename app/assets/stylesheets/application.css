@@ -21,6 +21,8 @@ h2{
   padding:1em;
   width:62%;
 }
-
 dt{font-weight:bold;margin-top:1em;}
 dd{margin-left:1em;}
+xmp{
+  white-space: pre-wrap;
+}

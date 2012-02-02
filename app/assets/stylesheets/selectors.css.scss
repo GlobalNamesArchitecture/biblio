@@ -65,3 +65,15 @@ h3{font-size:1.1em;}
 .grabtag-resizer{border-left:5px solid transparent;}
 .grabtag-resizer-e{cursor:e-resize;margin-left:-0.15em;}
 .grabtag-resizer-w{cursor:w-resize;margin-right:-0.15em;}
+
+/*
+* context menu
+*/
+.context-menu-theme-default {border:2px outset white;background-color:#E0E0E0;}
+.context-menu-theme-default .context-menu-item {
+  font-family: Droid Serif, Georgia, serif;
+  font-size:0.8em;
+  cursor:pointer;
+  padding:4px 10px;
+}
+.context-menu-theme-default .context-menu-item-hover{background-color:#777;color:#fff;}

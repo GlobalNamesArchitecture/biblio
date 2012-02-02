@@ -2,26 +2,20 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
-table{border-collapse: collapse;border-spacing: 0;width:98.5%;}
-table thead tr{
+#parse-results{border-collapse: collapse;border-spacing: 0;width:98.5%;}
+#parse-results thead tr{
   color: #444444;
   font-size: 1.1em;
   font-weight: bold;
   line-height: 2em;
 }
-table thead tr td{
+#parse-results thead tr td{
   border-bottom: 1px solid #868D92;
   padding: 5px;
 }
-table tbody tr.even{
-}
-table tbody tr.odd{
-  background: none repeat scroll 0 0 #E6E6E6;
-}
-table tbody tr.failed{
-  background: none repeat scroll 0 0 #ffbfbf;
-}
-table tbody tr.failed span{
+#parse-results tbody tr.odd{background: none repeat scroll 0 0 #E6E6E6;}
+#parse-results tbody tr.failed{background: none repeat scroll 0 0 #ffbfbf;}
+#parse-results tbody tr.failed span{
   width:20px;
   display:inline-block;
   background: asset-url("cancel.png", image) no-repeat;

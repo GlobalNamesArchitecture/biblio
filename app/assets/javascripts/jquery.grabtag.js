@@ -194,8 +194,9 @@
           if(intersects && _self.hasClass(gt + "-resizer-w")) { $(tag).before(residual.toString()); }
           $(tag).before(newNode).remove();
           self.add_resizers($(this), settings, newNode);
+          self.context_menu($(this), settings, newNode);
           obj[0].normalize();
-          settings.onTagged.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : self.convert_markup(this) });
+          settings.onTag.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : self.convert_markup(this) });
         } catch(error) {
           self.clear_selections();
           $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, self.tag_selected);
@@ -206,6 +207,28 @@
         $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, self.tag_selected);
       });
 
+    });
+  };
+
+  GT.context_menu = function(obj, settings, tag) {
+    var self = this;
+
+    $(tag).mousedown(function(e) {
+      var tag_type  = $(this).attr("data-" + gt),
+          tag_value = $(this).text();
+
+      if (e.which === 3 && $.fn.contextMenu) {
+        var menu = [{
+          'Remove':{
+            onclick:function(menuItem,menu) {
+              var content = $(tag).find('.' + gt + '-resizer').remove().end().html();
+              $(tag).before(content).remove();
+              settings.onTagRemove.call(this, $(this), { "tag" : { "type" : tag_type, "value" : tag_value }, "content" : self.convert_markup($(obj)) });
+            }
+          }
+        }];
+        $(this).contextMenu(menu, { 'shadow' : false });
+      }
     });
   };
 
@@ -232,10 +255,12 @@
       if(snippet.length > 1 && !settings.multitag) {
         $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', self.get_style(value));
         self.add_resizers($(obj), settings, $(snippet[0]));
+        self.context_menu($(obj), settings, $(snippet[0]));
       } else {
         snippet.each(function() {
           $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', self.get_style(value));
           self.add_resizers($(obj), settings, $(this));
+          self.context_menu($(obj), settings, $(this));
         });
       }
     });
@@ -258,7 +283,7 @@
     }
 
     if($.trim(sel) !== "") {
-      settings.beforeTagged.call(this, $(this));
+      settings.beforeTag.call(this, $(this));
       newNode = $(self.build_selector(settings.active_tag, settings.active_tag, $(selected).attr("style"), false));
       try {
         if(self.range_intersects_tags(range, $(this))) {
@@ -269,7 +294,8 @@
           self.clear_selections();
           range.surroundContents(newNode[0]);
           self.add_resizers($(this), settings, newNode);
-          settings.onTagged.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString() }, "content" : self.convert_markup(this) });
+          self.context_menu($(this), settings, newNode);
+          settings.onTag.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString() }, "content" : self.convert_markup(this) });
         }
       } catch(error) {
         self.clear_selections();
@@ -418,8 +444,9 @@
     'active_tag'        : '',
 
     'onActivate'        : function(obj, data) { obj = null; data = null; },
-    'beforeTagged'      : function(obj) { obj = null; },
-    'onTagged'          : function(obj, data) { obj = null; data = null; },
+    'beforeTag'         : function(obj) { obj = null; },
+    'onTag'             : function(obj, data) { obj = null; data = null; },
+    'onTagRemove'       : function(obj, data) { obj = null; data = null; },
     'onMultitagWarning' : function() { alert('This tag has already been used'); },
     'onOverlapWarning'  : function() { alert('This selection overlaps a previous selection'); }
   };

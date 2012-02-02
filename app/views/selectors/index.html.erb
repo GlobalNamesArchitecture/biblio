@@ -64,7 +64,11 @@ $(function(){
     'onActivate'   : function(obj, data) {
       $('#grabtag-output').val(data.content);
     },
-    'onTagged'     : function(obj, data) {
+    'onTag'        : function(obj, data) {
+       console.log(data.tag.type + ": " + data.tag.value);
+       $('#grabtag-output').val(data.content);
+    },
+    'onTagRemove'  : function(obj, data) {
        console.log(data.tag.type + ": " + data.tag.value);
        $('#grabtag-output').val(data.content);
     }
@@ -74,8 +78,7 @@ $(function(){
 </head>
 <body>
 <div id="grabtag-initializer"></div>
-<p class="biblio-selector">Buddle, C.M. and D.P. Shorthouse. (2008). Effects of experimental harvesting on spider (Araneae) assemblages 
-in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volume">140(4)</span>: 437-452, 10.4039/n07-LS01</p>
+<p class="biblio-selector">Buddle, C.M. and D.P. Shorthouse. (2008). Effects of experimental harvesting on spider (Araneae) assemblages in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volume">140(4)</span>: 437-452, 10.4039/n07-LS01</p>
 <textarea id="grabtag-output"></textarea>
 </body>
 </html></xmp>
@@ -93,7 +96,7 @@ in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volum
     tags       : ["color", "shape"],
     active_tag : 'color',
     config_ele : '#freeform-config',
-    onTagged   : function(obj, data) {
+    onTag      : function(obj, data) {
       $("#freeform-output").val(data.tag.type + ':' + data.tag.value);
     }
   };
@@ -113,10 +116,16 @@ in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volum
   <dt>active_group</dt><dd>Group of tags to be made active on load (if tags are arranged in groups)</dd>
   <dt>active_tag</dt><dd>Tag to be made active on load</dd>
   <dt>onActivate(obj, data)</dt><dd>Callback function that executes after the control panel loads; obj = jQuery object being extended and data = { 'content' : 'marked up content' }<dd>
-  <dt>beforeTagged(obj)</dt><dd>Callback function that executes before a tag is created; obj = jQuery object being extended</dd>
-  <dt>onTagged(obj, data)</dt><dd>Callback function that executes after a tag is created or expanded/contracted; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
+  <dt>beforeTag(obj)</dt><dd>Callback function that executes before a tag is created; obj = jQuery object being extended</dd>
+  <dt>onTag(obj, data)</dt><dd>Callback function that executes after a tag is created or expanded/contracted; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
+  <dt>onTagRemove(obj, data)</dt><dd>Callback function that executes after a tag is removed; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
   <dt>onMultitagWarning()</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type while <strong>multitag</strong> set to false</dd>
   <dt>onOverlapWarning()</dt><dd>Callback function that overrides default warning when user expands tag into another tag or when user attempts to create tag within another tag</dd>
+</dl>
+<h3>Additional Methods</h3>
+<dl>
+  <dt>$(selector).grabtag("remove_all");</dt><dd>Removes all tags from selector</dd>
+  <dt>$(selector).grabtag("destroy");</dt><dd>Destroys (unbinds) extension from selector<dd>
 </dl>
 
 <h2><a name="limitations">Limitations</a></h2>
@@ -124,4 +133,5 @@ in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volum
 
 <h2><a name="download">Downloads</a></h2>
 <p>jQuery plug-in: <%= link_to 'jquery.grabtag.js', root_url.to_s << 'assets/jquery.grabtag.js' %></p>
+<p>jQuery contextMenu: <%= link_to 'jquery.contextMenu.js', root_url.to_s << 'assets/jquery.contextMenu.js' %>, from <a href="http://www.JavascriptToolbox.com/lib/contextmenu/">Matt Kruse</a>.</p>
 <p>Stylesheet: <%= link_to 'grabtag.css', root_url.to_s << 'assets/selectors.css' %></p>
