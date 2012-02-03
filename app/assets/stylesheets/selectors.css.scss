@@ -6,7 +6,6 @@ h3{font-size:1.1em;}
 /*
 * grabtag buttons or groups of tags in control panel
 */
-.grabtag-selectors-buttons{margin-bottom:1em;}
 .grabtag-selectors-buttons ul{list-style-type:none;margin:0px;padding:0px;}
 .grabtag-selectors-buttons li{display:inline;margin:0.2em 0.5em 0 0;}
 .grabtag-selectors-buttons a{
@@ -36,7 +35,7 @@ h3{font-size:1.1em;}
 */
 .grabtag-selectors-type{display:none;margin:0.5em 0;}
 .grabtag-selectors-type ul{list-style-type:none;margin:0px;padding:0px;}
-.grabtag-selectors-type li{display:inline;margin:0.2em 0.5em 0 0;}
+.grabtag-selectors-type li{margin:0.2em 0.5em 0 0;float:left;line-height:1.5em;}
 .grabtag-selectors-type span{padding: 0.15em 0.35em;cursor:pointer;}
 .grabtag-selectors-type .grabtag-selector:hover{box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);}
 .grabtag-selectors-type .selected{box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9) inset;}

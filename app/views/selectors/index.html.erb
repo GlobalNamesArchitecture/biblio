@@ -11,7 +11,7 @@
 <p>Click a tag, select text within the citation, then expand/contract a tagged region to refine. Right-click a tag to remove it.</p>
 
 <div id="grab-tag">
-<div id="grabtag-initializer"></div>
+<div id="grabtag-initializer" class="clearfix"></div>
 <% @references.each do |reference| %>
 <p class="biblio-selector"><%= raw reference %></p>
 <% end %>
@@ -82,14 +82,14 @@ $(function(){
 </script>
 </head>
 <body>
-<div id="grabtag-initializer"></div>
+<div id="grabtag-initializer" class="clearfix"></div>
 <p class="biblio-selector">Buddle, C.M. and D.P. Shorthouse. (2008). Effects of experimental harvesting on spider (Araneae) assemblages in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volume">140(4)</span>: 437-452, 10.4039/n07-LS01</p>
 <textarea id="grabtag-output"></textarea>
 </body>
 </html></xmp>
 
 <h2><a name="example2">Example 2</a>: Marking-up Free-form Text</h2>
-<div id="freeform-config"></div>
+<div id="freeform-config" class="clearfix"></div>
 <p class="freeform">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sodales nunc pharetra orci venenatis laoreet semper enim molestie. Fusce aliquet sagittis lobortis. Vivamus in nisi sem, vitae accumsan massa. Donec bibendum, ipsum a fringilla placerat, mi mi tincidunt mauris, sed dapibus diam odio in dui. Curabitur in tincidunt ipsum. Pellentesque posuere leo libero. Maecenas sit amet urna et magna varius tincidunt. Pellentesque urna ante, ornare vitae suscipit eu, tempus eu elit. Fusce id turpis quis massa lobortis sodales. Integer in nulla lectus, in tincidunt elit. Sed tempus malesuada sem ac faucibus. Aenean eleifend consectetur nisl ut consectetur. Nulla facilisi. Cras ullamcorper tincidunt convallis. Suspendisse varius vestibulum tortor eget egestas.</p>
 <%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
   <%= text_area_tag "freeform-output", "", :size => "40x2" %>
@@ -114,7 +114,7 @@ $(function(){
   $(".freeform").grabtag(config);
 </script>
 
-<div id="freeform-config"></div>
+<div id="freeform-config" class="clearfix"></div>
 <p class="freeform">Lorem ipsum...</p></xmp>
 
 <h2><a name="config">Configuration Options</a></h2>
@@ -128,7 +128,7 @@ $(function(){
   <dt>active_tag</dt><dd>Tag to be made active on load</dd>
   <dt>onActivate(obj, data)</dt><dd>Callback function that executes after the control panel loads; obj = jQuery object being extended and data = { 'content' : 'marked up content' }<dd>
   <dt>beforeTag(obj)</dt><dd>Callback function that executes before a tag is created; obj = jQuery object being extended</dd>
-  <dt>onTag(obj, data)</dt><dd>Callback function that executes after a tag is created or expanded/contracted; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
+  <dt>onTag(obj, data)</dt><dd>Callback function that executes after a tag is created; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
   <dt>onTagResize(obj, data)</dt><dd>Callback function that executes after a tag is resized; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
   <dt>onTagRemove(obj, data)</dt><dd>Callback function that executes after a tag is removed; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }.<br><strong>NOTE:</strong> a right-click context menu is drawn using <a href="http://www.JavascriptToolbox.com/lib/contextmenu/">jquery.contextMenu.js</a>. In its absence, this callback will not be executed.</dd>
   <dt>onMultitagWarning()</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type while <strong>multitag</strong> set to false</dd>
