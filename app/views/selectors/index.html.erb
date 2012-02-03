@@ -30,6 +30,7 @@
 <head>
 <script type="text/javascript" src="jquery-1.7.1.min.js"></script>
 <script type="text/javascript" src="jquery.grabtag.js"></script>
+<script type="text/javascript" src="jquery.contextMenu.js"></script>
 <script type="text/javascript">
 $(function(){
   $('.biblio-selector').grabtag({
@@ -129,7 +130,7 @@ $(function(){
   <dt>beforeTag(obj)</dt><dd>Callback function that executes before a tag is created; obj = jQuery object being extended</dd>
   <dt>onTag(obj, data)</dt><dd>Callback function that executes after a tag is created or expanded/contracted; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
   <dt>onTagResize(obj, data)</dt><dd>Callback function that executes after a tag is resized; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
-  <dt>onTagRemove(obj, data)</dt><dd>Callback function that executes after a tag is removed; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
+  <dt>onTagRemove(obj, data)</dt><dd>Callback function that executes after a tag is removed; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }.<br><strong>NOTE:</strong> a right-click context menu is drawn using <a href="http://www.JavascriptToolbox.com/lib/contextmenu/">jquery.contextMenu.js</a>. In its absence, this callback will not be executed.</dd>
   <dt>onMultitagWarning()</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type while <strong>multitag</strong> set to false</dd>
   <dt>onOverlapWarning()</dt><dd>Callback function that overrides default warning when user expands tag into another tag or when user attempts to create tag within another tag</dd>
 </dl>
