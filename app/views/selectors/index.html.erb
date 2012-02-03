@@ -68,6 +68,10 @@ $(function(){
        console.log(data.tag.type + ": " + data.tag.value);
        $('#grabtag-output').val(data.content);
     },
+    'onTagResize'  : function(obj, data) {
+       console.log(data.tag.type + ": " + data.tag.value);
+       $('#grabtag-output').val(data.content);
+    },
     'onTagRemove'  : function(obj, data) {
        console.log(data.tag.type + ": " + data.tag.value);
        $('#grabtag-output').val(data.content);
@@ -97,7 +101,13 @@ $(function(){
     active_tag : 'color',
     config_ele : '#freeform-config',
     onTag      : function(obj, data) {
-      $("#freeform-output").val(data.tag.type + ':' + data.tag.value);
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (added)');
+    },
+    onTagResize      : function(obj, data) {
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (resized)');
+    },
+    onTagRemove      : function(obj, data) {
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (removed)');
     }
   };
   $(".freeform").grabtag(config);
@@ -118,6 +128,7 @@ $(function(){
   <dt>onActivate(obj, data)</dt><dd>Callback function that executes after the control panel loads; obj = jQuery object being extended and data = { 'content' : 'marked up content' }<dd>
   <dt>beforeTag(obj)</dt><dd>Callback function that executes before a tag is created; obj = jQuery object being extended</dd>
   <dt>onTag(obj, data)</dt><dd>Callback function that executes after a tag is created or expanded/contracted; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
+  <dt>onTagResize(obj, data)</dt><dd>Callback function that executes after a tag is resized; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
   <dt>onTagRemove(obj, data)</dt><dd>Callback function that executes after a tag is removed; obj = jQuery object being extended and data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse'}, 'content' : 'marked up content' }</dd>
   <dt>onMultitagWarning()</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type while <strong>multitag</strong> set to false</dd>
   <dt>onOverlapWarning()</dt><dd>Callback function that overrides default warning when user expands tag into another tag or when user attempts to create tag within another tag</dd>

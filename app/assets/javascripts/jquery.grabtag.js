@@ -196,7 +196,7 @@
           self.add_resizers($(this), settings, newNode);
           self.context_menu($(this), settings, newNode);
           obj[0].normalize();
-          settings.onTag.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : self.convert_markup(this) });
+          settings.onTagResize.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : self.convert_markup(this) });
         } catch(error) {
           self.clear_selections();
           $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, self.tag_selected);
@@ -462,6 +462,7 @@
     'onActivate'        : function(obj, data) { obj = null; data = null; },
     'beforeTag'         : function(obj) { obj = null; },
     'onTag'             : function(obj, data) { obj = null; data = null; },
+    'onTagResize'       : function(obj, data) { obj = null; data = null; },
     'onTagRemove'       : function(obj, data) { obj = null; data = null; },
     'onMultitagWarning' : function() { alert('This tag has already been used'); },
     'onOverlapWarning'  : function() { alert('This selection overlaps a previous selection'); }

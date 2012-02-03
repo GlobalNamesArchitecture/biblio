@@ -34,6 +34,9 @@ $ ->
    onTag : (obj, data) ->
      console.log(data.tag.type + ": " + data.tag.value)
      $('#grabtag-output').val(data.content)
+   onTagResize : (obj, data) ->
+     console.log(data.tag.type + ": " + data.tag.value)
+     $('#grabtag-output').val(data.content)
    onTagRemove : (obj, data) ->
      console.log(data.tag.type + ": " + data.tag.value)
      $('#grabtag-output').val(data.content)
@@ -48,7 +51,9 @@ $ ->
     active_tag  : 'color',
     config_ele  : '#freeform-config'
     onTag       : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value)
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (added)')
+    onTagResize : (obj, data) ->
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (resized)')
     onTagRemove : (obj, data) ->
       $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (removed)')
   }
