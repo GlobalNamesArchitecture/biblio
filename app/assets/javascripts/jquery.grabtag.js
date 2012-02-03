@@ -223,6 +223,7 @@
 
       $.each($(this).data('events'), function() {
         $.each(this, function(i,event) {
+          i = null;
           if(event.type === "contextmenu") {
             bound = true;
             return;
@@ -235,6 +236,8 @@
           'Remove':{
             onclick:function(menuItem,menu) {
               var content = $(tag).find('.' + gt + '-resizer').remove().end().html();
+
+              menuItem = null; menu = null;
               $(tag).before(content).unbind("contextmenu").remove();
               settings.onTagRemove.call(this, $(this), { "tag" : { "type" : tag_type, "value" : tag_value }, "content" : self.convert_markup($(obj)) });
             }
