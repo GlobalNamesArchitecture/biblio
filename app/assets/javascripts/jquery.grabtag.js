@@ -53,6 +53,7 @@
              .next(".grabtag-resizer").remove().end()
              .wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
     });
+    result[0].normalize();
     return result.html();
   };
 
@@ -222,6 +223,7 @@
                 var content = $(this).find('.' + gt + '-resizer').remove().end().html();
                 menuItem = null; menu = null;
                 $(this).before(content).unbind("contextmenu").remove();
+                $(obj)[0].normalize();
                 settings.onTagRemove.call(this, $(obj), { "tag" : { "type" : tag_type, "value" : tag_value }, "content" : self.convert_markup($(obj)) });
               }
             }
@@ -414,6 +416,7 @@
       return this.each(function() {
         $('.' + gt + '-tag', $(this)).each(function() {
           $(this).children('.' + gt + '-resizer').remove().end().before($(this).html()).remove();
+          $(this)[0].normalize();
         });
       });
     },
