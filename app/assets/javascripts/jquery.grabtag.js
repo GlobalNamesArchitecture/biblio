@@ -243,7 +243,7 @@
             }
           }
         }];
-        $(this).contextMenu(menu, { 'shadow' : false });
+        $(this).contextMenu(menu, {'shadow' : false});
       }
     });
   };

@@ -69,11 +69,20 @@ h3{font-size:1.1em;}
 /*
 * context menu
 */
-.context-menu-theme-default {border:2px outset white;background-color:#E0E0E0;}
+.context-menu-theme-default{border:1px solid #D0D0D0;background-color:#fff;border-radius:3px;box-shadow:0 1px 2px 1px rgba(125, 125, 125, 0.9);}
 .context-menu-theme-default .context-menu-item {
   font-family: Droid Serif, Georgia, serif;
   font-size:0.8em;
   cursor:pointer;
   padding:4px 10px;
 }
-.context-menu-theme-default .context-menu-item-hover{background-color:#777;color:#fff;}
+.context-menu-theme-default .context-menu-item-hover{
+  color:#fff;
+  text-shadow:0 -1px 2px #CCCCCC;
+  background-image: linear-gradient(bottom, rgb(13,82,255) 32%, rgb(55,106,247) 66%, rgb(83,105,247) 83%);
+  background-image: -o-linear-gradient(bottom, rgb(13,82,255) 32%, rgb(55,106,247) 66%, rgb(83,105,247) 83%);
+  background-image: -moz-linear-gradient(bottom, rgb(13,82,255) 32%, rgb(55,106,247) 66%, rgb(83,105,247) 83%);
+  background-image: -webkit-linear-gradient(bottom, rgb(13,82,255) 32%, rgb(55,106,247) 66%, rgb(83,105,247) 83%);
+  background-image: -ms-linear-gradient(bottom, rgb(13,82,255) 32%, rgb(55,106,247) 66%, rgb(83,105,247) 83%);
+}
+.context-menu-shadow{border-radius:3px;}
