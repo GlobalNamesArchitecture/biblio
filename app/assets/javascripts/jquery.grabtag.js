@@ -136,6 +136,34 @@
     return intersects;
   };
 
+  GT.getCaretCharacterOffsetWithin = function(element) {
+    var start             = 0,
+        end               = 0,
+        caretOffset       = { "start" : start, "end" : end },
+        range             = "",
+        preCaretRange     = "",
+        textRange         = "",
+        preCaretTextRange = "";
+
+    if (typeof window.getSelection != "undefined") {
+        range = window.getSelection().getRangeAt(0);
+        preCaretRange = range.cloneRange();
+        preCaretRange.selectNodeContents(element);
+        preCaretRange.setEnd(range.endContainer, range.endOffset);
+        end = preCaretRange.toString().length;
+        start = end - range.toString().length;
+        caretOffset = { "start" : start , "end" : end };
+    } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
+        textRange = document.selection.createRange();
+        preCaretTextRange = document.body.createTextRange();
+        preCaretTextRange.moveToElementText(element);
+        preCaretTextRange.setEndPoint("EndToEnd", textRange);
+        caretOffset = preCaretTextRange.text.length;
+    }
+    return caretOffset;
+  };
+
+
   GT.add_resizers = function(obj, settings, newNode) {
     var self      = this,
         resizer_w = self.build_resizer('w'),
@@ -159,7 +187,8 @@
             intersects = self.range_intersects(range, tag.childNodes[1]),
             new_range  = document.createRange(),
             residual   = range.cloneRange(),
-            offset     = range.toString().length,
+            _offset    = range.toString().length,
+            offset     = self.getCaretCharacterOffsetWithin($(obj)[0]),
             contents   = "";
 
         if(self.range_intersects_tag(range, $(obj), $(tag))) {
@@ -173,31 +202,54 @@
           if(_self.hasClass(gt + "-resizer-e")) {
             if(intersects) {
               new_range.setStart(tag.childNodes[1], 0);
-              new_range.setEnd(tag.childNodes[1], tag.childNodes[1].length-offset);
+              new_range.setEnd(tag.childNodes[1], tag.childNodes[1].length-_offset);
             } else {
+//TODO: accommodate HTML
               new_range.setStart(tag.childNodes[1], 0);
-              new_range.setEnd(tag.nextSibling, offset);
+              new_range.setEnd(tag.nextSibling, _offset);
             }
           } else if(_self.hasClass(gt + "-resizer-w")) {
             if(intersects) {
-              new_range.setStart(tag.childNodes[1], offset);
+              new_range.setStart(tag.childNodes[1], _offset);
               new_range.setEnd(tag, 2);
             } else {
-              new_range.setStart(tag.previousSibling, tag.previousSibling.length-offset);
+//TODO: accommodate HTML
+              new_range.setStart(tag.previousSibling, tag.previousSibling.length-_offset);
               new_range.setEnd(tag, 2);
             }
           }
           self.clear_selections();
-          sel.addRange(new_range);
-          contents = new_range.extractContents().textContent;
-          newNode = $(self.build_selector(tag_type, contents, $(tag).attr("style")));
-          if(intersects && _self.hasClass(gt + "-resizer-e")) { $(tag).after(residual.toString()); }
-          if(intersects && _self.hasClass(gt + "-resizer-w")) { $(tag).before(residual.toString()); }
-          $(tag).before(newNode).remove();
-          self.add_resizers($(this), settings, newNode);
-          self.context_menu($(this), settings, newNode);
-          obj[0].normalize();
-          settings.onTagResize.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents }, "content" : self.convert_markup(this) });
+          contents = new_range.cloneContents().textContent;
+          if(contents.length === 0) {
+            self.clear_selections();
+          } else {
+            contents = new_range.extractContents().textContent;
+            newNode = $(self.build_selector(tag_type, contents, $(tag).attr("style")));
+            if(_self.hasClass(gt + "-resizer-e")) {
+              if(intersects) {
+                $(tag).after(residual.toString());
+                offset.start = offset.start - contents.length;
+                offset.end = contents.length + offset.start;
+              } else {
+                offset.start = offset.end - contents.length;
+                offset.end = offset.start + contents.length;
+              }
+            }
+            if(_self.hasClass(gt + "-resizer-w")) {
+              if(intersects) {
+                $(tag).before(residual.toString());
+                offset.start = offset.end;
+                offset.end = offset.end + contents.length;
+              } else {
+                offset.end = offset.start + contents.length;
+              }
+            }
+            $(tag).before(newNode).remove();
+            self.add_resizers($(this), settings, newNode);
+            self.context_menu($(this), settings, newNode);
+            obj[0].normalize();
+            settings.onTagResize.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents, "offset" : offset }, "content" : self.convert_markup(this) });
+          }
         } catch(error) {
           self.clear_selections();
           $(this).unbind(eventNameResize).bind(eventName, { 'settings' : settings }, self.tag_selected);
@@ -220,11 +272,19 @@
           menu = [{
             'Remove':{
               onclick:function(menuItem,menu) {
-                var content = $(this).find('.' + gt + '-resizer').remove().end().html();
+                var s       = window.getSelection(),
+                    range   = document.createRange(),
+                    offset  = {},
+                    content = "";
+                
                 menuItem = null; menu = null;
+                range.selectNode(tag[0]);
+                s.addRange(range);
+                offset = self.getCaretCharacterOffsetWithin($(obj)[0]);
+                content = $(this).find('.' + gt + '-resizer').remove().end().html();
                 $(this).before(content).unbind("contextmenu").remove();
                 $(obj)[0].normalize();
-                settings.onTagRemove.call(this, $(obj), { "tag" : { "type" : tag_type, "value" : tag_value }, "content" : self.convert_markup($(obj)) });
+                settings.onTagRemove.call(this, $(obj), { "tag" : { "type" : tag_type, "value" : tag_value, "offset" : offset }, "content" : self.convert_markup($(obj)) });
               }
             }
           }];
@@ -275,7 +335,8 @@
         range      = sel.getRangeAt(0),
         newNode    = "",
         settings   = e.data.settings,
-        selected   = '.' + gt + '-tag[data-' + gt + '=' + settings.active_tag + ']';
+        selected   = '.' + gt + '-tag[data-' + gt + '=' + settings.active_tag + ']',
+        offset     = {};
 
     if(!settings.multitag && $(selected, $(this)).length === 1) {
       self.clear_selections();
@@ -292,11 +353,12 @@
           settings.onOverlapWarning.call();
           return;
         } else {
+          offset = self.getCaretCharacterOffsetWithin($(this)[0]);
           self.clear_selections();
           range.surroundContents(newNode[0]);
           self.add_resizers($(this), settings, newNode);
           self.context_menu($(this), settings, newNode);
-          settings.onTag.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString() }, "content" : self.convert_markup(this) });
+          settings.onTag.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString(), "offset" : offset }, "content" : self.convert_markup(this) });
         }
       } catch(error) {
         self.clear_selections();

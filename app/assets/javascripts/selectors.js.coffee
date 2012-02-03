@@ -32,14 +32,14 @@ $ ->
    onActivate : (obj, data) ->
      $('#grabtag-output').val(data.content)
    onTag : (obj, data) ->
-     console.log(data.tag.type + ": " + data.tag.value)
      $('#grabtag-output').val(data.content)
+     console.log(data)
    onTagResize : (obj, data) ->
-     console.log(data.tag.type + ": " + data.tag.value)
      $('#grabtag-output').val(data.content)
+     console.log(data)
    onTagRemove : (obj, data) ->
-     console.log(data.tag.type + ": " + data.tag.value)
      $('#grabtag-output').val(data.content)
+     console.log(data)
  }
  $(".biblio-selector").grabtag(config)
 
@@ -51,10 +51,10 @@ $ ->
     active_tag  : 'color',
     config_ele  : '#freeform-config'
     onTag       : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (added)')
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (added, offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end + ')')
     onTagResize : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (resized)')
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (resized, offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end + ')')
     onTagRemove : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (removed)')
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (removed, offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end + ')')
   }
   $(".freeform").grabtag(config)
