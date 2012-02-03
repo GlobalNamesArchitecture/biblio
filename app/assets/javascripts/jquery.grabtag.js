@@ -211,18 +211,31 @@
   };
 
   GT.context_menu = function(obj, settings, tag) {
-    var self = this;
+    var self      = this,
+        tag_type  = "",
+        tag_value = "",
+        menu      = {},
+        bound     = false;
 
     $(tag).mousedown(function(e) {
-      var tag_type  = $(this).attr("data-" + gt),
-          tag_value = $(this).text();
+      tag_type  = $(this).attr("data-" + gt);
+      tag_value = $(this).text();
 
-      if (e.which === 3 && $.fn.contextMenu) {
-        var menu = [{
+      $.each($(this).data('events'), function() {
+        $.each(this, function(i,event) {
+          if(event.type === "contextmenu") {
+            bound = true;
+            return;
+          }
+        });
+      });
+
+      if (e.which === 3 && $.fn.contextMenu && !bound) {
+        menu = [{
           'Remove':{
             onclick:function(menuItem,menu) {
               var content = $(tag).find('.' + gt + '-resizer').remove().end().html();
-              $(tag).before(content).remove();
+              $(tag).before(content).unbind("contextmenu").remove();
               settings.onTagRemove.call(this, $(this), { "tag" : { "type" : tag_type, "value" : tag_value }, "content" : self.convert_markup($(obj)) });
             }
           }
