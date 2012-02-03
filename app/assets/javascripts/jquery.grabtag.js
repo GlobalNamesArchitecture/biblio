@@ -211,40 +211,23 @@
   };
 
   GT.context_menu = function(obj, settings, tag) {
-    var self      = this,
-        tag_type  = "",
-        tag_value = "",
-        menu      = {},
-        bound     = false;
+    var self      = this;
 
-    $(tag).mousedown(function(e) {
-      tag_type  = $(this).attr("data-" + gt);
-      tag_value = $(this).text();
-
-      $.each($(this).data('events'), function() {
-        $.each(this, function(i,event) {
-          i = null;
-          if(event.type === "contextmenu") {
-            bound = true;
-            return;
-          }
-        });
-      });
-
-      if (e.which === 3 && $.fn.contextMenu && !bound) {
-        menu = [{
-          'Remove':{
-            onclick:function(menuItem,menu) {
-              var content = $(tag).find('.' + gt + '-resizer').remove().end().html();
-
-              menuItem = null; menu = null;
-              $(tag).before(content).unbind("contextmenu").remove();
-              settings.onTagRemove.call(this, $(this), { "tag" : { "type" : tag_type, "value" : tag_value }, "content" : self.convert_markup($(obj)) });
+    $(tag).on("mouseover", function() {
+      var tag_type  = $(this).attr("data-" + gt),
+          tag_value = $(this).text(),
+          menu = [{
+            'Remove':{
+              onclick:function(menuItem,menu) {
+                var content = $(this).find('.' + gt + '-resizer').remove().end().html();
+                menuItem = null; menu = null;
+                $(this).before(content).unbind("contextmenu").remove();
+                settings.onTagRemove.call(this, $(obj), { "tag" : { "type" : tag_type, "value" : tag_value }, "content" : self.convert_markup($(obj)) });
+              }
             }
-          }
-        }];
-        $(this).contextMenu(menu, {'shadow' : false});
-      }
+          }];
+
+      $(this).unbind("contextmenu").contextMenu(menu, {'beforeShow' : function() { self.clear_selections(); }, 'shadow' : false});
     });
   };
 
