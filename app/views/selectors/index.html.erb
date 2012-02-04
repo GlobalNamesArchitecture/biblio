@@ -66,16 +66,16 @@ $(function(){
       $('#grabtag-output').val(data.content);
     },
     'onTag'        : function(obj, data) {
-       console.log(data);
        $('#grabtag-output').val(data.content);
+       console.log(data);
     },
     'onTagResize'  : function(obj, data) {
-       console.log(data);
        $('#grabtag-output').val(data.content);
+       console.log(data);
     },
     'onTagRemove'  : function(obj, data) {
-       console.log(data);
        $('#grabtag-output').val(data.content);
+       console.log(data);
     }
   });
 });
@@ -141,6 +141,7 @@ $(function(){
 </dl>
 
 <h2><a name="limitations">Limitations</a></h2>
+<p>This plug-in assumes there is no additional HTML mark-up in the element being extended except for pre-selected &lt;span&gt; elements with matching tag types <em>i.e.</em> tag types listed in the <strong>tags</strong> configuration object. Any additional HTML will be stripped. Offset values returned in callback functions are measured in raw text counts and do not include any underlying HTML, including that of pre-selected tags. These actions are performed because HTML mark-up wreaks havoc on range selections, dynamically created and adjusted mark-up, and resultant offset counts.</p>
 <p>Internet Explorer &lt; 9 will not (currently) work because it does not support the range selection method getRangeAt(0).</p>
 
 <h2><a name="download">Downloads</a></h2>
