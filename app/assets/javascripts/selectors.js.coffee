@@ -49,6 +49,7 @@ $ ->
 
  $(".clear-button").bind 'click', (event) =>
    $(".biblio-selector").grabtag("remove_all")
+   $("#grabtag-initializer").find(".grabtag-selector").parent().show()
 
   config = {
     tags        : ["taxon", "color", "shape"],
