@@ -69,7 +69,7 @@ $(function(){
     },
     'onTag'        : function(obj, tag, data) {
        $('#grabtag-output').val(data.content);
-       $(tag).hide();
+       $(tag).parent().hide();
        console.log(data);
     },
     'onTagResize'  : function(obj, data) {
@@ -78,7 +78,7 @@ $(function(){
     },
     'onTagRemove'  : function(obj, data) {
        $('#grabtag-output').val(data.content);
-       $('#grabtag-initializer').find('[data-grabtag=' + data.tag.type + ']').show();
+       $('#grabtag-initializer').find('[data-grabtag=' + data.tag.type + ']').parent().show();
        console.log(data);
     }
   });

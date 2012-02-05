@@ -34,7 +34,7 @@ $ ->
    onActivate : (obj, data) ->
      $('#grabtag-output').val(data.content)
    onTag : (obj, tag, data) ->
-     $(tag).hide()
+     $(tag).parent().hide()
      $('#grabtag-output').val(data.content)
      console.log(data)
    onTagResize : (obj, data) ->
@@ -42,7 +42,7 @@ $ ->
      console.log(data)
    onTagRemove : (obj, data) ->
      $('#grabtag-output').val(data.content)
-     $('#grabtag-initializer').find('[data-grabtag=' + data.tag.type + ']').show()
+     $('#grabtag-initializer').find('[data-grabtag=' + data.tag.type + ']').parent().show()
      console.log(data)
  }
  $(".biblio-selector").grabtag(config)
