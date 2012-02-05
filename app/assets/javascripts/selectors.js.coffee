@@ -28,7 +28,7 @@ $ ->
        "extra" : [ "note", "container", "retrieved", "tech", "translator", "unknown", "url" ]
    },
    active_group : 'journal',
-   active_tag   : 'author',
+   sitcky_tag   : 'author',
    onActivate : (obj, data) ->
      $('#grabtag-output').val(data.content)
    onTag : (obj, data) ->
@@ -48,7 +48,8 @@ $ ->
 
   config = {
     tags        : ["color", "shape"],
-    active_tag  : 'color',
+    sticky      : true,
+    sticky_tag  : 'color',
     config_ele  : '#freeform-config'
     onTag       : (obj, data) ->
       $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (added, offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end + ')')

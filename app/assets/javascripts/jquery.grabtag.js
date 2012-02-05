@@ -347,19 +347,18 @@
         range      = sel.getRangeAt(0),
         newNode    = "",
         settings   = e.data.settings,
-        selected   = '.' + gt + '-tag[data-' + gt + '=' + settings.active_tag + ']',
+        selected   = '.' + gt + '-tag[data-' + gt + '=' + settings.sticky_tag + ']',
         offset     = {};
 
     if(!settings.multitag && $(selected, $(this)).length === 1) {
       self.clear_selections();
-//TODO: hide button in control panel if not multitag
       settings.onMultitagWarning.call();
       return;
     }
 
     if($.trim(sel) !== "") {
       settings.beforeTag.call(this, $(this));
-      newNode = $(self.build_selector(settings.active_tag, settings.active_tag, $(selected).attr("style"), false));
+      newNode = $(self.build_selector(settings.sticky_tag, settings.sticky_tag, $(selected).attr("style"), false));
       try {
         if(self.range_intersects_tags(range, $(this))) {
           self.clear_selections();
@@ -367,12 +366,15 @@
           return;
         } else {
           offset = self.get_offset($(this)[0]);
-          self.clear_selections();
-          range.surroundContents(newNode[0]);
-          self.add_resizers($(this), settings, newNode);
-          self.context_menu($(this), settings, newNode);
-//TODO: hide button in control panel if not multitag
-          settings.onTag.call(this, $(this), { "tag" : { "type" : settings.active_tag, "value" : range.toString(), "offset" : offset }, "content" : self.convert_markup(this) });
+          if(settings.sticky) {
+            self.clear_selections();
+            range.surroundContents(newNode[0]); 
+            self.add_resizers($(this), settings, newNode);
+            self.context_menu($(this), settings, newNode);
+            settings.onTag.call(this, $(this), { "tag" : { "type" : settings.sticky_tag, "value" : range.toString(), "offset" : offset }, "content" : self.convert_markup(this) });
+          } else {
+            $(this).data("data-" + gt, { "range" : range, "offset" : offset });
+          }
         }
       } catch(error) {
         self.clear_selections();
@@ -380,7 +382,20 @@
         return;
       }
     }
+  };
 
+  GT.add_selection = function(obj, selection, settings) {
+    var self     = this,
+        tag_type = selection.attr("data-" + gt),
+        data     = $(obj).data("data-" + gt),
+        newNode  = $(self.build_selector(tag_type, tag_type, $(selection).attr("style"), false));
+
+    settings.beforeTag.call(self, $(obj));
+    data.range.surroundContents(newNode[0]);
+    self.add_resizers($(obj), settings, newNode);
+    self.context_menu($(obj), settings, newNode);
+    $(obj).data("data-" + gt, "");
+    settings.onTag.call(self, $(obj), { "tag" : { "type" : tag_type, "value" : data.range.toString(), "offset" : data.offset }, "content" : self.convert_markup($(obj)) });
   };
 
 //TODO: counts & default color selections get a little wonky when there are groups
@@ -392,7 +407,8 @@
         selectors = {},
         selector  = "",
         tag_obj   = {},
-        selected  = "";
+        selected  = "",
+        stored    = $(obj).data("data-" + gt) || {};
 
     $.each(settings.tags, function(index0, value0) {
       if(typeof value0 === "object") {
@@ -464,15 +480,25 @@
       });
       if($(this).hasClass(settings.active_group)) { $(this).trigger('click'); }
     }).end().find('.' + gt + '-selector', '.' + gt + '-selectors-type').each(function() {
-        if($(this).text() === settings.active_tag) { $(this).addClass('selected'); }
+        if(settings.sticky && $(this).text() === settings.sticky_tag) { $(this).addClass('selected'); }
         $(this).click(function(e) {
           var _self = $(this);
           e.preventDefault();
           $('.' + gt + '-selectors-type', settings.config_ele).find('.' + gt + '-selector').removeClass("selected");
-          _self.addClass("selected");
-          settings.config_activate = false;
-          settings.active_tag = _self.text();
-          $(obj)[gt]("destroy")[gt](settings);
+          if(settings.sticky) {
+            _self.addClass("selected");
+            settings.config_activate = false;
+            settings.sticky_tag = _self.text();
+            $(obj)[gt]("destroy")[gt](settings);
+          } else {
+            if(stored) {
+              if(!settings.multitag && $('[data-' + gt + '=' + _self.attr("data-" + gt) + ']', $(obj)).length === 1) {
+                settings.onMultitagWarning.call();
+              } else {
+                self.add_selection($(obj), _self, settings);
+              }
+            }
+          }
         });
       });
 
@@ -519,7 +545,8 @@
     'multitag'          : true,
     'tags'              : {},
     'active_group'      : '',
-    'active_tag'        : '',
+    'sticky'            : false,
+    'sticky_tag'        : '',
 
     'onActivate'        : function(obj, data) { obj = null; data = null; },
     'beforeTag'         : function(obj) { obj = null; },

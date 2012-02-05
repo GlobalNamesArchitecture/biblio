@@ -8,7 +8,7 @@
 </p>
 
 <h2><a name="example1">Example 1</a>: Marking-Up Bibliographic Citations</h2>
-<p>Click a tag, select text within the citation, then expand/contract a tagged region to refine. Right-click a tag to remove it.</p>
+<p>Select text within the citation, click a tag type, then expand/contract a tagged region to refine. Right-click a tag to remove it.</p>
 
 <div id="grab-tag">
 <div id="grabtag-initializer" class="clearfix"></div>
@@ -88,7 +88,7 @@ $(function(){
 </body>
 </html></xmp>
 
-<h2><a name="example2">Example 2</a>: Marking-up Free-form Text</h2>
+<h2><a name="example2">Example 2</a>: Marking-up Free-form Text (Sticky Buttons)</h2>
 <div id="freeform-config" class="clearfix"></div>
 <p class="freeform">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sodales nunc pharetra orci venenatis laoreet semper enim molestie. Fusce aliquet sagittis lobortis. Vivamus in nisi sem, vitae accumsan massa. Donec bibendum, ipsum a fringilla placerat, mi mi tincidunt mauris, sed dapibus diam odio in dui. Curabitur in tincidunt ipsum. Pellentesque posuere leo libero. Maecenas sit amet urna et magna varius tincidunt. Pellentesque urna ante, ornare vitae suscipit eu, tempus eu elit. Fusce id turpis quis massa lobortis sodales. Integer in nulla lectus, in tincidunt elit. Sed tempus malesuada sem ac faucibus. Aenean eleifend consectetur nisl ut consectetur. Nulla facilisi. Cras ullamcorper tincidunt convallis. Suspendisse varius vestibulum tortor eget egestas.</p>
 <%= form_tag("/selectors", :method => "POST", :autocomplete => "off") do %>
@@ -122,10 +122,11 @@ $(function(){
 <p>Enabled as shown in <a href="#example1">Example 1</a> for the <em>volume</em> tag. The region should be marked-up as ...&lt;span data-grabtag="volume"&gt;242(1)&lt;/span&gt;...</p>
 <dl>
   <dt>config_ele</dt><dd>The element where a control panel with clickable tag types will be created</dd>
-  <dt>multitag</dt><dd>true or false for tagging with the same tag</dd>
+  <dt>multitag</dt><dd>true or false for tagging with the same tag, default is false</dd>
   <dt>tags</dt><dd>An array of tags such as ["this", "that", "other"] or a hash of tags in grouped arrays such as { "group1" : ["this", "that", "other"], "group2" : ["here", "there", "nowhere"] }. Each tag can also be optionally styled as shown in example 1 above, otherwise a sample of 15 included colors will be drawn.</dd>
   <dt>active_group</dt><dd>Group of tags to be made active on load (if tags are arranged in groups)</dd>
-  <dt>active_tag</dt><dd>Tag to be made active on load</dd>
+  <dt>sticky</dt><dd>true or false to cause tag to be applied immediately after selections in extended element, default is false</dd>
+  <dt>sticky_tag</dt><dd>Tag to be made sticky on load</dd>
   <dt>onActivate(obj, data)</dt><dd>Callback function that executes after the control panel loads<br>obj = jQuery object being extended<br>data = { 'content' : 'marked up content' }<dd>
   <dt>beforeTag(obj)</dt><dd>Callback function that executes before a tag is created<br>obj = jQuery object being extended</dd>
   <dt>onTag(obj, data)</dt><dd>Callback function that executes after a tag is created<br>obj = jQuery object being extended<br>data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse', 'offset' : { 'start' : 22, 'end' : 32 } }, 'content' : 'marked up content' }</dd>
