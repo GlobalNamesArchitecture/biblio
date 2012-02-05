@@ -33,6 +33,7 @@ $ ->
      alert($(tag).attr("data-grabtag") + " has already been used")
    onActivate : (obj, data) ->
      $('#grabtag-output').val(data.content)
+     $('[data-grabtag="volume"]', '#grabtag-initializer').parent().hide();
    onTag : (obj, tag, data) ->
      $(tag).parent().hide()
      $('#grabtag-output').val(data.content)
