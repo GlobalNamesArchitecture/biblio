@@ -61,7 +61,6 @@ $(function(){
        "extra" : [ "note", "container", "retrieved", "tech", "translator", "unknown", "url" ]
     },
     'active_group' : 'journal',
-    'active_tag'   : 'author',
     'onActivate'   : function(obj, data) {
       $('#grabtag-output').val(data.content);
     },
@@ -99,7 +98,8 @@ $(function(){
 <xmp><script type="text/javascript">
   var config = {
     tags       : ["color", "shape"],
-    active_tag : 'color',
+    sticky     : true,
+    sticky_tag : 'color',
     config_ele : '#freeform-config',
     onTag      : function(obj, data) {
       $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (added)');
