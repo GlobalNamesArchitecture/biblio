@@ -390,12 +390,14 @@
         data     = $(obj).data("data-" + gt),
         newNode  = $(self.build_selector(tag_type, tag_type, $(selection).attr("style"), false));
 
-    settings.beforeTag.call(self, $(obj));
-    data.range.surroundContents(newNode[0]);
-    self.add_resizers($(obj), settings, newNode);
-    self.context_menu($(obj), settings, newNode);
+    if(data !== undefined) {
+      settings.beforeTag.call(self, $(obj));
+      data.range.surroundContents(newNode[0]);
+      self.add_resizers($(obj), settings, newNode);
+      self.context_menu($(obj), settings, newNode);
+      settings.onTag.call(self, $(obj), { "tag" : { "type" : tag_type, "value" : data.range.toString(), "offset" : data.offset }, "content" : self.convert_markup($(obj)) });
+    }
     $(obj).data("data-" + gt, "");
-    settings.onTag.call(self, $(obj), { "tag" : { "type" : tag_type, "value" : data.range.toString(), "offset" : data.offset }, "content" : self.convert_markup($(obj)) });
   };
 
 //TODO: counts & default color selections get a little wonky when there are groups
