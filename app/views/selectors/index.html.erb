@@ -63,6 +63,7 @@ $(function(){
     'active_group' : 'journal',
     'onActivate'   : function(obj, data) {
       $('#grabtag-output').val(data.content);
+      $('[data-grabtag="volume"]', '#grabtag-initializer').parent().hide();
     },
     'onMultitagWarning' : function(obj, tag) {
       alert($(tag).attr("data-grabtag") + " has already been used");
@@ -102,9 +103,9 @@ $(function(){
 <h3>Example 2 Configuration</h3>
 <xmp><script type="text/javascript">
   var config = {
-    tags       : ["color", "shape"],
+    tags       : ["taxon" : { "background-color" : "#80b1d3", "color" : "#fff"}, "size", "shape"],
     sticky     : true,
-    sticky_tag : 'color',
+    sticky_tag : 'size',
     config_ele : '#freeform-config',
     onTag      : function(obj, tag, data) {
       obj = null; tag = null;

@@ -53,9 +53,9 @@ $ ->
    $("#grabtag-initializer").find(".grabtag-selector").parent().show()
 
   config = {
-    tags        : ["taxon", "color", "shape"],
+    tags        : ["taxon" : { "background-color" : "#80b1d3", "color" : "#fff"}, "size", "shape"],
     sticky      : true,
-    sticky_tag  : 'color',
+    sticky_tag  : 'size',
     config_ele  : '#freeform-config'
     onTag       : (obj, tag, data) ->
       offset = 'offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end
