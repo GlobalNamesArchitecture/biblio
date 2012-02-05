@@ -37,8 +37,6 @@
         { 'background-color' : '#c8c8c8' }
       ];
 
-//TODO: reverse behavior of button click, select region when not multitag to be select region then click button
-
   GT.get_style = function(obj) {
     return JSON.stringify(obj).replace(/[{}"]/g, "").replace(",", ";");
   };
@@ -201,7 +199,6 @@
         }
 
         try {
-//TODO: need better way to accommodate existing HTML in obj
           if(_self.hasClass(gt + "-resizer-e")) {
             if(intersects) {
               new_range.setStart(tag.childNodes[1], 0);
@@ -286,7 +283,6 @@
                 content = $(this).find('.' + gt + '-resizer').remove().end().html();
                 $(this).before(content).unbind("contextmenu").remove();
                 $(obj)[0].normalize();
-//TODO: show button in control panel if not multitag
                 settings.onTagRemove.call(this, $(obj), { "tag" : { "type" : tag_type, "value" : tag_value, "offset" : offset }, "content" : self.convert_markup($(obj)) });
               }
             }
@@ -352,13 +348,13 @@
 
     if(!settings.multitag && $(selected, $(this)).length === 1) {
       self.clear_selections();
-      settings.onMultitagWarning.call();
+      settings.onMultitagWarning.call(this, $(this), $(selected, $(settings.config_ele)));
       return;
     }
 
     if($.trim(sel) !== "") {
-      settings.beforeTag.call(this, $(this));
-      newNode = $(self.build_selector(settings.sticky_tag, settings.sticky_tag, $(selected).attr("style"), false));
+      settings.beforeTag.call(this, $(this), $(selected, $(settings.config_ele)));
+      newNode = $(self.build_selector(settings.sticky_tag, settings.sticky_tag, $(selected, $(settings.config_ele)).attr("style"), false));
       try {
         if(self.range_intersects_tags(range, $(this))) {
           self.clear_selections();
@@ -371,7 +367,7 @@
             range.surroundContents(newNode[0]); 
             self.add_resizers($(this), settings, newNode);
             self.context_menu($(this), settings, newNode);
-            settings.onTag.call(this, $(this), { "tag" : { "type" : settings.sticky_tag, "value" : range.toString(), "offset" : offset }, "content" : self.convert_markup(this) });
+            settings.onTag.call(this, $(this), $(selected, $(settings.config_ele)), { "tag" : { "type" : settings.sticky_tag, "value" : range.toString(), "offset" : offset }, "content" : self.convert_markup(this) });
           } else {
             $(this).data("data-" + gt, { "range" : range, "offset" : offset });
           }
@@ -384,18 +380,18 @@
     }
   };
 
-  GT.add_selection = function(obj, selection, settings) {
+  GT.add_selection = function(obj, tag, settings) {
     var self     = this,
-        tag_type = selection.attr("data-" + gt),
+        tag_type = tag.attr("data-" + gt),
         data     = $(obj).data("data-" + gt),
-        newNode  = $(self.build_selector(tag_type, tag_type, $(selection).attr("style"), false));
+        newNode  = $(self.build_selector(tag_type, tag_type, $(tag).attr("style"), false));
 
     if(data !== undefined) {
-      settings.beforeTag.call(self, $(obj));
+      settings.beforeTag.call(self, $(obj), $(tag));
       data.range.surroundContents(newNode[0]);
       self.add_resizers($(obj), settings, newNode);
       self.context_menu($(obj), settings, newNode);
-      settings.onTag.call(self, $(obj), { "tag" : { "type" : tag_type, "value" : data.range.toString(), "offset" : data.offset }, "content" : self.convert_markup($(obj)) });
+      settings.onTag.call(self, $(obj), $(tag), { "tag" : { "type" : tag_type, "value" : data.range.toString(), "offset" : data.offset }, "content" : self.convert_markup($(obj)) });
     }
     $(obj).data("data-" + gt, "");
   };
@@ -495,7 +491,7 @@
           } else {
             if(stored) {
               if(!settings.multitag && $('[data-' + gt + '=' + _self.attr("data-" + gt) + ']', $(obj)).length === 1) {
-                settings.onMultitagWarning.call();
+                settings.onMultitagWarning.call(this, $(obj), _self);
               } else {
                 self.add_selection($(obj), _self, settings);
               }
@@ -551,11 +547,11 @@
     'sticky_tag'        : '',
 
     'onActivate'        : function(obj, data) { obj = null; data = null; },
-    'beforeTag'         : function(obj) { obj = null; },
-    'onTag'             : function(obj, data) { obj = null; data = null; },
+    'beforeTag'         : function(obj, tag) { obj = null; tag = null; },
+    'onTag'             : function(obj, tag, data) { obj = null; tag = null; data = null; },
     'onTagResize'       : function(obj, data) { obj = null; data = null; },
     'onTagRemove'       : function(obj, data) { obj = null; data = null; },
-    'onMultitagWarning' : function() { alert('This tag has already been used'); },
+    'onMultitagWarning' : function(obj, tag) { obj = null; tag = null; alert('This tag has already been used'); },
     'onOverlapWarning'  : function() { alert('This selection overlaps a previous selection'); }
   };
 

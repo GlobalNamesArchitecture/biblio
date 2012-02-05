@@ -64,8 +64,12 @@ $(function(){
     'onActivate'   : function(obj, data) {
       $('#grabtag-output').val(data.content);
     },
-    'onTag'        : function(obj, data) {
+    'onMultitagWarning' : function(obj, tag) {
+      alert($(tag).attr("data-grabtag") + " has already been used");
+    },
+    'onTag'        : function(obj, tag, data) {
        $('#grabtag-output').val(data.content);
+       $(tag).hide();
        console.log(data);
     },
     'onTagResize'  : function(obj, data) {
@@ -74,6 +78,7 @@ $(function(){
     },
     'onTagRemove'  : function(obj, data) {
        $('#grabtag-output').val(data.content);
+       $('#grabtag-initializer').find('[data-grabtag=' + data.tag.type + ']').show();
        console.log(data);
     }
   });
@@ -101,14 +106,20 @@ $(function(){
     sticky     : true,
     sticky_tag : 'color',
     config_ele : '#freeform-config',
-    onTag      : function(obj, data) {
-      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (added)');
+    onTag      : function(obj, tag, data) {
+      obj = null; tag = null;
+      var offset = 'offset:start=' + data.tag.offset.start + ', offset:end=' + data.tag.offset.end;
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (added, ' + offset + ')');
     },
     onTagResize      : function(obj, data) {
-      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (resized)');
+      obj = null;
+      var offset = 'offset:start=' + data.tag.offset.start + ', offset:end=' + data.tag.offset.end;
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (resized, ' + offset + ')');
     },
     onTagRemove      : function(obj, data) {
-      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (removed)');
+      obj = null;
+      var offset = 'offset:start=' + data.tag.offset.start + ', offset:end=' + data.tag.offset.end;
+      $("#freeform-output").val(data.tag.type + ':' + data.tag.value + ' (removed, ' + offset + ')');
     }
   };
   $(".freeform").grabtag(config);
@@ -128,11 +139,11 @@ $(function(){
   <dt>sticky</dt><dd>true or false to cause tag to be applied immediately after selections in extended element, default is false</dd>
   <dt>sticky_tag</dt><dd>Tag to be made sticky on load</dd>
   <dt>onActivate(obj, data)</dt><dd>Callback function that executes after the control panel loads<br>obj = jQuery object being extended<br>data = { 'content' : 'marked up content' }<dd>
-  <dt>beforeTag(obj)</dt><dd>Callback function that executes before a tag is created<br>obj = jQuery object being extended</dd>
-  <dt>onTag(obj, data)</dt><dd>Callback function that executes after a tag is created<br>obj = jQuery object being extended<br>data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse', 'offset' : { 'start' : 22, 'end' : 32 } }, 'content' : 'marked up content' }</dd>
+  <dt>beforeTag(obj, tag)</dt><dd>Callback function that executes before a tag is created<br>obj = jQuery object being extended<br>tag = jQuery object for chosen tag type</dd>
+  <dt>onTag(obj, tag, data)</dt><dd>Callback function that executes after a tag is created<br>obj = jQuery object being extended<br>tag = jQuery object for chosen tag type<br>data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse', 'offset' : { 'start' : 22, 'end' : 32 } }, 'content' : 'marked up content' }</dd>
   <dt>onTagResize(obj, data)</dt><dd>Callback function that executes after a tag is resized<br>obj = jQuery object being extended<br> data = { 'tag' : { 'type' : 'author', 'value' : 'D.P. Shorthouse', 'offset' : { 'start' : 17, 'end' : 32 } }, 'content' : 'marked up content' }</dd>
   <dt>onTagRemove(obj, data)</dt><dd>Callback function that executes after a tag is removed<br>obj = jQuery object being extended<br>data = { 'tag' : { 'type' : 'author', 'value' : 'D.P. Shorthouse', 'offset' : { 'start' : 17, 'end' : 32 } }, 'content' : 'marked up content' }.<br><strong>NOTE:</strong> a right-click context menu is drawn using <a href="http://www.JavascriptToolbox.com/lib/contextmenu/">jquery.contextMenu.js</a>. In its absence, this callback will not be executed.</dd>
-  <dt>onMultitagWarning()</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type while <strong>multitag</strong> set to false</dd>
+  <dt>onMultitagWarning(obj, tag)</dt><dd>Callback function that overrides default warning when user attempts to create multiple tags of same type while <strong>multitag</strong> set to false<br>obj = jQuery object being extended<br>tag = jQuery tag that was clicked</dd>
   <dt>onOverlapWarning()</dt><dd>Callback function that overrides default warning when user expands tag into another tag or when user attempts to create tag within another tag</dd>
 </dl>
 <h3>Additional Methods</h3>

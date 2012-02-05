@@ -2,6 +2,7 @@
 //= require jquery.grabtag
 $ ->
  config = {
+   config_ele : '#grabtag-initializer',
    multitag : false,
    tags : {
        "journal" : [
@@ -28,10 +29,12 @@ $ ->
        "extra" : [ "note", "container", "retrieved", "tech", "translator", "unknown", "url" ]
    },
    active_group : 'journal',
-   sitcky_tag   : 'author',
+   onMultitagWarning : (obj, tag) ->
+     alert($(tag).attr("data-grabtag") + " has already been used")
    onActivate : (obj, data) ->
      $('#grabtag-output').val(data.content)
-   onTag : (obj, data) ->
+   onTag : (obj, tag, data) ->
+     $(tag).hide()
      $('#grabtag-output').val(data.content)
      console.log(data)
    onTagResize : (obj, data) ->
@@ -39,6 +42,7 @@ $ ->
      console.log(data)
    onTagRemove : (obj, data) ->
      $('#grabtag-output').val(data.content)
+     $('#grabtag-initializer').find('[data-grabtag=' + data.tag.type + ']').show()
      console.log(data)
  }
  $(".biblio-selector").grabtag(config)
@@ -47,15 +51,18 @@ $ ->
    $(".biblio-selector").grabtag("remove_all")
 
   config = {
-    tags        : ["color", "shape"],
+    tags        : ["taxon", "color", "shape"],
     sticky      : true,
     sticky_tag  : 'color',
     config_ele  : '#freeform-config'
-    onTag       : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (added, offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end + ')')
+    onTag       : (obj, tag, data) ->
+      offset = 'offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (added, ' + offset + ')')
     onTagResize : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (resized, offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end + ')')
+      offset = 'offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (resized, ' + offset + ')')
     onTagRemove : (obj, data) ->
-      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (removed, offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end + ')')
+      offset = 'offset:start=' + data.tag.offset.start + ' , offset:end=' + data.tag.offset.end
+      $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (removed, ' + offset + ')')
   }
   $(".freeform").grabtag(config)
