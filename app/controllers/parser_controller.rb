@@ -1,4 +1,4 @@
-class CitationsController < ApplicationController
+class ParserController < ApplicationController
   require 'anystyle/parser'
   require 'citeproc'
   require 'openurl'

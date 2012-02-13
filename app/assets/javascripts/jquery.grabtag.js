@@ -49,9 +49,9 @@
     snippet = $('[data-' + gt + ']', result);
     snippet.each(function() {
       tag = $(this).attr("data-" + gt);
-      $(this).prev(".grabtag-resizer").remove().end()
-             .next(".grabtag-resizer").remove().end()
-             .wrap('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
+      $(this).prev("." + gt + "-resizer").remove().end()
+             .next("." + gt + "-resizer").remove().end()
+             .before('<' + tag + '>' + $(this).text() + '</' + tag + '>').remove();
     });
     result[0].normalize();
     return result.html();
@@ -85,6 +85,17 @@
       sel = document.selection.createRange();
     }
     return sel;
+  };
+
+  GT.get_range = function(selection) {
+    var range = "";
+
+    if(typeof selection.getRangeAt !== "undefined") {
+      range = selection.getRangeAt(0);
+    } else {
+      range = document.selection.createRange();
+    }
+    return range;
   };
 
   GT.build_selector = function(title, innerContent, style, selector) {
@@ -145,7 +156,7 @@
         textRange         = "",
         preCaretTextRange = "";
 
-    if (typeof window.getSelection != "undefined") {
+    if (typeof window.getSelection !== "undefined") {
         range = window.getSelection().getRangeAt(0);
         preCaretRange = range.cloneRange();
         preCaretRange.selectNodeContents(element);
@@ -153,12 +164,15 @@
         end           = preCaretRange.toString().length;
         start         = end - range.toString().length;
         caretOffset   = { "start" : start , "end" : end };
-    } else if (typeof document.selection != "undefined" && document.selection.type != "Control") {
+    } else if (typeof document.selection !== "undefined" && document.selection.type !== "Control") {
         textRange         = document.selection.createRange();
         preCaretTextRange = document.body.createTextRange();
         preCaretTextRange.moveToElementText(element);
         preCaretTextRange.setEndPoint("EndToEnd", textRange);
-        caretOffset       = preCaretTextRange.text.length;
+        end           = preCaretTextRange.text.length;
+        start         = end - textRange.text.length;
+        caretOffset   = { "start" : start, "end" : end };
+
     }
     return caretOffset;
   };
@@ -169,11 +183,11 @@
         resizer_w = self.build_resizer('w'),
         resizer_e = self.build_resizer('e');
 
-    if($(newNode).children('.' + gt + '-resizer').length === 0) {
-      $(newNode).prepend(resizer_w).append(resizer_e);
+    if($(newNode, obj).children('.' + gt + '-resizer').length === 0) {
+      $(newNode, obj).prepend(resizer_w).append(resizer_e);
     }
 
-    $('.' + gt + '-resizer').mousedown(function() {
+    $('.' + gt + '-resizer', $(newNode)).mousedown(function() {
       var _self      = $(this),
           tag        = obj[0].children[$(this).parent().index()],
           tag_type   = $(tag).attr("data-" + gt);
@@ -182,8 +196,8 @@
       $(obj)[gt]("destroy");
 
       $(obj).unbind(eventNameResize).bind(eventNameResize, function() {
-        var sel                = self.get_selections(),
-            range              = sel.getRangeAt(0),
+        var selection          = self.get_selections(),
+            range              = self.get_range(selection),
             preCaretRange      = range.cloneRange(),
             intersects         = self.range_intersects(range, tag.childNodes[1]),
             new_range          = document.createRange(),
@@ -245,7 +259,7 @@
             }
             $(tag).before(newNode).remove();
             self.add_resizers($(this), settings, newNode);
-            self.context_menu($(this), settings, newNode);
+            self.add_context_menu($(this), settings, newNode);
             obj[0].normalize();
             settings.onTagResize.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents, "offset" : offset }, "content" : self.convert_markup(this) });
           }
@@ -262,7 +276,7 @@
     });
   };
 
-  GT.context_menu = function(obj, settings, tag) {
+  GT.add_context_menu = function(obj, settings, tag) {
     var self      = this;
 
     $(tag).on("mouseover", function() {
@@ -271,14 +285,22 @@
           menu = [{
             'Remove':{
               onclick:function(menuItem,menu) {
-                var s       = window.getSelection(),
-                    range   = document.createRange(),
+                var s       = "",
+                    range   = "",
                     offset  = {},
                     content = "";
                 
                 menuItem = null; menu = null;
-                range.selectNode(tag[0]);
-                s.addRange(range);
+                if(window.getSelection) {
+                  s = window.getSelection();
+                  range = document.createRange()
+                  range.selectNode(tag[0]);
+                  s.addRange(range);
+                } else {
+                  range = document.selection.createRange();
+                  range.moveToElementText(tag[0]);
+                  range.select();
+                }
                 offset = self.get_offset($(obj)[0]);
                 content = $(this).find('.' + gt + '-resizer').remove().end().html();
                 $(this).before(content).unbind("contextmenu").remove();
@@ -324,12 +346,12 @@
       if(snippet.length > 1 && !settings.multitag) {
         $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', self.get_style(value));
         self.add_resizers($(obj), settings, $(snippet[0]));
-        self.context_menu($(obj), settings, $(snippet[0]));
+        self.add_context_menu($(obj), settings, $(snippet[0]));
       } else {
         snippet.each(function() {
           $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', self.get_style(value));
           self.add_resizers($(obj), settings, $(this));
-          self.context_menu($(obj), settings, $(this));
+          self.add_context_menu($(obj), settings, $(this));
         });
       }
     });
@@ -339,12 +361,18 @@
 
   GT.tag_selected = function(e) {
     var self       = GT,
-        sel        = self.get_selections(),
-        range      = sel.getRangeAt(0),
+        selection  = self.get_selections(),
+        range      = self.get_range(selection),
+        sel_text   = (window.getSelection) ? selection.toString() : selection.text,
         newNode    = "",
         settings   = e.data.settings,
         selected   = '.' + gt + '-tag[data-' + gt + '=' + settings.sticky_tag + ']',
-        offset     = {};
+        offset     = self.get_offset($(this)[0]);
+
+    if(!settings.sticky) {
+      $(this).data("data-" + gt, { "range" : range, "offset" : offset });
+      return;
+    }
 
     if(!settings.multitag && $(selected, $(this)).length === 1) {
       self.clear_selections();
@@ -352,25 +380,30 @@
       return;
     }
 
-    if($.trim(sel) !== "") {
+    if($.trim(sel_text) !== "") {
       settings.beforeTag.call(this, $(this), $(selected, $(settings.config_ele)));
-      newNode = $(self.build_selector(settings.sticky_tag, settings.sticky_tag, $(selected, $(settings.config_ele)).attr("style"), false));
+      newNode = $(self.build_selector(settings.sticky_tag, sel_text, $(selected, $(settings.config_ele)).attr("style"), false));
       try {
         if(self.range_intersects_tags(range, $(this))) {
           self.clear_selections();
           settings.onOverlapWarning.call();
           return;
         } else {
-          offset = self.get_offset($(this)[0]);
-          if(settings.sticky) {
-            self.clear_selections();
-            range.surroundContents(newNode[0]); 
+          self.clear_selections();
+          if(window.getSelection) {
+            newNode = $(newNode);
+            range.surroundContents(newNode[0]);
             self.add_resizers($(this), settings, newNode);
-            self.context_menu($(this), settings, newNode);
-            settings.onTag.call(this, $(this), $(selected, $(settings.config_ele)), { "tag" : { "type" : settings.sticky_tag, "value" : range.toString(), "offset" : offset }, "content" : self.convert_markup(this) });
+            self.add_context_menu($(this), settings, newNode);
           } else {
-            $(this).data("data-" + gt, { "range" : range, "offset" : offset });
+            var wrapper = newNode.wrap("<div></div>").parent();
+            wrapper.find("." + gt + "-tag").each(function() {
+//              self.add_resizers($(obj), settings, $(this));
+//              self.add_context_menu($(obj), settings, $(this));
+            });
+            range.pasteHTML(wrapper.html());
           }
+          settings.onTag.call(this, $(this), $(selected, $(settings.config_ele)), { "tag" : { "type" : settings.sticky_tag, "value" : sel_text, "offset" : offset }, "content" : self.convert_markup(this) });
         }
       } catch(error) {
         self.clear_selections();
@@ -390,7 +423,7 @@
       settings.beforeTag.call(self, $(obj), $(tag));
       data.range.surroundContents(newNode[0]);
       self.add_resizers($(obj), settings, newNode);
-      self.context_menu($(obj), settings, newNode);
+      self.add_context_menu($(obj), settings, newNode);
       settings.onTag.call(self, $(obj), $(tag), { "tag" : { "type" : tag_type, "value" : data.range.toString(), "offset" : data.offset }, "content" : self.convert_markup($(obj)) });
     }
     $(obj).data("data-" + gt, "");

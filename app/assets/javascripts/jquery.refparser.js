@@ -22,7 +22,7 @@
         defaults = {
 
           // JSONP-based web service parser
-          parserUrl   : 'http://refparser.shorthouse.net/citations/',
+          parserUrl   : 'http://biblio.globalnames.org/plugins/embed',
 
           // set the target for the final click event (if there is one)
           target      : '',
@@ -37,7 +37,7 @@
           timeout     : 10000,
 
           // URL path to the icons directory & icons themselves
-          iconPath  : 'http://refparser.shorthouse.net/assets/',
+          iconPath  : 'http://biblio.globalnames.org/assets/',
           iconClass : 'refparser-icon',
           icons     : {
             search   : {
@@ -157,10 +157,10 @@
         });
       } else {
         self.append('<a href="#" class="'+settings.iconClass+'"><img src="'+settings.iconPath+settings.icons.search.icon+'" alt="' + settings.icons.search.title+'" title="'+settings.icons.search.title+'" /></a>');
-        self.find('.'+settings.iconClass).css({'border':'0px'}).click(function() {
+        self.find('.'+settings.iconClass).click(function() {
           base.execute(self, self.text());
           return false;
-        });
+        }).end().find("img").css({'border':'0px'});
       }
     });
   };

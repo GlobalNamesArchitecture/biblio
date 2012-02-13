@@ -1,0 +1,21 @@
+<div id="Header" class="structural fixedWidth">
+  <div class="inner">
+    <div id="Logo">
+      <a href="/">
+        <h1>Global Names Biblio Tools</h1>
+      </a>
+    </div>
+    <ul id="SiteNavigation">
+      <%- if controller_name == "home" -%>
+        <li class="active"><%= link_to "Home", root_path %></li>
+      <%- else -%>
+        <li><%= link_to "Home", root_path %></li>
+      <%- end -%>
+      <%- if controller_path.include? "plugins" -%>
+        <li class="active"><%= link_to "Plugins", plugins_path %></li>
+      <%- else -%>
+        <li><%= link_to "Plugins", plugins_path %></li>
+      <%- end -%>
+    </ul>
+  </div>
+</div>

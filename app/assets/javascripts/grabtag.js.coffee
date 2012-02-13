@@ -37,14 +37,14 @@ $ ->
    onTag : (obj, tag, data) ->
      $(tag).parent().hide()
      $('#grabtag-output').val(data.content)
-     console.log(data)
+     console.log(data) if (typeof console == "object")
    onTagResize : (obj, data) ->
      $('#grabtag-output').val(data.content)
-     console.log(data)
+     console.log(data) if (typeof console == "object")
    onTagRemove : (obj, data) ->
      $('#grabtag-output').val(data.content)
      $('#grabtag-initializer').find('[data-grabtag=' + data.tag.type + ']').parent().show()
-     console.log(data)
+     console.log(data) if (typeof console == "object")
  }
  $(".biblio-selector").grabtag(config)
 

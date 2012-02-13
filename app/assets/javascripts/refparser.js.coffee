@@ -4,12 +4,15 @@
 //= require jquery.refparser
 $ ->
  config = {
-   parserUrl: "/citations/",
+   parserUrl: "/parser/",
    iconPath : "/assets/",
    target   : "_blank",
-   onSuccessfulParse : (obj, data) -> console.log(data),
-   onFailedParse : (obj) -> console.log(obj),
-   onError : (obj) -> console.log(obj)
+   onSuccessfulParse : (obj, data) ->
+       console.log(data) if (typeof console == "object")
+   onFailedParse : (obj) ->
+       console.log(obj) if (typeof console == "object")
+   onError : (obj) ->
+       console.log(obj) if (typeof console == "object")
  }
  $(".biblio-item").refparser(config)
  $(".biblio-input").refparser(config)

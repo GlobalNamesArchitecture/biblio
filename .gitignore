@@ -19,3 +19,6 @@ config/database.yml
 
 # Ignore OS files
 .DS_Store
+
+# Ignore rvm
+.rvmrc

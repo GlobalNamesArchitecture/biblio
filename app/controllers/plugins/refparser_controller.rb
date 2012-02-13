@@ -1,4 +1,4 @@
-class ExamplesController < ApplicationController
+class Plugins::RefparserController < ApplicationController
   def index
     @references = [
       "DeMaster, D., I. Stirling. 1981. *Ursus maritimus*. Mammalian Species, 145: 1-7.",
