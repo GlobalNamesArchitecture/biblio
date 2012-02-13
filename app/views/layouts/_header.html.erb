@@ -11,10 +11,15 @@
       <%- else -%>
         <li><%= link_to "Home", root_path %></li>
       <%- end -%>
-      <%- if controller_path.include? "plugins" -%>
-        <li class="active"><%= link_to "Plugins", plugins_path %></li>
+      <%- if controller_name == "parser" -%>
+        <li class="active"><%= link_to "Parser", parser_index_path %></li>
       <%- else -%>
-        <li><%= link_to "Plugins", plugins_path %></li>
+        <li><%= link_to "Parser", parser_index_path %></li>
+      <%- end -%>
+      <%- if controller_path.include? "plugins" -%>
+        <li class="active"><%= link_to "jQuery Plugins", plugins_path %></li>
+      <%- else -%>
+        <li><%= link_to "jQuery Plugins", plugins_path %></li>
       <%- end -%>
     </ul>
   </div>

@@ -22,7 +22,7 @@
         defaults = {
 
           // JSONP-based web service parser
-          parserUrl   : 'http://biblio.globalnames.org/plugins/embed',
+          parserUrl   : 'http://biblio.globalnames.org/parser.json',
 
           // set the target for the final click event (if there is one)
           target      : '',

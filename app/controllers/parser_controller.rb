@@ -5,22 +5,30 @@ class ParserController < ApplicationController
   require 'typhoeus'
 
   def index
-    valid_sources = ["crossref", "bhl", "biostor"]
-    valid_styles  = ["ama", "apa", "asa"]
+    respond_to do |format|
+      format.json do
+        valid_sources = ["crossref", "bhl", "biostor"]
+        valid_styles  = ["ama", "apa", "asa"]
 
-    @citation = params[:q] || ""
-    @sources  = params[:sources] || {}
-    @style    = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
+        @citation = params[:q] || ""
+        @sources  = params[:sources] || {}
+        @style    = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
 
-    @sources.each do |key, source|
-      if !valid_sources.include?(key)
-        @sources.delete(key)
+        @sources.each do |key, source|
+          if !valid_sources.include?(key)
+            @sources.delete(key)
+          end
+        end
+
+        response = (@citation =~ /10.(\d)+(\S)+/) ? doi_response : parse_response
+
+        render :json => { :metadata => make_metadata, :records => [response] }, :callback => params[:callback]
       end
+
+      format.html do
+      end
+
     end
-
-    response = (@citation =~ /10.(\d)+(\S)+/) ? doi_response : parse_response
-
-    render :json => { :metadata => make_metadata, :records => [response] }, :callback => params[:callback]
   end
 
   def create

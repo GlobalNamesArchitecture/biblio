@@ -1,5 +1,19 @@
-<% title "Plugins" %>
+<% title "jQuery Plugins" %>
 
 <%- content_for :content_splash do -%>
-<%= content_tag :h2, "Plugins" %>
+<%= content_tag :h2, "jQuery Plugins" %>
 <%- end -%>
+
+<div id="panel-wrapper" class="clear">
+
+<div class="panel">
+<h3><%= link_to "RefParser", plugins_refparser_index_path %></h3>
+<p>Seamlessly embed parsing and discovery in your online bibliographic citations and use the callback functions to crowd-source DOI capture.</p>
+</div>
+
+<div class="panel">
+<h3><%= link_to "GrabTag", plugins_grabtag_index_path %></h3>
+<p>Empower users to mark-up your content and provide semantic meaning to words, phrases, or more.</p>
+</div>
+
+</div>

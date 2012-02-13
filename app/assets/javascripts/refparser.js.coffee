@@ -4,7 +4,7 @@
 //= require jquery.refparser
 $ ->
  config = {
-   parserUrl: "/parser/",
+   parserUrl: "/parser.json",
    iconPath : "/assets/",
    target   : "_blank",
    onSuccessfulParse : (obj, data) ->

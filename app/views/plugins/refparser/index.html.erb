@@ -16,10 +16,10 @@
 <% end %>
 
 <h3><a name="example2">Example 2</a>: User Input</h23>
-<%= form_tag("/citations", :method => "POST") do %>
+<%= form_tag("/parser.json", :method => "POST") do %>
   <%= text_field_tag :citations, nil, :class => 'biblio-input' %>
 <% end %>
-<h4>Examples for Copy/Paste</h4>
+<h4>Examples for Copy/Paste Above</h4>
 <div class="examples">Solodovnikov, A. 2012. Rove beetle subtribes Quediina, Amblyopinina and Tanygnathinina: systematic changes affecting Central European fauna (Coleoptera, Staphylinidae, Staphylinini). <em>ZooKeys</em> <strong>162</strong>: 25-42.</div>
 <div class="examples">10.3897/zookeys.166.1802</div>
 
@@ -34,7 +34,7 @@ $(function(){
   var options = {
 
      // JSONP-based web service parser
-     parserUrl   : "<%= url_for( :controller => 'plugins/refparser', :action => 'index', :only_path => false ) %>",
+     parserUrl   : "<%= url_for( :controller => '/parser', :action => 'index', :format => :json, :only_path => false ) %>",
 
      // select 3rd party sources to query, pass empty array if no querying desired
      sources     : ["crossref", "bhl", "biostor"],
