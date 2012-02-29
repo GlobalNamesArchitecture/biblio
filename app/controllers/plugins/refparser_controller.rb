@@ -1,4 +1,6 @@
 class Plugins::RefparserController < ApplicationController
+  caches_page :index
+
   def index
     @references = [
       "DeMaster, D., I. Stirling. 1981. *Ursus maritimus*. Mammalian Species, 145: 1-7.",

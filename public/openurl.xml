@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossref_result xmlns="http://www.crossref.org/qrschema/2.0" version="2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.crossref.org/qrschema/2.0 http://www.crossref.org/schema/queryResultSchema/crossref_query_output2.0.xsd">
+  <query_result>
+    <head>
+      <doi_batch_id>none</doi_batch_id>
+    </head>
+    <body>
+      <query status="resolved" fl_count="0">
+        <doi type="journal_article">10.3897/zookeys.166.1802</doi>
+        <issn type="electronic">1313-2970</issn>
+        <issn type="print">1313-2989</issn>
+        <journal_title>ZooKeys</journal_title>
+        <contributors>
+          <contributor sequence="first" contributor_role="author">
+            <given_name>Benjamin</given_name>
+            <surname>Wipfler</surname>
+          </contributor>
+          <contributor sequence="additional" contributor_role="author">
+            <given_name>Hans</given_name>
+            <surname>Pohl</surname>
+          </contributor>
+          <contributor sequence="additional" contributor_role="author">
+            <given_name>Reinhard</given_name>
+            <surname>Predel</surname>
+          </contributor>
+        </contributors>
+        <volume>166</volume>
+        <issue>0</issue>
+        <first_page>75</first_page>
+        <year media_type="online">2012</year>
+        <publication_type>full_text</publication_type>
+        <article_title>Two new genera and two new species of Mantophasmatodea (Insecta, Polyneoptera) from Namibia</article_title>
+      </query>
+    </body>
+  </query_result>
+</crossref_result>

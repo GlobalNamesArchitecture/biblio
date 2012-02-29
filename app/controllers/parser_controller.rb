@@ -71,8 +71,21 @@ class ParserController < ApplicationController
 
   def doi_response
     begin
-      parsed = doi_lookup
+      hydra = setup_hydra
+      @doi_lookup = doi_lookup
+      @issn_lookup = issn_lookup
+      hydra.queue @doi_lookup
+      hydra.queue @issn_lookup
+      hydra.run
+
+      parsed = @doi_lookup.handled_response
+      issn = @issn_lookup.handled_response
+
       parsed["identifiers"] = [{ "id" => parsed["DOI"], "type" => "doi" }]
+      issn.each do |i|
+        parsed["identifiers"] << i
+      end
+
       parsed["formatted"] = format_citeproc(parsed)
       parsed["type"] = (parsed["type"] == "article-journal") ? "article" : parsed["type"]
       parsed["status"] = "success"
@@ -153,9 +166,9 @@ class ParserController < ApplicationController
 
   def context_object(parsed)
     co = OpenURL::ContextObject.new
-
     co.referent.set_format(parsed["type"])
     co.referent.set_metadata('genre', parsed["type"])
+    co.refererent.set_metadata('id', parsed["DOI"]) unless parsed["DOI"].nil?
 
     if parsed["type"] == 'journal' || parsed["type"] == 'article'
       co.referent.set_format("journal")
@@ -180,27 +193,53 @@ class ParserController < ApplicationController
     doi = @citation.match(/10.(\d)+(\S)+/)[0].chomp('.')
     req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 8000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
     req.on_complete do |r|
-      result = []
       if r.success?
-        result = JSON.parse(r.body)
+        begin
+          JSON.parse(r.body)
+        rescue
+          nil
+        end
       elsif r.timed_out?
         #TODO: do something here
-        result
+        nil
       else
         #TODO: do something here
-        result
+        nil
       end
     end
-    hydra = setup_hydra
-    hydra.queue req
-    hydra.run
-    req.handled_response
+    return req
+  end
+  
+  def issn_lookup
+    params = {
+      :id => @citation.match(/10.(\d)+(\S)+/)[0].chomp('.'),
+      :noredirect => true,
+      :pid => Biblio::Application.config.crossref_pid
+    }.to_query
+    req = Typhoeus::Request.new('http://www.crossref.org/openurl?' << params, :timeout => 8000, :cache_timeout => 1.day)  
+    req.on_complete do |r|
+      if r.success?
+        begin
+          issn_types = { :electronic => "eISSN", :print => "ISSN" }
+          Nokogiri::XML(r.body).css('issn').map {|x| { "id" => x.content, "type" => issn_types[x.attributes["type"].value.to_sym] } }
+        rescue
+          nil
+        end
+      elsif r.timed_out?
+        #TODO: do something here
+        nil
+      else
+        #TODO: do something here
+        nil
+      end
+    end
+    return req
   end
 
   def crossref(co)
     #TODO: ignore books?
     transport = OpenURL::Transport.new('http://www.crossref.org/openurl', co)
-    transport.extra_args = { :pid => 'dshorthouse@eol.org', :noredirect => true }
+    transport.extra_args = { :pid => Biblio::Application.config.crossref_pid, :noredirect => true }
     req = Typhoeus::Request.new('http://www.crossref.org' << transport.get_path, :timeout => 8000, :cache_timeout => 1.day)
     req.on_complete do |r|
       result = []
