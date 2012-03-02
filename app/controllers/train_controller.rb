@@ -4,7 +4,7 @@ class TrainController < ApplicationController
   def create
     tagged = params[:tagged]
     begin
-      Anystyle.parser.train tagged, true
+      Anystyle.parser.train tagged, false
       Anystyle.parser.model.save
       response = "success"
     rescue
