@@ -185,8 +185,8 @@ class ParserController < ApplicationController
       co.referent.set_metadata('btitle', parsed["container-title"]) unless parsed["container-title"].nil?
       co.referent.set_metadata('publisher', parsed["publisher"]) unless parsed["publisher"].nil?
     end
-    co.referent.set_metadata('aulast', parsed["author"][0]["family"]) unless parsed["author"].nil?
-    co.referent.set_metadata('aufirst', parsed["author"][0]["given"]) unless parsed["author"].nil?
+    co.referent.set_metadata('aulast', parsed["author"][0]["family"]) unless parsed["author"].nil? && parsed["author"][0]["family"].nil?
+    co.referent.set_metadata('aufirst', parsed["author"][0]["given"]) unless parsed["author"].nil? && parsed["author"][0]["given"].nil?
     co.referent.set_metadata('date', parsed["year"]) unless parsed["year"].nil?
     co.referent.set_metadata('pages', parsed["page"]) unless parsed["page"].nil?
     pages = parsed["page"].split("--") unless parsed["page"].nil?
