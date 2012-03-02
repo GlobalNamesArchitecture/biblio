@@ -1,8 +1,0 @@
-HTTP/1.1 303 See Other
-Server: Apache-Coyote/1.1
-Location: http://www.sciencemag.org/cgi/doi/10.1126/science.1157784
-Expires: Tue, 28 Feb 2012 23:16:44 GMT
-Content-Type: text/html;charset=utf-8
-Content-Length: 200
-Date: Tue, 28 Feb 2012 15:16:05 GMT
-

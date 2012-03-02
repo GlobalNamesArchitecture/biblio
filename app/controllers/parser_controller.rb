@@ -1,8 +1,9 @@
 class ParserController < ApplicationController
-  require 'anystyle/parser'
   require 'citeproc'
   require 'openurl'
   require 'typhoeus'
+  
+  protect_from_forgery :except => :create
 
   def index
     respond_to do |format|
@@ -101,6 +102,7 @@ class ParserController < ApplicationController
       parsed = parse
       parsed["identifiers"] = make_requests(parsed).flatten
       parsed["formatted"] = format_citeproc(parsed)
+      parsed["tagged"] = tagged
       parsed["status"] = get_status(parsed)
     rescue
       parsed = {}
@@ -128,11 +130,15 @@ class ParserController < ApplicationController
   end
 
   def format_citeproc(cp)
-    CiteProc.process(cp, :style => @style)
+    CiteProc.process(cp, :style => @style) rescue nil
   end
 
   def parse(citation = nil)
     Anystyle.parse(citation || @citation, :citeproc)[0]
+  end
+  
+  def tagged
+    Anystyle.parse(@citation, :tags)[0]
   end
 
   def make_requests(parsed)

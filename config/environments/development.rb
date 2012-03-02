@@ -29,4 +29,6 @@ Biblio::Application.configure do
   config.assets.debug = true
   
   config.crossref_pid = "dshorthouse@eol.org"
+
+  config.anystyle = { :mode => :redis, :host => 'localhost' } 
 end

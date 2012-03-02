@@ -144,7 +144,8 @@ $(function(){
   <dt>active_group</dt><dd>Group of tags to be made active on load (if tags are arranged in groups)</dd>
   <dt>sticky</dt><dd>true or false to cause tag to be applied immediately after selections in extended element, default is false</dd>
   <dt>sticky_tag</dt><dd>Tag to be made sticky on load</dd>
-  <dt>onActivate(obj, data)</dt><dd>Callback function that executes after the control panel loads<br>obj = jQuery object being extended<br>data = { 'content' : 'marked up content' }<dd>
+  <dt>beforeActivate(obj, data)</dt><dd>Callback function that executes on load, <em>before</em> the object's HTML is stripped and tags are created<br>obj = jQuery object being extended<br>data = { 'tags' : 'object of tags in config' }</dd>
+  <dt>onActivate(obj, data)</dt><dd>Callback function that executes on load, <em>after</em> the object's HTML is stripped and tags are created (see below under <a href='#limitations'>limitations</a>)<br>obj = jQuery object being extended<br>data = { 'content' : 'marked up content' }<dd>
   <dt>beforeTag(obj, tag)</dt><dd>Callback function that executes before a tag is created<br>obj = jQuery object being extended<br>tag = jQuery object for chosen tag type</dd>
   <dt>onTag(obj, tag, data)</dt><dd>Callback function that executes after a tag is created<br>obj = jQuery object being extended<br>tag = jQuery object for chosen tag type<br>data = { 'tag' : { 'type' : 'author', 'value' : 'Shorthouse', 'offset' : { 'start' : 22, 'end' : 32 } }, 'content' : 'marked up content' }</dd>
   <dt>onTagResize(obj, data)</dt><dd>Callback function that executes after a tag is resized<br>obj = jQuery object being extended<br> data = { 'tag' : { 'type' : 'author', 'value' : 'D.P. Shorthouse', 'offset' : { 'start' : 17, 'end' : 32 } }, 'content' : 'marked up content' }</dd>

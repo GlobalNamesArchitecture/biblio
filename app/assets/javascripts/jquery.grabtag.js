@@ -333,6 +333,8 @@
       }
     });
 
+    settings.beforeActivate.call(this, obj, { "tags" : tags });
+
     $('*', obj).each(function() {
       if($(this).attr('data-' + gt) === undefined || !$.inArray($(this).attr('data-' + gt), tags)) {
         $(this).before($(this).text()).remove();
@@ -579,6 +581,7 @@
     'sticky'            : false,
     'sticky_tag'        : '',
 
+    'beforeActivate'    : function(obj, data) { obj = null; data = null; },
     'onActivate'        : function(obj, data) { obj = null; data = null; },
     'beforeTag'         : function(obj, tag) { obj = null; tag = null; },
     'onTag'             : function(obj, tag, data) { obj = null; tag = null; data = null; },
