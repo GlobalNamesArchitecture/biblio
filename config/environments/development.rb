@@ -30,5 +30,5 @@ Biblio::Application.configure do
   
   config.crossref_pid = "dshorthouse@eol.org"
 
-  config.anystyle = { :mode => :redis, :host => 'localhost' } 
+  config.anystyle = { :model => Rails.root.join('vendor', 'plugins', 'anystyle-parser', 'support', 'anystyle.mod').to_s, :mode => :redis, :host => 'localhost' } 
 end
