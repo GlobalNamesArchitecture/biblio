@@ -176,7 +176,7 @@ class ParserController < ApplicationController
     co.referent.set_metadata('genre', parsed["type"])
     co.refererent.set_metadata('id', parsed["DOI"]) unless parsed["DOI"].nil?
 
-    if parsed["type"] == 'journal' || parsed["type"] == 'article'
+    if parsed["type"] == 'journal' || parsed["type"] == 'article' || parsed["type"] == 'article-journal'
       co.referent.set_format("journal")
       co.referent.set_metadata('atitle', parsed["title"]) unless parsed["title"].nil?
       co.referent.set_metadata('jtitle', parsed["container-title"]) unless parsed["container-title"].nil?
