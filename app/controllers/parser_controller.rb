@@ -1,4 +1,5 @@
 class ParserController < ApplicationController
+  require 'anystyle/parser'
   require 'citeproc'
   require 'openurl'
   require 'typhoeus'
@@ -21,7 +22,7 @@ class ParserController < ApplicationController
           end
         end
 
-        response = (@citation =~ /10.(\d)+(\S)+/) ? doi_response : parse_response
+        response = (@citation =~ /10\.(\d)+([^(\s\>\"\<)])+/) ? doi_response : parse_response
 
         render :json => { :metadata => make_metadata, :records => [response] }, :callback => params[:callback]
       end
@@ -99,6 +100,7 @@ class ParserController < ApplicationController
 
   def parse_response
     begin
+      setup_parser
       parsed = parse
       parsed["identifiers"] = make_requests(parsed).flatten
       parsed["formatted"] = format_citeproc(parsed)
@@ -114,6 +116,7 @@ class ParserController < ApplicationController
   def multiparse_response
     records = []
     citations = params[:citations].split("\r\n").delete_if { |r| r == "" }
+    setup_parser
     citations.each do |citation|
       parsed = parse(citation)
       parsed["status"] = get_status(parsed)
@@ -125,20 +128,29 @@ class ParserController < ApplicationController
   end
 
   def get_status(parsed)
-    return "failed" if parsed["author"].nil? || parsed["issued"]["date-parts"].nil? || parsed["title"].nil?
+    return "failed" if parsed["author"].nil? || parsed["issued"]["date-parts"].nil? || parsed["title"].nil? || parsed["type"].nil? || parsed["container-title"].nil?
     "success"
   end
 
   def format_citeproc(cp)
     CiteProc.process(cp, :style => @style) rescue nil
   end
+  
+  def setup_parser
+    @parser = Anystyle::Parser::Parser.new ({
+      :model => Biblio::Application.config.anystyle[:model],
+      :training_data => Biblio::Application.config.anystyle[:training_data],
+      :mode => Biblio::Application.config.anystyle[:mode],
+      :host => Biblio::Application.config.anystyle[:host]
+    })
+  end
 
   def parse(citation = nil)
-    Anystyle.parse(citation || @citation, :citeproc)[0]
+    @parser.parse(citation || @citation, :citeproc)[0]
   end
   
   def tagged
-    Anystyle.parse(@citation, :tags)[0]
+    @parser.parse(@citation, :tags)[0]
   end
 
   def make_requests(parsed)
