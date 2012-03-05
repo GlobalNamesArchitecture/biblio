@@ -7,11 +7,12 @@ module Biblio
       Anystyle.parser.model.save
     end
     
-    def add_to_model
-      Tag.all.each do |tag|
-        Anystyle.parser.train tag.markup, false
+    def append_train_file
+      File.open(Biblio::Application.config.anystyle[:training_data], 'a') do |f|
+        Tag.all.each do |tag|
+          f.write "\n" << tag.markup
+        end
       end
-      Anystyle.parser.model.save
     end
   end
 end
