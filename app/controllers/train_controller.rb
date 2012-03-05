@@ -14,6 +14,8 @@ class TrainController < ApplicationController
       })
       parser.train tagged, false
       parser.model.save
+      tag = Tag.new(:markup => tagged)
+      tag.save!
       response = "success"
     rescue
       response = "failed"

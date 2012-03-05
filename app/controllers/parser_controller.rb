@@ -88,6 +88,8 @@ class ParserController < ApplicationController
       parsed["formatted"] = format_citeproc(parsed)
       parsed["tagged"] = tagged
       parsed["status"] = get_status(parsed)
+      parsed["verbatim"] = @citation
+      save_parsed(parsed) unless parsed["status"] == "failed"
     rescue
       parsed = {}
       parsed["status"] = "failed"
@@ -105,6 +107,7 @@ class ParserController < ApplicationController
       parsed["identifiers"] = make_requests(parsed).flatten unless parsed["status"] == "failed"
       parsed["verbatim"] = citation
       records << parsed
+      save_parsed(parsed) unless parsed["status"] == "failed"
     end
     records
   end
@@ -124,6 +127,24 @@ class ParserController < ApplicationController
   
   def tagged
     @parser.parse(@citation, :tags)[0]
+  end
+  
+  def save_parsed(parsed)
+    record = Citation.find_by_citeproc_id(parsed["id"])
+    if record.nil?
+      doi = nil
+      parsed["identifiers"].each do |identifier|
+        if identifier[:type] == "doi"
+          doi = identifier[:id]
+        end
+      end
+      record = Citation.new({
+        :citeproc_id => parsed["id"],
+        :citation => parsed["verbatim"],
+        :doi => doi
+      })
+      record.save!
+    end
   end
 
   def make_requests(parsed)

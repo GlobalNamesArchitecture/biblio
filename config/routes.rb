@@ -51,7 +51,7 @@ Biblio::Application.routes.draw do
 
   resources :parser, :only => [:index, :create]
   
-  resources :train, :only => [:create]
+  resources :train, :only => [:create, :destroy]
 
   resources :plugins, :only => [:index]
   

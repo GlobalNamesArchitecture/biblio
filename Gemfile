@@ -6,7 +6,7 @@ gem 'therubyracer'
 # Bundle edge Rails instead:
 # gem 'rails',     :git => 'git://github.com/rails/rails.git'
 
-gem 'sqlite3'
+gem 'mysql2'
 gem 'anystyle-parser'
 gem 'redis'
 gem 'citeproc-ruby'
