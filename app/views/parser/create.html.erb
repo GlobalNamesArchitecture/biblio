@@ -20,10 +20,11 @@
         </tr>
     </thead>
     <tbody>
+<% cols = (params["sources"].nil?) ? 0 : params["sources"].size %>
 <% @records.each do |record| %>
   <tr class="<%= cycle("even", "odd") %> <%= record["status"] %>">
     <% if(record["status"] == "failed") %>
-      <td colspan="8"><span title="<%= record["status"] %>">&nbsp;</span><%= record["verbatim"] %></td>
+      <td colspan="<%= 6 + cols %>"><span title="<%= record["status"] %>">&nbsp;</span><%= record["verbatim"] %></td>
     <% else %>
       <td>
         <% record["author"].each_with_index do |author, i| %>

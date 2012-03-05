@@ -9,8 +9,6 @@ class ParserController < ApplicationController
   def index
     respond_to do |format|
       format.json do
-        valid_sources = ["crossref", "bhl", "biostor"]
-        valid_styles  = ["ama", "apa", "asa"]
 
         @citation = params[:q] || ""
         @sources  = params[:sources] || {}
@@ -22,11 +20,11 @@ class ParserController < ApplicationController
           end
         end
 
-        response = (@citation =~ /10\.(\d)+([^(\s\>\"\<)])+/) ? doi_response : parse_response
+        response = (@citation =~ doi_regex) ? doi_response : parse_response
 
         render :json => { :metadata => make_metadata, :records => [response] }, :callback => params[:callback]
       end
-
+      
       format.html do
       end
 
@@ -34,10 +32,7 @@ class ParserController < ApplicationController
   end
 
   def create
-    valid_sources = ["crossref", "bhl", "biostor"]
-
     @sources = params[:sources] || {}
-
     @sources.each do |key, source|
       if !valid_sources.include?(key)
         @sources.delete(key)
@@ -50,7 +45,6 @@ class ParserController < ApplicationController
       format.json do
         render :json => { :metadata => make_metadata, :records => @records }, :callback => params[:callback]
       end
-
       format.html do
       end
     end
@@ -58,18 +52,6 @@ class ParserController < ApplicationController
   end
 
   protected
-
-  def make_metadata
-    metadata = {
-      :format => "citeproc",
-      :id => "refparser",
-      :owner => "David P. Shorthouse",
-      :specification => "0.81",
-      :namespaces => {
-        :bibo => "http://purl.org/ontology/bibo/"
-      }
-    }
-  end
 
   def doi_response
     begin
@@ -135,15 +117,6 @@ class ParserController < ApplicationController
   def format_citeproc(cp)
     CiteProc.process(cp, :style => @style) rescue nil
   end
-  
-  def setup_parser
-    @parser = Anystyle::Parser::Parser.new ({
-      :model => Biblio::Application.config.anystyle[:model],
-      :training_data => Biblio::Application.config.anystyle[:training_data],
-      :mode => Biblio::Application.config.anystyle[:mode],
-      :host => Biblio::Application.config.anystyle[:host]
-    })
-  end
 
   def parse(citation = nil)
     @parser.parse(citation || @citation, :citeproc)[0]
@@ -171,44 +144,8 @@ class ParserController < ApplicationController
     return responses
   end
 
-  def setup_hydra
-    hydra = Typhoeus::Hydra.new
-    hydra.cache_getter do |request|
-      Rails.cache.read(request.cache_key) rescue nil
-    end
-    hydra.cache_setter do |request|
-      Rails.cache.write(request.cache_key,request.response,expires_in: request.cache_timeout)
-    end
-    return hydra
-  end
-
-  def context_object(parsed)
-    co = OpenURL::ContextObject.new
-    co.referent.set_format(parsed["type"])
-    co.referent.set_metadata('genre', parsed["type"])
-    co.refererent.set_metadata('id', parsed["DOI"]) unless parsed["DOI"].nil?
-
-    if parsed["type"] == 'journal' || parsed["type"] == 'article' || parsed["type"] == 'article-journal'
-      co.referent.set_format("journal")
-      co.referent.set_metadata('atitle', parsed["title"]) unless parsed["title"].nil?
-      co.referent.set_metadata('jtitle', parsed["container-title"]) unless parsed["container-title"].nil?
-      co.referent.set_metadata('volume', parsed["volume"]) unless parsed["volume"].nil?
-    elsif parsed["type"] == 'book'
-      co.referent.set_metadata('btitle', parsed["container-title"]) unless parsed["container-title"].nil?
-      co.referent.set_metadata('publisher', parsed["publisher"]) unless parsed["publisher"].nil?
-    end
-    co.referent.set_metadata('aulast', parsed["author"][0]["family"]) unless parsed["author"].nil? && parsed["author"][0]["family"].nil?
-    co.referent.set_metadata('aufirst', parsed["author"][0]["given"]) unless parsed["author"].nil? && parsed["author"][0]["given"].nil?
-    co.referent.set_metadata('date', parsed["year"]) unless parsed["year"].nil?
-    co.referent.set_metadata('pages', parsed["page"]) unless parsed["page"].nil?
-    pages = parsed["page"].split("--") unless parsed["page"].nil?
-    co.referent.set_metadata('spage', pages[0]) unless pages.nil?
-
-    return co
-  end
-
   def doi_lookup
-    doi = @citation.match(/10.(\d)+(\S)+/)[0].chomp('.')
+    doi = @citation.match(doi_regex)[0].chomp('.')
     req = Typhoeus::Request.new('http://dx.doi.org/' << doi, :timeout => 8000, :headers => { "Accept" => "application/citeproc+json" }, :follow_location => true, :cache_timeout => 1.day)
     req.on_complete do |r|
       if r.success?
@@ -230,7 +167,7 @@ class ParserController < ApplicationController
   
   def issn_lookup
     params = {
-      :id => @citation.match(/10.(\d)+(\S)+/)[0].chomp('.'),
+      :id => @citation.match(doi_regex)[0].chomp('.'),
       :noredirect => true,
       :pid => Biblio::Application.config.crossref_pid
     }.to_query
