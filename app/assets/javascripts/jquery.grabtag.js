@@ -103,6 +103,7 @@
         output  = "";
 
     innerContent = innerContent || "";
+    if(!selector) { classes += ' ' + gt + '-item'; }
     output = '<span class="' + classes + '" style="' + style + '" title="' + title + '" data-' + gt + '="' + title + '">' + innerContent + '</span>';
     if(selector) { output = '<li>' + output + '</li>'; }
     return output;
@@ -260,6 +261,7 @@
             $(tag).before(newNode).remove();
             self.add_resizers($(this), settings, newNode);
             self.add_context_menu($(this), settings, newNode);
+            self.add_hover(newNode);
             obj[0].normalize();
             settings.onTagResize.call(this, $(this), { "tag" : { "type" : tag_type, "value" : contents, "offset" : offset }, "content" : self.convert_markup(this) });
           }
@@ -314,6 +316,19 @@
     });
   };
 
+  GT.add_hover = function(tag) {
+    $(tag).hover(function() {
+      $("." + gt + "-resizer", $(this)).each(function(){
+        $(this).addClass(gt + "-hover");
+      });
+    }, function() {
+      $("." + gt + "-resizer", $(this)).each(function() {
+        $(this).removeClass(gt + "-hover");
+      });
+    }
+   );
+  };
+
   GT.preloader = function(obj, selectors, settings) {
     var self    = this,
         tags    = {},
@@ -346,14 +361,16 @@
     $.each(tags, function(index, value) {
       snippet = $('[data-' + gt + '=' + index + ']', obj);
       if(snippet.length > 1 && !settings.multitag) {
-        $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', self.get_style(value));
+        $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag ' + gt + '-item').attr('title', index).attr('style', self.get_style(value));
         self.add_resizers($(obj), settings, $(snippet[0]));
         self.add_context_menu($(obj), settings, $(snippet[0]));
+        self.add_hover($(snippet[0]));
       } else {
         snippet.each(function() {
-          $(this).addClass(gt + '-selector ' + gt + '-tag').attr('title', index).attr('style', self.get_style(value));
+          $(this).addClass(gt + '-selector ' + gt + '-tag ' + gt + '-item').attr('title', index).attr('style', self.get_style(value));
           self.add_resizers($(obj), settings, $(this));
           self.add_context_menu($(obj), settings, $(this));
+          self.add_hover($(this));
         });
       }
     });
@@ -397,11 +414,13 @@
             range.surroundContents(newNode[0]);
             self.add_resizers($(this), settings, newNode);
             self.add_context_menu($(this), settings, newNode);
+            self.add_hover(newNode);
           } else {
             var wrapper = newNode.wrap("<div></div>").parent();
             wrapper.find("." + gt + "-tag").each(function() {
 //              self.add_resizers($(obj), settings, $(this));
 //              self.add_context_menu($(obj), settings, $(this));
+//              self.add_hover($(this));
             });
             range.pasteHTML(wrapper.html());
           }
@@ -426,6 +445,7 @@
       data.range.surroundContents(newNode[0]);
       self.add_resizers($(obj), settings, newNode);
       self.add_context_menu($(obj), settings, newNode);
+      self.add_hover(newNode);
       settings.onTag.call(self, $(obj), $(tag), { "tag" : { "type" : tag_type, "value" : data.range.toString(), "offset" : data.offset }, "content" : self.convert_markup($(obj)) });
     }
     $(obj).data("data-" + gt, "");

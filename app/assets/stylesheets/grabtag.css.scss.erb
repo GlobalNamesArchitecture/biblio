@@ -6,6 +6,7 @@
 /*
 * grabtag buttons or groups of tags in control panel
 */
+.grabtag-selectors-buttons{margin-bottom:15px;}
 .grabtag-selectors-buttons ul{list-style-type:none;margin:0px;padding:0px;}
 .grabtag-selectors-buttons li{display:inline;margin:0.2em 0.5em 0 0;}
 .grabtag-selectors-buttons a{
@@ -61,9 +62,20 @@
 /*
 * grabtag resizers
 */
+.grabtag-hover{
+  background-image:url(<%= asset_path 'vertical-dots.png' %>);
+  background-repeat:no-repeat;
+  background-position:right;
+}
 .grabtag-resizer{border-left:5px solid transparent;}
-.grabtag-resizer-e{cursor:e-resize;margin-left:-0.15em;}
-.grabtag-resizer-w{cursor:w-resize;margin-right:-0.15em;}
+.grabtag-resizer-e{
+  cursor:e-resize;
+  margin-left:-0.15em;
+}
+.grabtag-resizer-w{
+  cursor:w-resize;
+  margin-right:-0.15em;
+}
 
 /*
 * context menu
