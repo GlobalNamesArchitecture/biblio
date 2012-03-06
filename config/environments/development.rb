@@ -35,5 +35,7 @@ Biblio::Application.configure do
     :training_data => Rails.root.join('vendor', 'plugins', 'anystyle-parser', 'support', 'train.txt').to_s,
     :mode => :redis,
     :host => 'localhost'
-  } 
+  }
+  
+  config.chrome_app_id = 'xxx'
 end

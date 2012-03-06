@@ -50,6 +50,8 @@ GEM
       execjs
     coffee-script-source (1.2.0)
     columnize (0.3.6)
+    crxmake (2.0.7)
+      zip (~> 2.0.2)
     daemons (1.1.8)
     erubis (2.7.0)
     eventmachine (0.12.10)
@@ -149,6 +151,7 @@ GEM
       multi_json (>= 1.0.2)
     unicode (0.4.2)
     wapiti (0.0.5)
+    zip (2.0.2)
 
 PLATFORMS
   ruby
@@ -157,6 +160,7 @@ DEPENDENCIES
   anystyle-parser
   citeproc-ruby
   coffee-rails (~> 3.1.1)
+  crxmake
   jquery-rails
   marc
   mysql2
