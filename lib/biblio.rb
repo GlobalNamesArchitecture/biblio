@@ -44,8 +44,8 @@ module Biblio
     
     def construct_crx
       CrxMake.make(
-        :ex_dir => Rails.root.join("bibliospotter", "src").to_s,
-        :pkey   => Rails.root.join("bibliospotter","bibliospotter.pem").to_s,
+        :ex_dir => Rails.root.join("app", "bibliospotter", "src").to_s,
+        :pkey   => Rails.root.join("app", "bibliospotter","bibliospotter.pem").to_s,
         :crx_output => Rails.root.join("public", "bibliospotter","bibliospotter.crx").to_s,
         :verbose => true
       )
