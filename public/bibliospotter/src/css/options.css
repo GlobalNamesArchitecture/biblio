@@ -1,0 +1,38 @@
+body{
+  font-family: Droid Serif, Georgia, serif !important;
+}
+.header{
+  border-bottom:1px solid #aaa;min-width:500px;max-width:800px;height:60px;
+}
+.header h1{
+  font-size:28px;
+  line-height:50px;
+  background:url('chrome-extension://__MSG_@@extension_id__/images/icon-48.png') no-repeat;
+  padding-left:55px;
+  border-bottom:2px solid #bbb;
+  width:375px;
+  margin:0px;
+  padding-bottom:10px;
+}
+.buttons{
+  border-top:1px solid #aaa;min-width:500px;max-width:800px;height:60px;
+  margin-top:20px;
+  padding-top:20px;
+}
+button.submit{
+  text-decoration: none;
+  border: 0px solid #0F1215;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  min-height: 14px;
+  padding: 5px 8px;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  border-radius: 6px;
+  background: #5aa52b;
+  background-image: -webkit-gradient(linear, 0 100%, 0 0%, color-stop(0.04, #1b7004), color-stop(0.58, #5aa52b), color-stop(0.98, #90cf4c));
+}
+button.submit:hover{
+  color:#fff;
+  box-shadow: 0 1px 2px 1px rgba(125, 125, 125, 0.9);
+}
