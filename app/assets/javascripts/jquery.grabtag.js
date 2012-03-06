@@ -3,7 +3,7 @@
  *
  * A tool to highlight and tag parts of text
  * 
- * Version 0.5
+ * Version 0.6
  * January 22, 2012
  *
  * Copyright (c) 2012 David P. Shorthouse
@@ -359,12 +359,15 @@
     $(obj)[0].normalize();
 
     $.each(tags, function(index, value) {
-      snippet = $('[data-' + gt + '=' + index + ']', obj);
+      snippet = $('[data-' + gt + '="' + index + '"]', obj);
       if(snippet.length > 1 && !settings.multitag) {
         $(snippet[0]).addClass(gt + '-selector ' + gt + '-tag ' + gt + '-item').attr('title', index).attr('style', self.get_style(value));
         self.add_resizers($(obj), settings, $(snippet[0]));
         self.add_context_menu($(obj), settings, $(snippet[0]));
         self.add_hover($(snippet[0]));
+        for(var i = 1; i < snippet.length; i += 1 ) {
+          $(snippet[i]).before($(snippet[i]).text()).remove();
+        }
       } else {
         snippet.each(function() {
           $(this).addClass(gt + '-selector ' + gt + '-tag ' + gt + '-item').attr('title', index).attr('style', self.get_style(value));
@@ -374,6 +377,8 @@
         });
       }
     });
+
+    $(obj)[0].normalize();
 
     settings.onActivate.call(this, obj, { "content" : self.convert_markup(obj) });
   };
@@ -385,7 +390,7 @@
         sel_text   = (window.getSelection) ? selection.toString() : selection.text,
         newNode    = "",
         settings   = e.data.settings,
-        selected   = '.' + gt + '-tag[data-' + gt + '=' + settings.sticky_tag + ']',
+        selected   = '.' + gt + '-tag[data-' + gt + '="' + settings.sticky_tag + '"]',
         offset     = self.get_offset($(this)[0]);
 
     if(!settings.sticky) {
@@ -545,7 +550,7 @@
             $(obj)[gt]("destroy")[gt](settings);
           } else {
             if(stored) {
-              if(!settings.multitag && $('[data-' + gt + '=' + _self.attr("data-" + gt) + ']', $(obj)).length === 1) {
+              if(!settings.multitag && $('[data-' + gt + '="' + _self.attr("data-" + gt) + '"]', $(obj)).length === 1) {
                 settings.onMultitagWarning.call(this, $(obj), _self);
               } else {
                 self.add_selection($(obj), _self, settings);
