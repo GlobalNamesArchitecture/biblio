@@ -8,21 +8,24 @@ class ParserController < ApplicationController
 
   def index
     respond_to do |format|
-      format.json do
+      @citation = params[:q] || ""
+      @sources  = params[:sources] || {}
+      @style    = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
 
-        @citation = params[:q] || ""
-        @sources  = params[:sources] || {}
-        @style    = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
-
-        @sources.each do |key, source|
-          if !valid_sources.include?(key)
-            @sources.delete(key)
-          end
+      @sources.each do |key, source|
+        if !valid_sources.include?(key)
+          @sources.delete(key)
         end
+      end
 
-        response = (@citation =~ doi_regex) ? doi_response : parse_response
-
+      response = (@citation =~ doi_regex) ? doi_response : parse_response
+      
+      format.json do
         render :json => { :metadata => make_metadata, :records => [response] }, :callback => params[:callback]
+      end
+      
+      format.xml do
+        render :xml => response
       end
       
       format.html do
@@ -38,6 +41,7 @@ class ParserController < ApplicationController
         @sources.delete(key)
       end
     end
+    @style = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
 
     @records = multiparse_response
 
@@ -45,6 +49,11 @@ class ParserController < ApplicationController
       format.json do
         render :json => { :metadata => make_metadata, :records => @records }, :callback => params[:callback]
       end
+
+      format.xml do
+        render :xml => @records
+      end
+
       format.html do
       end
     end
@@ -104,6 +113,7 @@ class ParserController < ApplicationController
     citations.each do |citation|
       parsed = parse(citation)
       parsed["status"] = get_status(parsed)
+      parsed["formatted"] = format_citeproc(parsed) unless parsed["status"] == "failed"
       parsed["identifiers"] = make_requests(parsed).flatten unless parsed["status"] == "failed"
       parsed["verbatim"] = citation
       records << parsed

@@ -12,8 +12,8 @@ class TrainController < ApplicationController
         :mode => Biblio::Application.config.anystyle[:mode],
         :host => Biblio::Application.config.anystyle[:host]
       })
-      parser.train normalize(tagged), false
-      parser.model.save
+      parser.train tagged, false
+#      parser.model.save
       tag = Tag.new(:markup => tagged)
       tag.save!
       response = "success"
@@ -26,11 +26,6 @@ class TrainController < ApplicationController
         render :json => { :status => response }
       end
     end
-  end
-  
-  protected
-  
-  def normalize(tag)
   end
 
 end

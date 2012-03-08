@@ -1,0 +1,28 @@
+<% title "API" %>
+
+<%- content_for :content_splash do -%>
+<%= content_tag :h2, "Application Programming Interface" %>
+<%- end -%>
+
+<h3>Base URL</h3>
+<div id="base-url">
+  <p><%= url_for( :controller => '/parser', :action => 'index', :only_path => false ) << "?" %></p>
+</div>
+
+<h3>GET Request Parameters</h3>
+
+<dl>
+  <dt>q</dt><dd>A single, URL-encoded citation.<p>MACDONALD, S., &amp; FENNIAK T. (2007). Understory plant communities of boreal mixedwood forests in western Canada: Natural patterns and response to variable-retention harvesting. Forest Ecology and Management. 242(1): 34-48.<br><em>e.g.</em>  q=MACDONALD%2C%20S.%2C%20%26%20FENNIAK%20T.%20(2007).%20Understory%20plant %20communities%20of%20boreal%20mixedwood%20forests%20in%20western%20Canada%3A%20 Natural%20patterns%20and%20response%20to%20variable-retention%20harvesting.%20Forest%20 Ecology%20and%20Management.%20242(1)%3A%2034-48.</p></dd>
+  <dt>sources[endpoint]</dt><dd>OpenURL endpoints, available options are sources[crossref], sources[bhl], sources[biostor]<p><em>e.g.</em> &amp;sources[crossref]=true&amp;sources[bhl]=true</p></dd>
+  <dt>style</dt><dd>Output citation style in an element called "formatted". Options are ama, apa, asa.<p><em>e.g.</em>&amp;style=ama</p>
+  <dt>callback</dt><dd>Only relevant with a JSON output<p><em>e.g.</em> &amp;callback=MyCoolCallback</p></dd>
+</dl>
+
+<h3>POST Request Parameters</h3>
+  <dt>citations</dt><dd>A list of citations with line breaks</dd>
+  <dt>sources[endpoint]</dt><dd>As above for GET request</dd>
+  <dt>style</dt><dd>As above for GET request</dd>
+
+<h3>Output Format</h3>
+  <dt>JSON (default)</dt><dd>Base URL: <%= url_for( :controller => '/parser', :action => 'index', :only_path => false ) %> <em>or</em> <%= url_for( :controller => '/parser', :action => 'index', :format => :json, :only_path => false ) << "?" %></dd>
+  <dt>XML</dt><dd><%= url_for( :controller => '/parser', :action => 'index', :format => :xml, :only_path => false ) << "?" %></dd>

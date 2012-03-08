@@ -16,6 +16,11 @@
       <%- else -%>
         <li><%= link_to "Parser", parser_index_path %></li>
       <%- end -%>
+      <%- if controller_name == "api" -%>
+        <li class="active"><%= link_to "API", api_index_path %></li>
+      <%- else -%>
+        <li><%= link_to "API", api_index_path %></li>
+      <%- end -%>
       <%- if controller_path.include? "plugins" -%>
         <li class="active"><%= link_to "jQuery Plugins", plugins_path %></li>
       <%- else -%>
