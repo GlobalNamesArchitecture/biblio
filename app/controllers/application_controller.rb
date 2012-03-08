@@ -49,7 +49,7 @@ class ApplicationController < ActionController::Base
     co = OpenURL::ContextObject.new
     co.referent.set_format(parsed["type"])
     co.referent.set_metadata('genre', parsed["type"])
-    co.refererent.set_metadata('id', parsed["DOI"]) unless parsed["DOI"].nil?
+    co.referent.set_metadata('id', parsed["DOI"]) unless parsed["DOI"].nil?
 
     if parsed["type"] == 'journal' || parsed["type"] == 'article' || parsed["type"] == 'article-journal'
       co.referent.set_format("journal")
