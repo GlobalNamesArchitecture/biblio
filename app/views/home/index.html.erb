@@ -2,7 +2,15 @@
   <p class="tagline">Global Names bibliographic citation tools and services.</p>
 <% end %>
 
-<p>This collection of experimental tools and services may help you parse and discover relevant bibliographic materials. We strive to expose these tools in simple and extensible APIs and <%= link_to "jQuery plugins", plugins_path %>.</p>
+<p>This collection of bibliographic citation parsing and discovery tools and services uses four ruby gems at is core:
+  <a href="http://rubygems.org/gems/anystyle-parser">anystyle-parser</a>,
+  <a href="http://rubygems.org/gems/citeproc-ruby">citeproc-ruby</a>,
+  <a href="http://rubygems.org/gems/openurl">openurl</a>, and
+  <a href="http://rubygems.org/gems/typhoeus">typhoeus</a>.
+ Successfully parsed citations are each sent in parallel to <a href="http://www.crossref.org/">CrossRef</a>, the <a href="http://www.biodiversitylibrary.org/">Biodiversity Heritage Library</a> and <a href="http://biostor.org">BioStor</a> for discovery.</p>
+</p>
+
+<p>We strive to expose these tools in simple <%= link_to "APIs", api_index_path %> and extensible <%= link_to "jQuery plugins", plugins_path %>.</p>
 
 <div id="chrome" class="clear">
 <div id="chrome-icon"><a href="/bibliospotter/bibliospotter.crx"><img src="<%= asset_path 'icon-48.png' %>" alt="BiblioSpotter Chrome Extension" /></div>

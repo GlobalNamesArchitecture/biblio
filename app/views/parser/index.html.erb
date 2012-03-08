@@ -1,12 +1,3 @@
-<p>This experimental, Rails-based application uses four ruby gems at is core:
-  <a href="http://rubygems.org/gems/anystyle-parser">anystyle-parser</a>,
-  <a href="http://rubygems.org/gems/citeproc-ruby">citeproc-ruby</a>,
-  <a href="http://rubygems.org/gems/openurl">openurl</a>, and
-  <a href="http://rubygems.org/gems/typhoeus">typhoeus</a>.
-Successfully parsed citations are each sent in parallel to <a href="http://www.crossref.org/">CrossRef</a>, the <a href="http://www.biodiversitylibrary.org/">Biodiversity Heritage Library</a> and <a href="http://biostor.org">BioStor</a> for discovery.
-Functionality is exposed via a configurable <%= link_to "jQuery plug-in", plugins_refparser_index_path %> or a POST request to /parser.json (see HTML source for parameters).
-Another <%= link_to "jQuery plug-in", plugins_grabtag_index_path %> may eventually be used to build the training set when citations fail to parse.</p>
-
 <h3>Paste a List of Citations</h3>
 
 <%= form_tag("/parser", :method => "POST") do %>
