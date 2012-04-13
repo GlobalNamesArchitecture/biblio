@@ -31,12 +31,12 @@
 <% end %>
 
 <h4>Example 1 Configuration</h4>
-<xmp><html>
-<head>
-<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="jquery.grabtag.js"></script>
-<script type="text/javascript" src="jquery.contextMenu.js"></script>
-<script type="text/javascript">
+<pre class="js">&lt;html&gt;
+&lt;head&gt;
+&lt;script type="text/javascript" src="jquery-1.7.1.min.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="jquery.grabtag.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript" src="jquery.contextMenu.js"&gt;&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
 $(function(){
   $('.biblio-selector').grabtag({
     'config_ele'   : '#grabtag-initializer'
@@ -89,14 +89,14 @@ $(function(){
     }
   });
 });
-</script>
-</head>
-<body>
-<div id="grabtag-initializer" class="clearfix"></div>
-<p class="biblio-selector">Buddle, C.M. and D.P. Shorthouse. (2008). Effects of experimental harvesting on spider (Araneae) assemblages in boreal deciduous forests. The Canadian Entomologist <span data-grabtag="volume">140(4)</span>: 437-452, 10.4039/n07-LS01</p>
-<textarea id="grabtag-output"></textarea>
-</body>
-</html></xmp>
+&lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div id="grabtag-initializer" class="clearfix"&gt;&lt;/div&gt;
+&lt;p class="biblio-selector"&gt;Buddle, C.M. and D.P. Shorthouse. (2008). Effects of experimental harvesting on spider (Araneae) assemblages in boreal deciduous forests. The Canadian Entomologist &lt;span data-grabtag="volume"&gt;140(4)&lt;/span&gt;: 437-452, 10.4039/n07-LS01&lt;/p&gt;
+&lt;textarea id="grabtag-output"&gt;&lt;/textarea&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
 
 <h3><a name="example2">Example 2</a>: Marking-up Free-form Text (Sticky Buttons)</h3>
 <div id="freeform-config" class="clear"></div>
@@ -106,7 +106,7 @@ $(function(){
 <% end %>
 
 <h4>Example 2 Configuration</h4>
-<xmp><script type="text/javascript">
+<pre class="js">&lt;script type="text/javascript"&gt;
   var config = {
     tags       : ["taxon" : { "background-color" : "#80b1d3", "color" : "#fff"}, "size", "shape"],
     sticky     : true,
@@ -129,10 +129,10 @@ $(function(){
     }
   };
   $(".freeform").grabtag(config);
-</script>
+&lt;/script&gt;
 
-<div id="freeform-config" class="clearfix"></div>
-<p class="freeform">Lorem ipsum...</p></xmp>
+&lt;div id="freeform-config" class="clearfix"&gt;&lt;/div&gt;
+&lt;p class="freeform"&gt;Lorem ipsum...&lt;/p&gt;</pre>
 
 <h3><a name="config">Configuration Options</a></h3>
 <h4>Pre-selections</h4>

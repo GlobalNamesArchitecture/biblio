@@ -15,7 +15,7 @@
     "message" : "En train de chercher..."
   },
   "modal_header" : {
-    "message" : "Aide enseigner BibSpotter en ajouter, retirer, or ajouster les étiquettes."
+    "message" : "Aide enseigner BiblioSpotter en ajouter, retirer, or ajouster les étiquettes."
   },
   "modal_submit" : {
     "message" : "Envoyer"
@@ -24,7 +24,7 @@
     "message" : "Effacer"
   },
   "modal_failure" : {
-    "message" : "Désolé, quelque chose s'est mal passé et BibSpotter n'avez pas reçu votre citation étiqueté."
+    "message" : "Désolé, quelque chose s'est mal passé et BiblioSpotter n'avez pas reçu votre citation étiqueté."
   },
   "modal_retry" : {
     "message" : "En train de réessayer..."

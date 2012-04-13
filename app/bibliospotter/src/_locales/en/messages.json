@@ -15,7 +15,7 @@
     "message" : "Looking for citation..."
   },
   "modal_header" : {
-    "message" : "Help teach BibSpotter by adding, removing, or adjusting tags."
+    "message" : "Help teach BiblioSpotter by adding, removing, or adjusting tags."
   },
   "modal_submit" : {
     "message" : "Submit"
@@ -24,7 +24,7 @@
     "message" : "Clear"
   },
   "modal_failure" : {
-    "message" : "Sorry, something went wrong and BibSpotter did not receive your tagged citation."
+    "message" : "Sorry, something went wrong and BiblioSpotter did not receive your tagged citation."
   },
   "modal_retry" : {
     "message" : "Retrying..."

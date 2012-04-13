@@ -5,15 +5,4 @@
 input#citations{width:50%;height:1.5em;padding:5px;border:1px solid #CCC;border-radius:3px;}
 .biblio-item{margin: 0.5em 0 0 2em;text-indent: -2em;line-height:1.5em;}
 .refparser-icon{vertical-align:middle;margin-left:3px;}
-xmp{
-  background-color:#333;
-  color:#fff;
-  padding:5px;
-  font-size:0.8em;
-  white-space: pre-wrap;       /* css-3 */
-  white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
-  white-space: -pre-wrap;      /* Opera 4-6 */
-  white-space: -o-pre-wrap;    /* Opera 7 */
-  word-wrap: break-word;       /* Internet Explorer 5.5+ */
-  border-radius:8px;
-}
+pre{font-size:14px;}

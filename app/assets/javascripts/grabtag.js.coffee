@@ -1,5 +1,6 @@
 //= require jquery.contextMenu
 //= require jquery.grabtag
+//= require jquery.snippet.min
 $ ->
  config = {
    config_ele : '#grabtag-initializer',
@@ -68,3 +69,5 @@ $ ->
       $("#freeform-output").val(data.tag.type + ': ' + data.tag.value + ' (removed, ' + offset + ')')
   }
   $(".freeform").grabtag(config)
+
+  $("pre.js").snippet("javascript", {style:"darkness", showNum:false})

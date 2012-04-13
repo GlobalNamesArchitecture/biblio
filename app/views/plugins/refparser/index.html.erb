@@ -24,10 +24,10 @@
 <div class="examples">10.3897/zookeys.166.1802</div>
 
 <h3><a name="config">Configuration</a></h3>
-<xmp>
-<script type="text/javascript" src="jquery-1.7.1.min.js"></script>
-<script type="text/javascript" src="jquery.refparser.js"></script>
-<script type="text/javascript">
+<pre class="js">
+&lt;script type="text/javascript" src="jquery-1.7.1.min.js">&lt;/script&gt;
+&lt;script type="text/javascript" src="jquery.refparser.js">&lt;/script&gt;
+&lt;script type="text/javascript"&gt;
 $(function(){
 
   // Configure some options
@@ -109,16 +109,16 @@ $(function(){
  $(".biblio-input").refparser(options);
 
 });
-</script>
+&lt;/script&gt;
 
-<body>
-<!-- Pre-compiled list of citations -->
-<p class="biblio-entry">My reference here that may include HTML.</p>
+&lt;body&gt;
+&lt;!-- Pre-compiled list of citations --&gt;
+&lt;p class="biblio-entry"&gt;My reference here that may include HTML.&lt;/p&gt;
 
-<!-- User input box -->
-<input class="biblio-input"></input>
-</body>
-</xmp>
+&lt;!-- User input box --&gt;
+&lt;input class="biblio-input"&gt;&lt;/input&gt;
+&lt;/body&gt;
+</pre>
 
 <h3><a name="download">Download</a></h3>
 <p>jQuery plug-in: <%= link_to 'jquery.refparser.js', root_url.to_s << 'assets/jquery.refparser.js' %>, 3.7kb minified</p>
