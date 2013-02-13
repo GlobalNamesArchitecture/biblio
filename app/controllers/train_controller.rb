@@ -4,6 +4,7 @@ class TrainController < ApplicationController
   protect_from_forgery :except => :create
   
   def create
+    #TODO: can we immediately re-from and re-execute an OpenURL query
     tagged = params[:tagged]
     begin
       parser = Anystyle::Parser::Parser.new ({
@@ -13,7 +14,7 @@ class TrainController < ApplicationController
         :host => Biblio::Application.config.anystyle[:host]
       })
       parser.train tagged, false
-#      parser.model.save
+      parser.model.save
       tag = Tag.new(:markup => tagged)
       tag.save!
       response = "success"

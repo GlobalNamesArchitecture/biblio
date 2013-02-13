@@ -37,12 +37,10 @@ class ParserController < ApplicationController
   def create
     @sources = params[:sources] || {}
     @sources.each do |key, source|
-      if !valid_sources.include?(key)
-        @sources.delete(key)
-      end
+      @sources.delete(key) if !valid_sources.include?(key)
     end
+    
     @style = (params[:style] && valid_styles.include?(params[:style])) ? params[:style] : "apa"
-
     @records = multiparse_response
 
     respond_to do |format|
